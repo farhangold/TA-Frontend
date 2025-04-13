@@ -17,13 +17,13 @@ export default function Home() {
     <div className="flex min-h-screen font-sans">
       {/* Left side - Image */}
       <div className="hidden md:block md:w-1/2 relative">
-        <Image
-          src="/frame 19.png"
-          alt="Login background"
-          layout="fill"
-          objectFit="cover"
-          priority
-        />
+      <Image
+        src="/frame-19.png"
+        alt="Login background"
+        fill
+        className="object-cover"
+        priority
+      />
       </div>
 
       {/* Right side - Login Form */}
