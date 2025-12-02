@@ -1,6 +1,9 @@
 // src/components/DashboardLayout.tsx
+"use client";
+
 import React, { ReactNode } from "react";
 import Sidebar from "./Sidebar";
+import { useCurrentUser } from "../lib/auth";
 
 type DashboardLayoutProps = {
   children: ReactNode;
@@ -8,6 +11,18 @@ type DashboardLayoutProps = {
 };
 
 export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
+  const { user } = useCurrentUser();
+
+  const getUserInitials = () => {
+    if (!user?.name) return "U";
+    return user.name
+      .split(" ")
+      .map((n) => n[0])
+      .join("")
+      .toUpperCase()
+      .slice(0, 2);
+  };
+
   return (
     <div className="flex min-h-screen text-gray-600 bg-gray-100 font-sans">
       <Sidebar />
@@ -16,33 +31,17 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
         <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-blue-50">
           <h1 className="text-2xl font-semibold">{title}</h1>
           <div className="flex items-center">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari"
-                className="pl-10 pr-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500 w-64"
-              />
-              <svg
-                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
             <div className="ml-4 flex items-center">
               <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white">
-                <span>KL</span>
+                <span>{getUserInitials()}</span>
               </div>
               <div className="ml-2">
-                <div className="text-sm text-gray-600 font-medium">Kang Liu</div>
-                <div className="text-xs text-gray-500">Manager</div>
+                <div className="text-sm text-gray-600 font-medium">
+                  {user?.name || "User"}
+                </div>
+                <div className="text-xs text-gray-500">
+                  {user?.role || "Unknown"}
+                </div>
               </div>
             </div>
           </div>

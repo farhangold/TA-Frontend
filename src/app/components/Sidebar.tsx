@@ -1,10 +1,14 @@
 // components/Sidebar.tsx
+"use client";
+
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useCurrentUser } from "../lib/auth";
 
 const Sidebar = () => {
   const pathname = usePathname();
+  const { user } = useCurrentUser();
 
   const menuItems = [
     { icon: "dashboard", label: "Dashboard", path: "/dashboard" },
@@ -12,6 +16,15 @@ const Sidebar = () => {
     { icon: "details", label: "Detail Laporan", path: "/detail-laporan" },
     { icon: "validation", label: "Hasil Validasi", path: "/hasil-validasi" },
   ];
+
+  const adminMenuItems =
+    user?.role === "ADMIN"
+      ? [
+          { icon: "settings", label: "Scoring Rules", path: "/scoring-rules" },
+          { icon: "users", label: "Users", path: "/users" },
+          { icon: "audit", label: "Audit Logs", path: "/audit-logs" },
+        ]
+      : [];
 
   const bottomMenuItems = [
     { icon: "logout", label: "Keluar", path: "/logout" },
@@ -112,6 +125,32 @@ const Sidebar = () => {
             />
           </svg>
         );
+      case "users":
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5"
+          >
+            <path d="M4.5 6.375a4.125 4.125 0 118.25 0 4.125 4.125 0 01-8.25 0zM14.25 8.625a3.375 3.375 0 116.75 0 3.375 3.375 0 01-6.75 0zM1.5 19.125a7.125 7.125 0 0114.25 0v.004l-.001.119a.75.75 0 01-.363.63 13.067 13.067 0 01-6.761 1.873c-2.472 0-4.786-.684-6.76-1.873a.75.75 0 01-.364-.63l-.001-.122zM17.25 19.128l-.001.144a2.25 2.25 0 01-.233.96 10.088 10.088 0 005.06-1.01.75.75 0 00.42-.643 4.875 4.875 0 00-6.957-4.611 8.586 8.586 0 011.71 5.157v.003z" />
+          </svg>
+        );
+      case "audit":
+        return (
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+            className="w-5 h-5"
+          >
+            <path
+              fillRule="evenodd"
+              d="M4.125 3C3.089 3 2.25 3.84 2.25 4.875v14.25c0 1.036.84 1.875 1.875 1.875h15.75c1.035 0 1.875-.84 1.875-1.875V4.875C21.75 3.839 20.91 3 19.875 3H4.125zM12 9.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H12zm-3.75 0a.75.75 0 000 1.5h.75a.75.75 0 000-1.5h-.75zm3 3.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H12zm-3.75 0a.75.75 0 000 1.5h.75a.75.75 0 000-1.5h-.75zM6 16.5a.75.75 0 00.75.75h9a.75.75 0 000-1.5h-9a.75.75 0 00-.75.75z"
+              clipRule="evenodd"
+            />
+          </svg>
+        );
       default:
         return null;
     }
@@ -159,6 +198,28 @@ const Sidebar = () => {
                 </Link>
               </li>
             ))}
+            {adminMenuItems.length > 0 && (
+              <>
+                <li className="px-4 py-2 text-xs font-semibold text-blue-200 uppercase mt-4">
+                  Admin
+                </li>
+                {adminMenuItems.map((item, index) => (
+                  <li key={`admin-${index}`}>
+                    <Link
+                      href={item.path}
+                      className={`flex items-center px-4 py-3 text-sm ${
+                        isActive(item.path)
+                          ? "bg-blue-600"
+                          : "hover:bg-blue-600"
+                      }`}
+                    >
+                      <span className="mr-3">{renderIcon(item.icon)}</span>
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </>
+            )}
           </ul>
         </nav>
 

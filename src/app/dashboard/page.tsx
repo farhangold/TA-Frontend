@@ -1,5 +1,6 @@
 "use client";
 
+import { useQuery } from "@apollo/client";
 import {
   ResponsiveContainer,
   AreaChart,
@@ -14,33 +15,130 @@ import {
 } from "recharts";
 import { ArrowUpIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import DashboardLayout from "../components/DashboardLayout";
+import { GET_UAT_REPORTS } from "../graphql/uatReports";
+import { GET_EVALUATION_HISTORY } from "../graphql/evaluations";
+
+// Helper function to transform reports into time series data
+function transformReportsToTimeSeries(reports: any[]) {
+  const last7Days = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date();
+    date.setDate(date.getDate() - (6 - i));
+    return {
+      date: date.toISOString().split("T")[0],
+      count: 0,
+      name: date.toLocaleDateString("id-ID", { weekday: "short" }),
+    };
+  });
+
+  reports.forEach((report: any) => {
+    const reportDate = new Date(report.createdAt)
+      .toISOString()
+      .split("T")[0];
+    const dayIndex = last7Days.findIndex((d) => d.date === reportDate);
+    if (dayIndex !== -1) {
+      last7Days[dayIndex].count++;
+    }
+  });
+
+  return last7Days.map((d) => ({ name: d.name, value: d.count }));
+}
+
+// Helper function to count reports by status
+function countReportsByStatus(reports: any[]) {
+  const counts: Record<string, number> = {
+    PENDING_EVALUATION: 0,
+    EVALUATING: 0,
+    VALID: 0,
+    INVALID: 0,
+    FAILED: 0,
+  };
+
+  reports.forEach((report: any) => {
+    counts[report.status] = (counts[report.status] || 0) + 1;
+  });
+
+  return [
+    {
+      name: "Valid",
+      value: counts.VALID,
+      color: "#00D1E8",
+    },
+    {
+      name: "Invalid",
+      value: counts.INVALID + counts.FAILED,
+      color: "#FF3B30",
+    },
+  ];
+}
+
+// Helper function to count by severity
+function countBySeverity(reports: any[]) {
+  const counts: Record<string, number> = {
+    LOW: 0,
+    MEDIUM: 0,
+    HIGH: 0,
+    CRITICAL: 0,
+  };
+
+  reports.forEach((report: any) => {
+    if (report.severityLevel) {
+      counts[report.severityLevel] = (counts[report.severityLevel] || 0) + 1;
+    }
+  });
+
+  return Object.entries(counts).map(([name, value]) => ({
+    name,
+    value,
+    color:
+      name === "CRITICAL"
+        ? "#FF3B30"
+        : name === "HIGH"
+          ? "#FF9500"
+          : name === "MEDIUM"
+            ? "#FFCC00"
+            : "#4CD964",
+  }));
+}
 
 export default function Dashboard() {
-  // Mock data for the area chart
-  const areaData = [
-    { name: "Senin", value: 150 },
-    { name: "Selasa", value: 230 },
-    { name: "Rabu", value: 224 },
-    { name: "Kamis", value: 218 },
-    { name: "Jumat", value: 135 },
-    { name: "Sabtu", value: 147 },
-    { name: "Minggu", value: 260 },
-  ];
+  // Fetch recent reports (last 30 days worth)
+  const { data: reportsData, loading: reportsLoading } = useQuery(
+    GET_UAT_REPORTS,
+    {
+      variables: {
+        pagination: { page: 1, limit: 1000 }, // Get a large batch for aggregation
+      },
+      fetchPolicy: "cache-and-network",
+    },
+  );
 
-  // Pie chart data
-  const validInvalidData = [
-    { name: "Valid", value: 5, color: "#00D1E8" },
-    { name: "Invalid", value: 5, color: "#FF3B30" },
-  ];
+  const reports = reportsData?.getUATReports?.edges?.map(
+    (edge: any) => edge.node,
+  ) || [];
+  const totalCount = reportsData?.getUATReports?.totalCount ?? 0;
+
+  // Transform data for charts
+  const areaData = transformReportsToTimeSeries(reports);
+  const validInvalidData = countReportsByStatus(reports);
+  const severityData = countBySeverity(reports);
+
+  // Calculate verification status
+  const pendingCount = reports.filter(
+    (r: any) => r.status === "PENDING_EVALUATION" || r.status === "EVALUATING",
+  ).length;
+  const newCount = reports.filter(
+    (r: any) => r.status === "PENDING_EVALUATION",
+  ).length;
 
   const verificationData = [
-    { name: "Sedang Diverifikasi", value: 22, color: "#FF00C7" },
-    { name: "Laporan Baru", value: 10, color: "#FFAAF0" },
+    { name: "Sedang Diverifikasi", value: pendingCount, color: "#FF00C7" },
+    { name: "Laporan Baru", value: newCount, color: "#FFAAF0" },
   ];
 
+  const validCount = reports.filter((r: any) => r.status === "VALID").length;
   const successData = [
-    { name: "Validasi Sukses", value: 18, color: "#4CD964" },
-    { name: "Laporan Baru", value: 4, color: "#B8FFD0" },
+    { name: "Validasi Sukses", value: validCount, color: "#4CD964" },
+    { name: "Laporan Baru", value: newCount, color: "#B8FFD0" },
   ];
 
   // Custom tooltip for area chart
@@ -56,6 +154,21 @@ export default function Dashboard() {
     return null;
   };
 
+  if (reportsLoading) {
+    return (
+      <DashboardLayout title="Dashboard">
+        <div className="bg-white rounded-lg p-6 shadow">
+          <p className="text-gray-500">Memuat data dashboard...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // Calculate change from previous period (simplified - compare last 7 days vs previous 7 days)
+  const last7DaysCount = areaData.reduce((sum, d) => sum + d.value, 0);
+  const previous7DaysCount = Math.max(0, totalCount - last7DaysCount);
+  const change = last7DaysCount - previous7DaysCount;
+
   return (
     <DashboardLayout title="Dashboard">
       {/* Total Laporan UAT */}
@@ -63,13 +176,23 @@ export default function Dashboard() {
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-lg text-gray-600 font-semibold">Total Laporan UAT</h2>
           <div className="text-right">
-            <div className="text-4xl font-bold text-blue-500">245</div>
+            <div className="text-4xl font-bold text-blue-500">{totalCount}</div>
             <div className="flex items-center justify-end text-sm text-gray-500">
-              <span>Dari hari minggu</span>
-              <span className="ml-2 flex items-center text-green-500">
-                <ArrowUpIcon className="w-4 h-4 mr-1" />
-                23
-              </span>
+              <span>Total laporan</span>
+              {change !== 0 && (
+                <span
+                  className={`ml-2 flex items-center ${
+                    change > 0 ? "text-green-500" : "text-red-500"
+                  }`}
+                >
+                  <ArrowUpIcon
+                    className={`w-4 h-4 mr-1 ${
+                      change < 0 ? "rotate-180" : ""
+                    }`}
+                  />
+                  {Math.abs(change)}
+                </span>
+              )}
             </div>
           </div>
         </div>

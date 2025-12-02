@@ -63,12 +63,12 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
                 />
               </svg>
             </button>
-            <h2 className="text-lg font-medium text-gray-800">
+            <h2 className="text-lg font-medium text-gray-900">
               Upload file CSV
             </h2>
           </div>
 
-          <p className="text-sm text-gray-600 mb-6">
+          <p className="text-sm text-gray-700 mb-6">
             Unggah file untuk import format CSV untuk mempermudah pengolahan
             data. Pastikan file yang anda unggah dalam format CSV dan tidak
             lebih dari 20mb.
@@ -103,10 +103,10 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
               />
             </svg>
 
-            <p className="text-sm text-blue-500 mb-1">
+            <p className="text-sm text-blue-600 mb-1 font-medium">
               Klik untuk upload atau tarik dan taruh
             </p>
-            <p className="text-xs text-gray-500">CSV. Ukuran file max 20mb</p>
+            <p className="text-xs text-gray-600">CSV. Ukuran file max 20mb</p>
 
             {selectedFile && (
               <div className="mt-4 flex items-center text-blue-600 bg-blue-100 px-3 py-2 rounded-md">
