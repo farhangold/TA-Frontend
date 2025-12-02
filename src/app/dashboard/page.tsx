@@ -251,7 +251,7 @@ export default function Dashboard() {
                     }`}
                   />
                   {Math.abs(change)}
-                </span>
+              </span>
               )}
             </div>
           </div>
