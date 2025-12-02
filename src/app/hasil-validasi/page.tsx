@@ -1,6 +1,7 @@
+
 "use client";
 
-import React, { useMemo, useState } from "react";
+import React, { Suspense, useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
@@ -31,7 +32,7 @@ const getStatusBadgeClass = (status: string) => {
   return "bg-yellow-200 text-yellow-800";
 };
 
-export default function HasilValidasi() {
+const HasilValidasiContent = () => {
   const searchParams = useSearchParams();
   const reportId = searchParams.get("reportId");
   const [currentPage, setCurrentPage] = useState(1);
@@ -268,4 +269,24 @@ export default function HasilValidasi() {
       </div>
     </DashboardLayout>
   );
-}
+};
+
+const HasilValidasiPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <DashboardLayout title="Hasil Validasi">
+          <div className="bg-white rounded-lg p-6 shadow">
+            <div className="py-8 text-center text-sm text-gray-500">
+              Memuat hasil validasi...
+            </div>
+          </div>
+        </DashboardLayout>
+      }
+    >
+      <HasilValidasiContent />
+    </Suspense>
+  );
+};
+
+export default HasilValidasiPage;
