@@ -8,10 +8,13 @@ import DetailBugModal from "../components/DetailBugModal";
 import UploadCsvModal from "../components/UploadCSVModal";
 import ValidationModal from "../components/ValidationModal";
 import DeleteConfirmationModal from "../components/DeleteModal";
+import CreateReportModal from "../components/CreateReportModal";
+import { useCurrentUser } from "../lib/auth";
 import {
   GET_UAT_REPORTS,
   DELETE_UAT_REPORT,
   UPLOAD_BATCH_REPORTS,
+  CREATE_UAT_REPORT,
 } from "../graphql/uatReports";
 import {
   EVALUATE_REPORT,
@@ -61,8 +64,11 @@ export default function DaftarLaporan() {
   const [validationModalOpen, setValidationModalOpen] = useState(false);
   const [uploadCsvModalOpen, setUploadCsvModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const [selectedReport, setSelectedReport] = useState<ReportRow | null>(null);
+
+  const { user } = useCurrentUser();
 
   const filterInput = useMemo(() => {
     const filter: {
@@ -106,6 +112,7 @@ export default function DaftarLaporan() {
   const [evaluateBatch] = useMutation(EVALUATE_BATCH_REPORTS);
   const [deleteReport] = useMutation(DELETE_UAT_REPORT);
   const [uploadBatch] = useMutation(UPLOAD_BATCH_REPORTS);
+  const [createReport, { loading: isCreating }] = useMutation(CREATE_UAT_REPORT);
 
   const reports: ReportRow[] = useMemo(() => {
     if (!data?.getUATReports) return [];
@@ -178,6 +185,29 @@ export default function DaftarLaporan() {
       console.error("Error evaluating report:", e);
     } finally {
       setValidationModalOpen(false);
+    }
+  };
+
+  const handleCreateReport = async (input: any) => {
+    try {
+      await createReport({
+        variables: { input },
+        refetchQueries: [
+          {
+            query: GET_UAT_REPORTS,
+            variables: {
+              filter: filterInput,
+              sort,
+              pagination: { page: currentPage, limit: ITEMS_PER_PAGE },
+            },
+          },
+        ],
+      });
+      setCreateModalOpen(false);
+      alert("Laporan berhasil dibuat!");
+    } catch (error: any) {
+      console.error("Error creating report:", error);
+      throw error; // Re-throw to let modal handle error display
     }
   };
 
@@ -308,6 +338,14 @@ export default function DaftarLaporan() {
                 {isBatchEvaluating
                   ? "Memvalidasi..."
                   : `Validasi Batch (${selectedReportIds.size})`}
+              </button>
+            )}
+            {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
+              <button
+                onClick={() => setCreateModalOpen(true)}
+                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
+              >
+                + Tambah Laporan
               </button>
             )}
             <button
@@ -725,10 +763,18 @@ export default function DaftarLaporan() {
         bugId={selectedReport?.rawId.slice(-6) ?? ""}
       />
 
+      <CreateReportModal
+        isOpen={createModalOpen}
+        onClose={() => setCreateModalOpen(false)}
+        onSubmit={handleCreateReport}
+        loading={isCreating}
+      />
+
       {(detailModalOpen ||
         validationModalOpen ||
         uploadCsvModalOpen ||
-        deleteModalOpen) && (
+        deleteModalOpen ||
+        createModalOpen) && (
         <style jsx global>{`
           body {
             overflow: hidden;

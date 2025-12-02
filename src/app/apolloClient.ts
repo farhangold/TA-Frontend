@@ -11,7 +11,7 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = new HttpLink({
-  uri: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/graphql",
+  uri: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/graphql",
   credentials: "include",
 });
 
@@ -62,7 +62,7 @@ const refreshToken = async (): Promise<string | null> => {
     `;
 
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/graphql",
+      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/graphql",
       {
         method: "POST",
         headers: {
@@ -169,17 +169,26 @@ const errorLink = onError(
         }
       }
 
-      // Log other GraphQL errors
+      // Log other GraphQL errors with full details
       // eslint-disable-next-line no-console
       graphQLErrors.forEach((err) => {
-        console.error(
-          "[GraphQL error]:",
-          err.message,
-          "Location:",
-          err.locations,
-          "Path:",
-          err.path,
-        );
+        console.error("[GraphQL error]:", {
+          message: err.message,
+          extensions: err.extensions, // This contains validation errors
+          locations: err.locations,
+          path: err.path,
+          originalError: err.originalError,
+          name: err.name,
+        });
+        // Also log the full error object with all properties
+        console.error("[GraphQL error full object]:", JSON.stringify(err, Object.getOwnPropertyNames(err), 2));
+        // Log validation errors if present
+        if (err.extensions?.validationErrors) {
+          console.error("[Validation errors]:", err.extensions.validationErrors);
+        }
+        if (err.extensions?.response) {
+          console.error("[Error response]:", err.extensions.response);
+        }
       });
     }
 

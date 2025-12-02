@@ -194,4 +194,18 @@ export const DELETE_UAT_REPORT = gql`
   }
 `;
 
+export const GET_DASHBOARD_STATS = gql`
+  query GetDashboardStats {
+    getDashboardStats {
+      totalReports
+      validReports
+      invalidReports
+      pendingReports
+      evaluatingReports
+      failedReports
+      newReports
+      verifyingReports
+    }
+  }
+`;
 

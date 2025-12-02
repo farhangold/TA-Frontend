@@ -15,10 +15,10 @@ import {
 } from "recharts";
 import { ArrowUpIcon, ChevronRightIcon } from "@heroicons/react/24/solid";
 import DashboardLayout from "../components/DashboardLayout";
-import { GET_UAT_REPORTS } from "../graphql/uatReports";
-import { GET_EVALUATION_HISTORY } from "../graphql/evaluations";
+import { GET_UAT_REPORTS, GET_DASHBOARD_STATS } from "../graphql/uatReports";
 
 // Helper function to transform reports into time series data
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function transformReportsToTimeSeries(reports: any[]) {
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = new Date();
@@ -30,6 +30,7 @@ function transformReportsToTimeSeries(reports: any[]) {
     };
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reports.forEach((report: any) => {
     const reportDate = new Date(report.createdAt)
       .toISOString()
@@ -44,6 +45,7 @@ function transformReportsToTimeSeries(reports: any[]) {
 }
 
 // Helper function to count reports by status
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function countReportsByStatus(reports: any[]) {
   const counts: Record<string, number> = {
     PENDING_EVALUATION: 0,
@@ -53,6 +55,7 @@ function countReportsByStatus(reports: any[]) {
     FAILED: 0,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reports.forEach((report: any) => {
     counts[report.status] = (counts[report.status] || 0) + 1;
   });
@@ -72,6 +75,7 @@ function countReportsByStatus(reports: any[]) {
 }
 
 // Helper function to count by severity
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function countBySeverity(reports: any[]) {
   const counts: Record<string, number> = {
     LOW: 0,
@@ -80,6 +84,7 @@ function countBySeverity(reports: any[]) {
     CRITICAL: 0,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   reports.forEach((report: any) => {
     if (report.severityLevel) {
       counts[report.severityLevel] = (counts[report.severityLevel] || 0) + 1;
@@ -101,44 +106,72 @@ function countBySeverity(reports: any[]) {
 }
 
 export default function Dashboard() {
-  // Fetch recent reports (last 30 days worth)
-  const { data: reportsData, loading: reportsLoading } = useQuery(
-    GET_UAT_REPORTS,
+  // Fetch dashboard stats (aggregated counts from all reports)
+  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(
+    GET_DASHBOARD_STATS,
     {
-      variables: {
-        pagination: { page: 1, limit: 1000 }, // Get a large batch for aggregation
-      },
       fetchPolicy: "cache-and-network",
+      onError: (error) => {
+        console.error("Dashboard stats query error:", error);
+      },
     },
   );
 
+  // Fetch recent reports (max 100 per page due to backend limit) for time series chart
+  const { data: reportsData, loading: reportsLoading, error: reportsError } = useQuery(
+    GET_UAT_REPORTS,
+    {
+      variables: {
+        filter: undefined,
+        sort: undefined, // Explicitly set to undefined to avoid validation errors
+        pagination: { page: 1, limit: 100 }, // Backend max limit is 100
+      },
+      fetchPolicy: "cache-and-network",
+      onError: (error) => {
+        console.error("Dashboard query error:", error);
+      },
+    },
+  );
+
+  const stats = statsData?.getDashboardStats;
   const reports = reportsData?.getUATReports?.edges?.map(
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     (edge: any) => edge.node,
   ) || [];
-  const totalCount = reportsData?.getUATReports?.totalCount ?? 0;
+  const totalCount = stats?.totalReports ?? reportsData?.getUATReports?.totalCount ?? 0;
 
   // Transform data for charts
   const areaData = transformReportsToTimeSeries(reports);
-  const validInvalidData = countReportsByStatus(reports);
-  const severityData = countBySeverity(reports);
+  const validInvalidData = stats ? [
+    {
+      name: "Valid",
+      value: stats.validReports,
+      color: "#00D1E8",
+    },
+    {
+      name: "Invalid",
+      value: stats.invalidReports,
+      color: "#FF3B30",
+    },
+  ] : countReportsByStatus(reports);
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _severityData = countBySeverity(reports); // Reserved for future use
 
-  // Calculate verification status
-  const pendingCount = reports.filter(
-    (r: any) => r.status === "PENDING_EVALUATION" || r.status === "EVALUATING",
-  ).length;
-  const newCount = reports.filter(
-    (r: any) => r.status === "PENDING_EVALUATION",
-  ).length;
-
-  const verificationData = [
-    { name: "Sedang Diverifikasi", value: pendingCount, color: "#FF00C7" },
-    { name: "Laporan Baru", value: newCount, color: "#FFAAF0" },
+  // Use stats data for verification and success data
+  const verificationData = stats ? [
+    { name: "Sedang Diverifikasi", value: stats.verifyingReports, color: "#FF00C7" },
+    { name: "Laporan Baru", value: stats.newReports, color: "#FFAAF0" },
+  ] : [
+    { name: "Sedang Diverifikasi", value: 0, color: "#FF00C7" },
+    { name: "Laporan Baru", value: 0, color: "#FFAAF0" },
   ];
 
-  const validCount = reports.filter((r: any) => r.status === "VALID").length;
-  const successData = [
-    { name: "Validasi Sukses", value: validCount, color: "#4CD964" },
-    { name: "Laporan Baru", value: newCount, color: "#B8FFD0" },
+  const successData = stats ? [
+    { name: "Validasi Sukses", value: stats.validReports, color: "#4CD964" },
+    { name: "Laporan Baru", value: stats.newReports, color: "#B8FFD0" },
+  ] : [
+    { name: "Validasi Sukses", value: 0, color: "#4CD964" },
+    { name: "Laporan Baru", value: 0, color: "#B8FFD0" },
   ];
 
   // Custom tooltip for area chart
@@ -154,11 +187,38 @@ export default function Dashboard() {
     return null;
   };
 
-  if (reportsLoading) {
+  if (reportsLoading || statsLoading) {
     return (
       <DashboardLayout title="Dashboard">
         <div className="bg-white rounded-lg p-6 shadow">
           <p className="text-gray-500">Memuat data dashboard...</p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  if (reportsError || statsError) {
+    const error = reportsError || statsError;
+    console.error("Dashboard error details:", error);
+    return (
+      <DashboardLayout title="Dashboard">
+        <div className="bg-white rounded-lg p-6 shadow">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-red-600 font-semibold mb-2">Error memuat data dashboard</p>
+            <p className="text-sm text-red-600">
+              {error?.message || "Terjadi kesalahan saat memuat data. Silakan refresh halaman."}
+            </p>
+            {error?.graphQLErrors && error.graphQLErrors.length > 0 && (
+              <div className="mt-2 text-xs text-red-500">
+                {error.graphQLErrors.map((err: { message?: string; extensions?: Record<string, unknown> }, idx: number) => (
+                  <div key={idx}>
+                    {err.message || "Unknown error"}
+                    {err.extensions && <span>{JSON.stringify(err.extensions)}</span>}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -272,7 +332,7 @@ export default function Dashboard() {
                       className="font-bold"
                       fontSize="18"
                     >
-                      10
+                      {stats ? stats.validReports + stats.invalidReports : validInvalidData.reduce((sum, d) => sum + d.value, 0)}
                     </tspan>
                   </text>
                 </PieChart>
@@ -286,7 +346,7 @@ export default function Dashboard() {
                 style={{ backgroundColor: "#00D1E8" }}
               ></div>
               <span className="text-sm text-gray-600">Total Laporan Valid</span>
-              <span className="ml-auto text-gray-600 font-medium">5</span>
+              <span className="ml-auto text-gray-600 font-medium">{stats?.validReports ?? validInvalidData[0]?.value ?? 0}</span>
             </div>
             <div className="flex items-center">
               <div
@@ -294,7 +354,7 @@ export default function Dashboard() {
                 style={{ backgroundColor: "#FF3B30" }}
               ></div>
               <span className="text-sm text-gray-600">Total Laporan Invalid</span>
-              <span className="ml-auto text-gray-600 font-medium">5</span>
+              <span className="ml-auto text-gray-600 font-medium">{stats?.invalidReports ?? validInvalidData[1]?.value ?? 0}</span>
             </div>
           </div>
         </div>
@@ -343,7 +403,7 @@ export default function Dashboard() {
                       className="font-bold"
                       fontSize="18"
                     >
-                      32
+                      {stats?.verifyingReports ?? verificationData.reduce((sum, d) => sum + d.value, 0)}
                     </tspan>
                   </text>
                 </PieChart>
@@ -357,7 +417,7 @@ export default function Dashboard() {
                 style={{ backgroundColor: "#FF00C7" }}
               ></div>
               <span className="text-sm text-gray-600">Total Laporan Sedang Diverifikasi</span>
-              <span className="ml-auto text-gray-600 font-medium">22</span>
+              <span className="ml-auto text-gray-600 font-medium">{stats ? stats.evaluatingReports + stats.pendingReports : verificationData[0]?.value ?? 0}</span>
             </div>
             <div className="flex items-center">
               <div
@@ -367,7 +427,7 @@ export default function Dashboard() {
               <span className="text-sm text-gray-600">Laporan Baru</span>
               <span className="ml-auto font-medium flex items-center text-green-500">
                 <ArrowUpIcon className="w-3 h-3 mr-1" />
-                10
+                {stats?.newReports ?? verificationData[1]?.value ?? 0}
               </span>
             </div>
           </div>
@@ -417,7 +477,7 @@ export default function Dashboard() {
                       className="font-bold"
                       fontSize="18"
                     >
-                      22
+                      {stats ? stats.validReports + stats.newReports : successData.reduce((sum, d) => sum + d.value, 0)}
                     </tspan>
                   </text>
                 </PieChart>
@@ -431,7 +491,7 @@ export default function Dashboard() {
                 style={{ backgroundColor: "#4CD964" }}
               ></div>
               <span className="text-sm text-gray-600">Total Laporan Validasi Sukses</span>
-              <span className="ml-auto text-gray-600 font-medium">18</span>
+              <span className="ml-auto text-gray-600 font-medium">{stats?.validReports ?? successData[0]?.value ?? 0}</span>
             </div>
             <div className="flex items-center">
               <div
@@ -440,7 +500,7 @@ export default function Dashboard() {
               ></div>
               <span className="text-sm text-gray-600">Laporan Baru</span>
               <span className="ml-auto font-medium flex items-center text-green-500">
-                <ArrowUpIcon className="w-3 h-3 mr-1" />5
+                <ArrowUpIcon className="w-3 h-3 mr-1" />{stats?.newReports ?? successData[1]?.value ?? 0}
               </span>
             </div>
           </div>

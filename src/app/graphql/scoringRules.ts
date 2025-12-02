@@ -17,6 +17,21 @@ export const GET_SCORING_RULES = gql`
   }
 `;
 
+export const GET_SCORING_RULE = gql`
+  query GetScoringRule($attribute: AttributeType!) {
+    getScoringRule(attribute: $attribute) {
+      _id
+      attribute
+      description
+      criteria
+      weight
+      isActive
+      createdAt
+      updatedAt
+    }
+  }
+`;
+
 export const GET_VALIDATION_CONFIG = gql`
   query GetValidationConfig {
     getValidationConfig {
