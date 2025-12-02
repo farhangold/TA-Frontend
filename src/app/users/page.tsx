@@ -8,6 +8,14 @@ import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
 const ITEMS_PER_PAGE = 10;
 
+type UserNode = {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+  createdAt: string;
+};
+
 export default function UsersPage() {
   const { user } = useCurrentUser();
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,7 +23,21 @@ export default function UsersPage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [selectedUser, setSelectedUser] = useState<any>(null);
+  const [selectedUser, setSelectedUser] = useState<UserNode | null>(null);
+
+  const filter = filterRole ? { role: filterRole } : undefined;
+
+  const { data, loading, error, refetch } = useQuery(GET_USERS, {
+    variables: {
+      filter,
+      pagination: { page: currentPage, limit: ITEMS_PER_PAGE },
+    },
+    fetchPolicy: "cache-and-network",
+    skip: !user || user.role !== "ADMIN",
+  });
+
+  const [registerUser] = useMutation(REGISTER_USER);
+  const [updateUser] = useMutation(UPDATE_USER);
 
   // Redirect if not admin
   if (user && user.role !== "ADMIN") {
@@ -30,26 +52,14 @@ export default function UsersPage() {
     );
   }
 
-  const filter = filterRole ? { role: filterRole } : undefined;
-
-  const { data, loading, error, refetch } = useQuery(GET_USERS, {
-    variables: {
-      filter,
-      pagination: { page: currentPage, limit: ITEMS_PER_PAGE },
-    },
-    fetchPolicy: "cache-and-network",
-  });
-
-  const [registerUser] = useMutation(REGISTER_USER);
-  const [updateUser] = useMutation(UPDATE_USER);
-
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const users = data?.users?.edges?.map((edge: any) => edge.node) || [];
   const totalCount = data?.users?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
 
   // Filter by search term (client-side for name/email)
   const filteredUsers = users.filter(
-    (u: any) =>
+    (u: UserNode) =>
       !searchTerm ||
       u.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       u.email.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -69,11 +79,10 @@ export default function UsersPage() {
       });
       setShowCreateModal(false);
       await refetch();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error creating user:", e);
-      alert(
-        e.message || "Gagal membuat pengguna. Silakan coba lagi.",
-      );
+      const errorMessage = e instanceof Error ? e.message : "Gagal membuat pengguna. Silakan coba lagi.";
+      alert(errorMessage);
     }
   };
 
@@ -92,15 +101,14 @@ export default function UsersPage() {
       setShowEditModal(false);
       setSelectedUser(null);
       await refetch();
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error updating user:", e);
-      alert(
-        e.message || "Gagal memperbarui pengguna. Silakan coba lagi.",
-      );
+      const errorMessage = e instanceof Error ? e.message : "Gagal memperbarui pengguna. Silakan coba lagi.";
+      alert(errorMessage);
     }
   };
 
-  const handleEdit = (userData: any) => {
+  const handleEdit = (userData: UserNode) => {
     setSelectedUser(userData);
     setShowEditModal(true);
   };
@@ -166,7 +174,7 @@ export default function UsersPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 text-sm">
-                  {filteredUsers.map((u: any) => (
+                  {filteredUsers.map((u: UserNode) => (
                     <tr
                       key={u._id}
                       className="border-b border-gray-200 hover:bg-gray-50"
@@ -384,7 +392,7 @@ function EditUserModal({
   onClose,
   onSubmit,
 }: {
-  user: any;
+  user: UserNode;
   onClose: () => void;
   onSubmit: (id: string, data: {
     name?: string;
@@ -400,7 +408,11 @@ function EditUserModal({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const updateData: any = {
+    const updateData: {
+      name?: string;
+      password?: string;
+      role?: string;
+    } = {
       name: formData.name,
       role: formData.role,
     };

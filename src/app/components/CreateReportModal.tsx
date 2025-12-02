@@ -217,11 +217,11 @@ const CreateReportModal = ({
       });
       setFieldErrors({});
       setFormError(null);
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating report:", error);
       
       // Extract detailed error message from GraphQL error
-      const graphQLError = error?.graphQLErrors?.[0];
+      const graphQLError = (error as { graphQLErrors?: Array<{ message?: string; extensions?: Record<string, unknown> }> })?.graphQLErrors?.[0];
       let errorMessage = "Gagal membuat laporan. Silakan coba lagi.";
       
       if (graphQLError) {
@@ -931,7 +931,7 @@ const CreateReportModal = ({
               {(!formData.supportingEvidence ||
                 formData.supportingEvidence.length === 0) && (
                 <p className="text-xs text-gray-500 italic">
-                  Tidak ada evidence. Klik "Tambah Evidence" untuk menambahkan.
+                  Tidak ada evidence. Klik &quot;Tambah Evidence&quot; untuk menambahkan.
                 </p>
               )}
             </div>

@@ -86,11 +86,11 @@ const RegisterPage = () => {
       } else {
         setFormError("Registrasi gagal, silakan coba lagi.");
       }
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Registration error:", error);
       const errorMessage =
-        error?.graphQLErrors?.[0]?.message ||
-        error?.message ||
+        (error as { graphQLErrors?: Array<{ message?: string }>; message?: string })?.graphQLErrors?.[0]?.message ||
+        (error as { message?: string })?.message ||
         "Email sudah terdaftar atau terjadi kesalahan.";
       setFormError(errorMessage);
     }

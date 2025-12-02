@@ -16,7 +16,6 @@ const LogoutPage = () => {
         await logoutMutation();
       } catch (error) {
         // Continue with local logout even if backend call fails
-        // eslint-disable-next-line no-console
         console.error("Backend logout failed:", error);
       } finally {
         // Always perform local logout

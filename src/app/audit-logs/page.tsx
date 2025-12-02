@@ -17,21 +17,8 @@ export default function AuditLogsPage() {
   const [dateFrom, setDateFrom] = useState<string>("");
   const [dateTo, setDateTo] = useState<string>("");
 
-  // Redirect if not admin
-  if (user && user.role !== "ADMIN") {
-    return (
-      <DashboardLayout title="Audit Logs">
-        <div className="bg-white rounded-lg p-6 shadow">
-          <p className="text-red-600">
-            Akses ditolak. Hanya admin yang dapat mengakses halaman ini.
-          </p>
-        </div>
-      </DashboardLayout>
-    );
-  }
-
   const filter = useMemo(() => {
-    const f: any = {};
+    const f: Record<string, unknown> = {};
     if (filterAction.length > 0) {
       f.action = filterAction;
     }
@@ -56,8 +43,23 @@ export default function AuditLogsPage() {
       pagination: { page: currentPage, limit: ITEMS_PER_PAGE },
     },
     fetchPolicy: "cache-and-network",
+    skip: !user || user.role !== "ADMIN",
   });
 
+  // Redirect if not admin
+  if (user && user.role !== "ADMIN") {
+    return (
+      <DashboardLayout title="Audit Logs">
+        <div className="bg-white rounded-lg p-6 shadow">
+          <p className="text-red-600">
+            Akses ditolak. Hanya admin yang dapat mengakses halaman ini.
+          </p>
+        </div>
+      </DashboardLayout>
+    );
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const logs = data?.getAuditLogs?.edges?.map((edge: any) => edge.node) || [];
   const totalCount = data?.getAuditLogs?.totalCount ?? 0;
   const totalPages = Math.max(1, Math.ceil(totalCount / ITEMS_PER_PAGE));
@@ -206,6 +208,7 @@ export default function AuditLogsPage() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 text-sm">
+                  {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
                   {logs.map((log: any) => (
                     <tr
                       key={log._id}

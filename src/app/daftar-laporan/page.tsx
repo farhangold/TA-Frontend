@@ -188,7 +188,30 @@ export default function DaftarLaporan() {
     }
   };
 
-  const handleCreateReport = async (input: any) => {
+  const handleCreateReport = async (input: {
+    testIdentity: {
+      testId: string;
+      title: string;
+      version: string;
+    };
+    testEnvironment: {
+      os: string;
+      browser: string;
+      device: string;
+      additionalInfo?: string;
+    };
+    stepsToReproduce: string[];
+    actualResult: string;
+    expectedResult: string;
+    supportingEvidence?: Array<{
+      type: string;
+      url: string;
+      description?: string;
+    }>;
+    severityLevel: string;
+    domain?: string;
+    additionalInfo?: string;
+  }) => {
     try {
       await createReport({
         variables: { input },
@@ -205,7 +228,7 @@ export default function DaftarLaporan() {
       });
       setCreateModalOpen(false);
       alert("Laporan berhasil dibuat!");
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error("Error creating report:", error);
       throw error; // Re-throw to let modal handle error display
     }

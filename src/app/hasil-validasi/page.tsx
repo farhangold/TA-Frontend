@@ -48,6 +48,7 @@ export default function HasilValidasi() {
   const evaluations: EvaluationRow[] = useMemo(() => {
     if (!data?.getEvaluationHistory) return [];
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return data.getEvaluationHistory.edges.map((edge: any, index: number) => {
       const node = edge.node;
       const evaluatedAt = new Date(node.evaluatedAt);
