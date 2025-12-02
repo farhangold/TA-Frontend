@@ -1,12 +1,13 @@
+
 "use client";
 
-import React from "react";
+import React, { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import { GET_EVALUATION } from "../graphql/evaluations";
 
-const DetailLaporan = () => {
+const DetailLaporanContent = () => {
   const searchParams = useSearchParams();
   const reportId = searchParams.get("reportId");
 
@@ -125,9 +126,11 @@ const DetailLaporan = () => {
               </h3>
               <ol className="list-decimal list-inside text-sm text-gray-700 space-y-1 bg-gray-50 rounded-md p-3">
                 {report.stepsToReproduce?.length
-                  ? report.stepsToReproduce.map((step: string, index: number) => (
-                      <li key={index}>{step}</li>
-                    ))
+                  ? report.stepsToReproduce.map(
+                      (step: string, index: number) => (
+                        <li key={index}>{step}</li>
+                      ),
+                    )
                   : "Tidak ada data langkah reproduksi."}
               </ol>
             </div>
@@ -157,4 +160,20 @@ const DetailLaporan = () => {
   );
 };
 
-export default DetailLaporan;
+const DetailLaporanPage = () => {
+  return (
+    <Suspense
+      fallback={
+        <DashboardLayout title="Detail Laporan">
+          <div className="bg-white rounded-lg p-6 shadow space-y-4">
+            <p className="text-sm text-gray-500">Memuat detail laporan...</p>
+          </div>
+        </DashboardLayout>
+      }
+    >
+      <DetailLaporanContent />
+    </Suspense>
+  );
+};
+
+export default DetailLaporanPage;

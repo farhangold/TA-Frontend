@@ -107,31 +107,27 @@ function countBySeverity(reports: any[]) {
 
 export default function Dashboard() {
   // Fetch dashboard stats (aggregated counts from all reports)
-  const { data: statsData, loading: statsLoading, error: statsError } = useQuery(
-    GET_DASHBOARD_STATS,
-    {
-      fetchPolicy: "cache-and-network",
-      onError: (error) => {
-        console.error("Dashboard stats query error:", error);
-      },
-    },
-  );
+  const {
+    data: statsData,
+    loading: statsLoading,
+    error: statsError,
+  } = useQuery(GET_DASHBOARD_STATS, {
+    fetchPolicy: "cache-and-network",
+  });
 
   // Fetch recent reports (max 100 per page due to backend limit) for time series chart
-  const { data: reportsData, loading: reportsLoading, error: reportsError } = useQuery(
-    GET_UAT_REPORTS,
-    {
-      variables: {
-        filter: undefined,
-        sort: undefined, // Explicitly set to undefined to avoid validation errors
-        pagination: { page: 1, limit: 100 }, // Backend max limit is 100
-      },
-      fetchPolicy: "cache-and-network",
-      onError: (error) => {
-        console.error("Dashboard query error:", error);
-      },
+  const {
+    data: reportsData,
+    loading: reportsLoading,
+    error: reportsError,
+  } = useQuery(GET_UAT_REPORTS, {
+    variables: {
+      filter: undefined,
+      sort: undefined, // Explicitly set to undefined to avoid validation errors
+      pagination: { page: 1, limit: 100 }, // Backend max limit is 100
     },
-  );
+    fetchPolicy: "cache-and-network",
+  });
 
   const stats = statsData?.getDashboardStats;
   const reports = reportsData?.getUATReports?.edges?.map(
