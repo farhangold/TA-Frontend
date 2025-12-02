@@ -219,38 +219,62 @@ const CreateReportModal = ({
       setFormError(null);
     } catch (error: unknown) {
       console.error("Error creating report:", error);
-      
-      // Extract detailed error message from GraphQL error
-      const graphQLError = (error as { graphQLErrors?: Array<{ message?: string; extensions?: Record<string, unknown> }> })?.graphQLErrors?.[0];
+
+      type GraphQLErrorExtensions = {
+        exception?: { response?: { message?: string | string[] } };
+        response?: { message?: string | string[] };
+        [key: string]: unknown;
+      };
+
+      type GraphQLErrorLike = {
+        message?: string;
+        extensions?: GraphQLErrorExtensions;
+      };
+
+      const apolloError = error as {
+        graphQLErrors?: GraphQLErrorLike[];
+      };
+
+      const graphQLError = apolloError.graphQLErrors?.[0];
       let errorMessage = "Gagal membuat laporan. Silakan coba lagi.";
-      
+
       if (graphQLError) {
-        // Check for validation errors in extensions
-        if (graphQLError.extensions?.exception?.response?.message) {
-          const validationErrors = graphQLError.extensions.exception.response.message;
+        const extensions = graphQLError.extensions;
+
+        // Check for validation errors in extensions.exception.response.message
+        const exceptionResponseMessage =
+          extensions?.exception?.response?.message;
+
+        if (exceptionResponseMessage) {
+          const validationErrors = exceptionResponseMessage;
           if (Array.isArray(validationErrors)) {
             errorMessage = validationErrors.join(", ");
           } else if (typeof validationErrors === "string") {
             errorMessage = validationErrors;
           } else {
-            errorMessage = graphQLError.message;
+            errorMessage = graphQLError.message ?? errorMessage;
           }
-        } else if (graphQLError.extensions?.response?.message) {
-          const validationErrors = graphQLError.extensions.response.message;
+        } else if (extensions?.response?.message) {
+          const validationErrors = extensions.response.message;
           if (Array.isArray(validationErrors)) {
             errorMessage = validationErrors.join(", ");
           } else if (typeof validationErrors === "string") {
             errorMessage = validationErrors;
           } else {
-            errorMessage = graphQLError.message;
+            errorMessage = graphQLError.message ?? errorMessage;
           }
         } else {
-          errorMessage = graphQLError.message || errorMessage;
+          errorMessage = graphQLError.message ?? errorMessage;
         }
-      } else if (error?.message) {
-        errorMessage = error.message;
+      } else if (
+        typeof error === "object" &&
+        error !== null &&
+        "message" in error &&
+        typeof (error as { message: unknown }).message === "string"
+      ) {
+        errorMessage = (error as { message: string }).message;
       }
-      
+
       setFormError(errorMessage);
     }
   };
