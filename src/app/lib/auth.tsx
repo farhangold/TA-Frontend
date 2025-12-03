@@ -35,6 +35,7 @@ type AuthContextValue = {
   loading: boolean;
   login: (payload: AuthPayload) => Promise<void>;
   logout: () => Promise<void>;
+  refetchUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -58,7 +59,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     typeof window !== "undefined" &&
     window.localStorage.getItem(AUTH_TOKEN_KEY);
 
-  const { data, loading, error } = useQuery(ME_QUERY, {
+  const { data, loading, error, refetch } = useQuery(ME_QUERY, {
     skip: !hasToken,
     fetchPolicy: "cache-and-network",
   });
@@ -106,14 +107,26 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   }, [apolloClient, pathname, router]);
 
+  const refetchUser = useCallback(async () => {
+    try {
+      const result = await refetch();
+      if (result.data?.me) {
+        setUser(result.data.me as User);
+      }
+    } catch {
+      // If refetch fails, keep existing user; caller can handle errors if needed
+    }
+  }, [refetch]);
+
   const value: AuthContextValue = useMemo(
     () => ({
       user,
       loading: loading && !initialized,
       login,
       logout,
+      refetchUser,
     }),
-    [user, loading, initialized, login, logout],
+    [user, loading, initialized, login, logout, refetchUser],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -130,8 +143,8 @@ export const useAuth = () => {
 };
 
 export const useCurrentUser = () => {
-  const { user, loading } = useAuth();
-  return { user, loading };
+  const { user, loading, refetchUser } = useAuth();
+  return { user, loading, refetchUser };
 };
 
 

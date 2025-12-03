@@ -219,7 +219,7 @@ const CreateReportModal = ({
       setFormError(null);
     } catch (error: unknown) {
       console.error("Error creating report:", error);
-
+      
       type GraphQLErrorExtensions = {
         exception?: { response?: { message?: string | string[] } };
         response?: { message?: string | string[] };
@@ -237,7 +237,7 @@ const CreateReportModal = ({
 
       const graphQLError = apolloError.graphQLErrors?.[0];
       let errorMessage = "Gagal membuat laporan. Silakan coba lagi.";
-
+      
       if (graphQLError) {
         const extensions = graphQLError.extensions;
 
@@ -274,7 +274,7 @@ const CreateReportModal = ({
       ) {
         errorMessage = (error as { message: string }).message;
       }
-
+      
       setFormError(errorMessage);
     }
   };

@@ -116,9 +116,43 @@ const errorLink = onError(
   ({ graphQLErrors, networkError, operation, forward }) => {
     if (graphQLErrors) {
       for (const err of graphQLErrors) {
-        // Check for UNAUTHENTICATED error
+        const statusCode =
+          (err.extensions as { response?: { statusCode?: number } })?.response
+            ?.statusCode ?? (err.extensions as { statusCode?: number })?.statusCode;
+
+        // Check for FORBIDDEN error (403 - permission denied)
+        if (
+          err.extensions?.code === "FORBIDDEN" ||
+          err.extensions?.type === "FORBIDDEN" ||
+          statusCode === 403 ||
+          err.message.includes("Forbidden") ||
+          err.message.toLowerCase().includes("permission")
+        ) {
+          console.error("[GraphQL Permission Error]:", {
+            message: err.message,
+            extensions: err.extensions,
+            path: err.path,
+          });
+
+          if (typeof window !== "undefined") {
+            const currentPath = window.location.pathname;
+            const adminOnlyPaths = ["/scoring-rules", "/users", "/audit-logs"];
+
+            if (adminOnlyPaths.some((path) => currentPath.startsWith(path))) {
+              window.location.href = "/dashboard";
+            }
+          }
+
+          // Do not retry this operation; move to next error
+          continue;
+        }
+
+        // Check for UNAUTHENTICATED / NOT_AUTHORIZED error
         if (
           err.extensions?.code === "UNAUTHENTICATED" ||
+          err.extensions?.code === "NOT_AUTHORIZED" ||
+          err.extensions?.type === "NOT_AUTHORIZED" ||
+          statusCode === 401 ||
           err.message.includes("Unauthorized")
         ) {
           // Return a promise that will handle the refresh
@@ -170,7 +204,6 @@ const errorLink = onError(
       }
 
       // Log other GraphQL errors with full details
-      // eslint-disable-next-line no-console
       graphQLErrors.forEach((err) => {
         console.error("[GraphQL error]:", {
           message: err.message,
@@ -191,7 +224,6 @@ const errorLink = onError(
     }
 
     if (networkError) {
-      // eslint-disable-next-line no-console
       console.error("[Network error]:", networkError);
     }
   },
