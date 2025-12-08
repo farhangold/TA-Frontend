@@ -74,8 +74,8 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
                 <p className="text-xs text-gray-500">JSON atau CSV</p>
               </div>
             </div>
-            <button 
-              onClick={onClose} 
+            <button
+              onClick={onClose}
               className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
             >
               <svg
@@ -96,8 +96,9 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
           </div>
 
           <p className="text-sm text-gray-600 mb-6 leading-relaxed">
-            Drag & drop file kamu di sini atau klik untuk memilih file. 
-            Sistem akan otomatis mengklasifikasikan laporan menjadi Bug Report atau Success Report.
+            Drag & drop file kamu di sini atau klik untuk memilih file. Sistem
+            akan otomatis mengklasifikasikan laporan menjadi Bug Report atau
+            Success Report.
           </p>
 
           {/* Upload Information Section - Collapsible */}
@@ -131,7 +132,9 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
                 viewBox="0 0 24 24"
                 strokeWidth={2}
                 stroke="currentColor"
-                className={`w-5 h-5 text-blue-600 transition-transform ${showInfo ? 'rotate-180' : ''}`}
+                className={`w-5 h-5 text-blue-600 transition-transform ${
+                  showInfo ? "rotate-180" : ""
+                }`}
               >
                 <path
                   strokeLinecap="round"
@@ -145,29 +148,50 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
               <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                 <div className="text-sm text-blue-800 space-y-3">
                   <p>
-                    Sistem hanya menerima upload file dalam format <strong>JSON</strong> atau <strong>CSV</strong>.
-                    Tidak ada form input manual untuk membuat laporan baru.
+                    Sistem hanya menerima upload file dalam format{" "}
+                    <strong>JSON</strong> atau <strong>CSV</strong>. Tidak ada
+                    form input manual untuk membuat laporan baru.
                   </p>
                   <div>
                     <p className="font-medium mb-1">Format yang didukung:</p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li><strong>JSON:</strong> Array of objects dengan atribut yang diperlukan</li>
-                      <li><strong>CSV:</strong> File dengan header row dan data rows</li>
+                      <li>
+                        <strong>JSON:</strong> Array of objects dengan atribut
+                        yang diperlukan
+                      </li>
+                      <li>
+                        <strong>CSV:</strong> File dengan header row dan data
+                        rows
+                      </li>
                     </ul>
                   </div>
                   <div>
                     <p className="font-medium mb-1">Atribut yang diperlukan:</p>
                     <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li><strong>testId, title, version</strong> (Test Identity)</li>
-                      <li><strong>environment</strong> (OS, Device, Browser) - bisa object, string, atau kolom terpisah</li>
-                      <li><strong>description</strong> (Actual Result)</li>
-                      <li><strong>step to reproduce</strong> (opsional, untuk Bug Report)</li>
-                      <li><strong>evidence</strong> (opsional, untuk Bug Report)</li>
+                      <li>
+                        <strong>testId, title, version</strong> (Test Identity)
+                      </li>
+                      <li>
+                        <strong>environment</strong> (OS, Device, Browser) -
+                        bisa object, string, atau kolom terpisah
+                      </li>
+                      <li>
+                        <strong>description</strong> (Actual Result)
+                      </li>
+                      <li>
+                        <strong>step to reproduce</strong> (opsional, untuk Bug
+                        Report)
+                      </li>
+                      <li>
+                        <strong>evidence</strong> (opsional, untuk Bug Report)
+                      </li>
                     </ul>
                   </div>
                   <p className="text-xs text-blue-700 pt-2 border-t border-blue-300">
-                    <strong>Catatan:</strong> Sistem akan otomatis mengklasifikasikan laporan menjadi 
-                    <strong> Bug Report</strong> (jika ada step to reproduce dan evidence) atau 
+                    <strong>Catatan:</strong> Sistem akan otomatis
+                    mengklasifikasikan laporan menjadi
+                    <strong> Bug Report</strong> (jika ada step to reproduce dan
+                    evidence) atau
                     <strong> Success Report</strong> (jika tidak ada).
                   </p>
                 </div>
@@ -247,7 +271,7 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
                 <div className="text-xs">
                   <p className="font-medium mb-2">Format JSON (Bug Report):</p>
                   <pre className="bg-gray-800 text-gray-100 p-2 rounded overflow-x-auto text-xs">
-{`[
+                    {`[
   {
     "testId": "TEST-001",
     "title": "Login Button Not Responding",
@@ -276,9 +300,11 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
   }
 ]`}
                   </pre>
-                  <p className="font-medium mt-3 mb-2">Format JSON (Success Report):</p>
+                  <p className="font-medium mt-3 mb-2">
+                    Format JSON (Success Report):
+                  </p>
                   <pre className="bg-gray-800 text-gray-100 p-2 rounded overflow-x-auto text-xs">
-{`[
+                    {`[
   {
     "testId": "TEST-101",
     "title": "Successful User Registration",
@@ -299,11 +325,13 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
                 <div className="text-xs">
                   <p className="font-medium mb-2">Format CSV:</p>
                   <pre className="bg-gray-800 text-gray-100 p-2 rounded overflow-x-auto text-xs">
-{`testId,title,version,OS,Device,Browser,step to reproduce,description,evidence,expectedResult,severityLevel,domain
+                    {`testId,title,version,OS,Device,Browser,step to reproduce,description,evidence,expectedResult,severityLevel,domain
 TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|Step2|Step3","Description...","TYPE:URL:Description","Expected...",HIGH,Authentication`}
                   </pre>
                   <p className="mt-2 text-gray-600">
-                    <strong>Catatan:</strong> Untuk Success Report, kolom "step to reproduce", "evidence", dan "expectedResult" bisa dikosongkan.
+                    <strong>Catatan:</strong> Untuk Success Report, kolom
+                    &quot;step to reproduce&quot;, &quot;evidence&quot;, dan
+                    &quot;expectedResult&quot; bisa dikosongkan.
                   </p>
                 </div>
               )}
@@ -351,8 +379,12 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                     Drop file di sini atau klik untuk memilih
                   </p>
                   <p className="text-sm text-gray-500 flex items-center gap-2">
-                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">JSON</span>
-                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">CSV</span>
+                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">
+                      JSON
+                    </span>
+                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">
+                      CSV
+                    </span>
                     <span className="text-gray-400">•</span>
                     <span>Max 20MB</span>
                   </p>
@@ -407,7 +439,7 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                         e.stopPropagation();
                         setSelectedFile(null);
                         if (fileInputRef.current) {
-                          fileInputRef.current.value = '';
+                          fileInputRef.current.value = "";
                         }
                       }}
                       className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 flex items-center justify-center transition-colors flex-shrink-0"
@@ -429,7 +461,9 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                     </button>
                   </div>
                 </div>
-                <p className="text-sm text-gray-600 mt-4">Klik untuk memilih file lain</p>
+                <p className="text-sm text-gray-600 mt-4">
+                  Klik untuk memilih file lain
+                </p>
               </div>
             )}
           </div>

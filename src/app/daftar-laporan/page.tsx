@@ -14,9 +14,7 @@ import {
   DELETE_UAT_REPORT,
   UPLOAD_BATCH_REPORTS,
 } from "../graphql/uatReports";
-import {
-  EVALUATE_BATCH_REPORTS,
-} from "../graphql/evaluations";
+import { EVALUATE_BATCH_REPORTS } from "../graphql/evaluations";
 
 const ITEMS_PER_PAGE = 10;
 
@@ -53,7 +51,7 @@ export default function DaftarLaporan() {
   });
   const [showFilters, setShowFilters] = useState(false);
   const [selectedReportIds, setSelectedReportIds] = useState<Set<string>>(
-    new Set(),
+    new Set()
   );
   const [isBatchEvaluating, setIsBatchEvaluating] = useState(false);
 
@@ -129,12 +127,14 @@ export default function DaftarLaporan() {
           rawId: node._id,
           id: `#${node.testIdentity?.testId ?? node._id.slice(-6)}`,
           description:
-            node.testIdentity?.title ?? node.actualResult ?? "Tidak ada deskripsi",
+            node.testIdentity?.title ??
+            node.actualResult ??
+            "Tidak ada deskripsi",
           status: node.status,
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
         };
-      },
+      }
     );
   }, [data]);
 
@@ -147,7 +147,7 @@ export default function DaftarLaporan() {
 
   const handleAction = (
     type: "detailBug" | "uploadCSV" | "delete",
-    id: string,
+    id: string
   ) => {
     const report = reports.find((item) => item.id === id);
     if (!report) return;
@@ -167,10 +167,10 @@ export default function DaftarLaporan() {
   const handleFileUpload = async (file: File) => {
     try {
       const format = file.name.endsWith(".csv") ? "CSV" : "JSON";
-      
+
       // Read file content
       const fileContent = await file.text();
-      
+
       // For JSON files, validate it's valid JSON
       if (format === "JSON") {
         try {
@@ -191,49 +191,71 @@ export default function DaftarLaporan() {
       });
 
       if (result.data?.uploadBatchReports) {
-        const { successful, failed, errors, reports } = result.data.uploadBatchReports;
-        
+        const { successful, failed, errors, reports } =
+          result.data.uploadBatchReports;
+
         // Show classification results if available
         type ReportWithType = { reportType?: string };
-        const bugReports = reports?.filter((r: ReportWithType) => r.reportType === "BUG_REPORT").length || 0;
-        const successReports = reports?.filter((r: ReportWithType) => r.reportType === "SUCCESS_REPORT").length || 0;
-        
-        const classificationInfo = reports && reports.length > 0
-          ? `\n\nKlasifikasi: ${bugReports} Bug Report, ${successReports} Success Report`
-          : "";
-        
+        const bugReports =
+          reports?.filter((r: ReportWithType) => r.reportType === "BUG_REPORT")
+            .length || 0;
+        const successReports =
+          reports?.filter(
+            (r: ReportWithType) => r.reportType === "SUCCESS_REPORT"
+          ).length || 0;
+
+        const classificationInfo =
+          reports && reports.length > 0
+            ? `\n\nKlasifikasi: ${bugReports} Bug Report, ${successReports} Success Report`
+            : "";
+
         // Show success message
         const errorMessages =
           errors.length > 0
             ? `\n\nError:\n${errors
                 .map(
                   (e: { row: number; message: string }) =>
-                    `Baris ${e.row}: ${e.message}`,
+                    `Baris ${e.row}: ${e.message}`
                 )
                 .join("\n")}`
             : "";
         alert(
-          `Upload selesai: ${successful} berhasil, ${failed} gagal.${classificationInfo}${errorMessages}`,
+          `Upload selesai: ${successful} berhasil, ${failed} gagal.${classificationInfo}${errorMessages}`
         );
         await refetch();
       }
-    } catch (e: any) {
+    } catch (e: unknown) {
       console.error("Error uploading batch:", e);
-      
+
       // Extract error message
       let errorMessage = "Gagal mengunggah file. Silakan coba lagi.";
-      
-      if (e?.graphQLErrors && e.graphQLErrors.length > 0) {
-        const graphQLError = e.graphQLErrors[0];
-        if (graphQLError.message) {
+
+      // Type guard for Apollo error with graphQLErrors
+      if (
+        typeof e === "object" &&
+        e !== null &&
+        "graphQLErrors" in e &&
+        Array.isArray((e as { graphQLErrors?: unknown[] }).graphQLErrors) &&
+        (e as { graphQLErrors: unknown[] }).graphQLErrors.length > 0
+      ) {
+        const graphQLError = (
+          e as { graphQLErrors: Array<{ message?: string }> }
+        ).graphQLErrors[0];
+        if (graphQLError && typeof graphQLError.message === "string") {
           errorMessage = `Error: ${graphQLError.message}`;
         }
-      } else if (e?.message) {
-        errorMessage = `Error: ${e.message}`;
-      } else if (e?.networkError) {
-        errorMessage = "Tidak dapat terhubung ke server. Pastikan backend sedang berjalan.";
+      } else if (
+        typeof e === "object" &&
+        e !== null &&
+        "message" in e &&
+        typeof (e as { message: unknown }).message === "string"
+      ) {
+        errorMessage = `Error: ${(e as { message: string }).message}`;
+      } else if (typeof e === "object" && e !== null && "networkError" in e) {
+        errorMessage =
+          "Tidak dapat terhubung ke server. Pastikan backend sedang berjalan.";
       }
-      
+
       alert(errorMessage);
     } finally {
       setUploadCsvModalOpen(false);
@@ -251,7 +273,7 @@ export default function DaftarLaporan() {
     } catch (e) {
       console.error("Error deleting report:", e);
     } finally {
-    setDeleteModalOpen(false);
+      setDeleteModalOpen(false);
     }
   };
 
@@ -358,32 +380,32 @@ export default function DaftarLaporan() {
             >
               Filter
             </button>
-          <div className="relative">
-            <input
-              type="text"
+            <div className="relative">
+              <input
+                type="text"
                 placeholder="Cari berdasarkan domain"
-              value={searchTerm}
+                value={searchTerm}
                 onChange={(event) => {
                   setSearchTerm(event.target.value);
                   setCurrentPage(1);
                 }}
                 className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-64 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <svg
-              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+              />
+              <svg
+                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
           </div>
-        </div>
         </div>
 
         {showFilters && (
@@ -399,7 +421,7 @@ export default function DaftarLaporan() {
                   onChange={(e) => {
                     const values = Array.from(
                       e.target.selectedOptions,
-                      (option) => option.value,
+                      (option) => option.value
                     );
                     setFilters({ ...filters, status: values });
                     setCurrentPage(1);
@@ -424,7 +446,7 @@ export default function DaftarLaporan() {
                   onChange={(e) => {
                     const values = Array.from(
                       e.target.selectedOptions,
-                      (option) => option.value,
+                      (option) => option.value
                     );
                     setFilters({ ...filters, severityLevel: values });
                     setCurrentPage(1);
@@ -535,10 +557,10 @@ export default function DaftarLaporan() {
 
         {!loading && !error && (
           <>
-        <div className="overflow-x-auto">
-          <table className="min-w-full bg-white">
-            <thead>
-              <tr className="bg-gray-100 text-gray-600 text-sm leading-normal">
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-600 text-sm leading-normal">
                     <th className="py-3 px-4 text-center w-12">
                       <input
                         type="checkbox"
@@ -550,19 +572,19 @@ export default function DaftarLaporan() {
                         className="cursor-pointer"
                       />
                     </th>
-                <th className="py-3 px-4 text-left w-24">ID</th>
-                <th className="py-3 px-4 text-left">Deskripsi Bug</th>
-                <th className="py-3 px-4 text-center w-28">Status</th>
+                    <th className="py-3 px-4 text-left w-24">ID</th>
+                    <th className="py-3 px-4 text-left">Deskripsi Bug</th>
+                    <th className="py-3 px-4 text-center w-28">Status</th>
                     <th className="py-3 px-4 text-center w-36">
                       Tanggal Dikirim
                     </th>
-                <th className="py-3 px-4 text-center w-32">Crowdworker</th>
-                <th className="py-3 px-4 text-center w-32">Action</th>
-              </tr>
-            </thead>
-            <tbody className="text-gray-600 text-sm">
+                    <th className="py-3 px-4 text-center w-32">Crowdworker</th>
+                    <th className="py-3 px-4 text-center w-32">Action</th>
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm">
                   {reports.map((report) => (
-                <tr
+                    <tr
                       key={report.rawId}
                       className={`border-b border-gray-200 hover:bg-gray-50 ${
                         selectedReportIds.has(report.rawId) ? "bg-blue-50" : ""
@@ -576,45 +598,43 @@ export default function DaftarLaporan() {
                           className="cursor-pointer"
                         />
                       </td>
-                  <td className="py-3 px-4 text-left font-medium">
-                    {report.id}
-                  </td>
+                      <td className="py-3 px-4 text-left font-medium">
+                        {report.id}
+                      </td>
                       <td className="py-3 px-4 text-left">
                         {report.description}
                       </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs ${getStatusBadgeClass(
-                            report.status,
-                      )}`}
-                    >
-                      {report.status}
-                    </span>
-                  </td>
-                  <td className="py-3 px-4 text-center">{report.date}</td>
+                      <td className="py-3 px-4">
+                        <span
+                          className={`px-3 py-1 rounded-full text-xs ${getStatusBadgeClass(
+                            report.status
+                          )}`}
+                        >
+                          {report.status}
+                        </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">{report.date}</td>
                       <td className="py-3 px-4 text-center">
                         {report.reporter}
                       </td>
-                  <td className="py-3 px-4">
-                    <div className="flex justify-center space-x-1">
-                      <ActionButton
-                        type="detailBug"
-                        onClick={() => handleAction("detailBug", report.id)}
-                      />
-                      <ActionButton
-                        type="uploadCSV"
-                            onClick={() =>
-                              handleAction("uploadCSV", report.id)
-                            }
-                      />
-                      <ActionButton
-                        type="delete"
-                        onClick={() => handleAction("delete", report.id)}
-                      />
-                    </div>
-                  </td>
-                </tr>
-              ))}
+                      <td className="py-3 px-4">
+                        <div className="flex justify-center space-x-1">
+                          <ActionButton
+                            type="detailBug"
+                            onClick={() => handleAction("detailBug", report.id)}
+                          />
+                          <ActionButton
+                            type="uploadCSV"
+                            onClick={() => handleAction("uploadCSV", report.id)}
+                          />
+                          <ActionButton
+                            type="delete"
+                            onClick={() => handleAction("delete", report.id)}
+                          />
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
                   {reports.length === 0 && (
                     <tr>
                       <td
@@ -625,86 +645,83 @@ export default function DaftarLaporan() {
                       </td>
                     </tr>
                   )}
-            </tbody>
-          </table>
-        </div>
+                </tbody>
+              </table>
+            </div>
 
-        <div className="flex justify-between items-center mt-4 text-sm">
-          <div className="text-gray-600">
-            Showing{" "}
-                {totalCount === 0
-                  ? 0
-                  : (currentPage - 1) * ITEMS_PER_PAGE + 1}{" "}
-                to{" "}
-                {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of{" "}
+            <div className="flex justify-between items-center mt-4 text-sm">
+              <div className="text-gray-600">
+                Showing{" "}
+                {totalCount === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}{" "}
+                to {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of{" "}
                 {totalCount} result
-          </div>
+              </div>
 
-          <div className="flex items-center space-x-1">
-            <span className="text-gray-600">
-              Page {currentPage} of {totalPages}
-            </span>
-            <div className="flex ml-2">
-              <button
+              <div className="flex items-center space-x-1">
+                <span className="text-gray-600">
+                  Page {currentPage} of {totalPages}
+                </span>
+                <div className="flex ml-2">
+                  <button
                     onClick={() =>
                       handlePageChange(Math.max(1, currentPage - 1))
                     }
-                disabled={currentPage === 1}
-                className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Previous page"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                    disabled={currentPage === 1}
+                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Previous page"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
 
-              {getPageNumbers().map((page) => (
-                <button
-                  key={page}
-                  onClick={() => handlePageChange(page)}
-                  className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded ${
-                    currentPage === page
-                      ? "bg-blue-500 text-white"
-                      : "border border-gray-300 text-gray-600 hover:bg-gray-100"
-                  }`}
-                >
-                  {page}
-                </button>
-              ))}
+                  {getPageNumbers().map((page) => (
+                    <button
+                      key={page}
+                      onClick={() => handlePageChange(page)}
+                      className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded ${
+                        currentPage === page
+                          ? "bg-blue-500 text-white"
+                          : "border border-gray-300 text-gray-600 hover:bg-gray-100"
+                      }`}
+                    >
+                      {page}
+                    </button>
+                  ))}
 
-              <button
-                onClick={() =>
-                  handlePageChange(Math.min(totalPages, currentPage + 1))
-                }
-                disabled={currentPage === totalPages}
-                className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Next page"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                  fill="currentColor"
-                  className="w-5 h-5"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </button>
+                  <button
+                    onClick={() =>
+                      handlePageChange(Math.min(totalPages, currentPage + 1))
+                    }
+                    disabled={currentPage === totalPages}
+                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    aria-label="Next page"
+                  >
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                      className="w-5 h-5"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </button>
+                </div>
+              </div>
             </div>
-          </div>
-        </div>
           </>
         )}
       </div>
@@ -747,9 +764,7 @@ export default function DaftarLaporan() {
         bugId={selectedReport?.rawId.slice(-6) ?? ""}
       />
 
-      {(detailModalOpen ||
-        uploadCsvModalOpen ||
-        deleteModalOpen) && (
+      {(detailModalOpen || uploadCsvModalOpen || deleteModalOpen) && (
         <style jsx global>{`
           body {
             overflow: hidden;
