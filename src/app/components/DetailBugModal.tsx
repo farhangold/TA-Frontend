@@ -34,16 +34,16 @@ const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) =>
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center z-50">
-      <div className="fixed top-0 right-0 h-full bg-white shadow-xl w-full max-w-md transform animate-slide-in-right">
+    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center z-50 animate-in fade-in duration-300">
+      <div className="fixed top-0 right-0 h-full bg-white/95 backdrop-blur-lg shadow-2xl w-full max-w-md transform animate-slide-in-right rounded-l-2xl">
         <div className="p-6 h-full overflow-y-auto">
           <div className="flex items-center mb-4">
-            <button onClick={onClose} className="mr-2">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-500">
+            <button onClick={onClose} className="mr-3 p-2 rounded-full hover:bg-gray-100 transition-colors">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-600">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
             </button>
-            <h2 className="text-lg text-black font-medium">Detail {type === 'bug' ? 'Bug' : 'Non-Bug'}</h2>
+            <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Detail {type === 'bug' ? 'Bug' : 'Non-Bug'}</h2>
           </div>
           
           <div className="space-y-4">

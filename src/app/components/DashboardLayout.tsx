@@ -24,19 +24,21 @@ export const DashboardLayout = ({ children, title }: DashboardLayoutProps) => {
   };
 
   return (
-    <div className="flex min-h-screen text-gray-600 bg-gray-100 font-sans">
+    <div className="flex min-h-screen text-gray-600 bg-gradient-to-br from-gray-50 to-gray-100 font-sans">
       <Sidebar />
-      <main className="flex-1 ml-[150px] overflow-auto">
+      <main className="flex-1 ml-0 md:ml-[200px] sm:ml-[180px] overflow-auto">
         {/* Header */}
-        <div className="sticky top-0 z-10 flex justify-between items-center p-4 bg-blue-50">
-          <h1 className="text-2xl font-semibold">{title}</h1>
+        <div className="sticky top-0 z-10 flex justify-between items-center px-6 py-4 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200/50">
+          <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {title}
+          </h1>
           <div className="flex items-center">
-            <div className="ml-4 flex items-center">
-              <div className="w-8 h-8 bg-pink-500 rounded-full flex items-center justify-center text-white">
-                <span>{getUserInitials()}</span>
+            <div className="ml-4 flex items-center gap-3">
+              <div className="w-10 h-10 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white ring-2 ring-blue-200 shadow-md">
+                <span className="text-sm font-semibold">{getUserInitials()}</span>
               </div>
-              <div className="ml-2">
-                <div className="text-sm text-gray-600 font-medium">
+              <div>
+                <div className="text-sm text-gray-800 font-semibold">
                   {user?.name || "User"}
                 </div>
                 <div className="text-xs text-gray-500">

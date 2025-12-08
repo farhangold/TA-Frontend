@@ -27,7 +27,7 @@ const PriorityButton = ({
     <div className="relative">
       <button
         type="button"
-        className="px-4 py-1 text-white rounded text-sm flex items-center bg-blue-500 hover:bg-blue-600"
+        className="px-4 py-2 text-white rounded-xl text-sm font-semibold flex items-center bg-gradient-to-r from-blue-500 to-purple-600 shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
         onClick={() => setIsOpen(!isOpen)}
       >
         <span>Prioritas</span>
@@ -46,11 +46,11 @@ const PriorityButton = ({
       </button>
 
       {isOpen && (
-        <div className="absolute z-10 mt-1 w-40 bg-white rounded-md shadow-lg overflow-hidden">
-          <ul className="py-1 text-sm text-white">
+        <div className="absolute z-10 mt-2 w-48 bg-white/95 backdrop-blur-lg rounded-xl shadow-2xl border border-gray-200/50 overflow-hidden">
+          <ul className="py-2 text-sm">
             <li>
               <button
-                className="w-full flex items-center px-4 py-2 bg-green-400 hover:bg-green-500"
+                className="w-full flex items-center px-4 py-2.5 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white transition-all duration-200"
                 onClick={() => handlePriorityChange("Rendah")}
               >
                 <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center mr-2">
@@ -63,7 +63,7 @@ const PriorityButton = ({
             </li>
             <li>
               <button
-                className="w-full flex items-center px-4 py-2 bg-yellow-300 hover:bg-yellow-400"
+                className="w-full flex items-center px-4 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white transition-all duration-200"
                 onClick={() => handlePriorityChange("Sedang")}
               >
                 <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center mr-2">
@@ -76,7 +76,7 @@ const PriorityButton = ({
             </li>
             <li>
               <button
-                className="w-full flex items-center px-4 py-2 bg-red-500 hover:bg-red-600"
+                className="w-full flex items-center px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white transition-all duration-200"
                 onClick={() => handlePriorityChange("Tinggi")}
               >
                 <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center mr-2">
@@ -89,7 +89,7 @@ const PriorityButton = ({
             </li>
             <li>
               <button
-                className="w-full flex items-center px-4 py-2 bg-red-900 hover:bg-red-950"
+                className="w-full flex items-center px-4 py-2.5 bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white transition-all duration-200"
                 onClick={() => handlePriorityChange("Kritis")}
               >
                 <div className="w-5 h-5 rounded-full border-2 border-white flex items-center justify-center mr-2">

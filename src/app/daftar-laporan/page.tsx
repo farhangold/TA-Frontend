@@ -329,22 +329,22 @@ export default function DaftarLaporan() {
   };
 
   const getStatusBadgeClass = (status: string) => {
-    if (status === "VALID") return "bg-blue-300 text-blue-800";
+    if (status === "VALID") return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
     if (status === "INVALID" || status === "FAILED")
-      return "bg-red-300 text-red-800";
-    return "bg-yellow-200 text-yellow-800";
+      return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
+    return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
   };
 
   return (
     <DashboardLayout title="Daftar Laporan">
-      <div className="bg-white rounded-lg p-6 shadow">
+      <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50">
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Daftar Laporan Bug</h2>
           <div className="flex gap-2 items-center">
             {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
               <button
                 onClick={() => setUploadCsvModalOpen(true)}
-                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium flex items-center gap-2 shadow-md"
+                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 text-sm font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -367,7 +367,7 @@ export default function DaftarLaporan() {
               <button
                 onClick={handleBatchEvaluate}
                 disabled={isBatchEvaluating}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed text-sm"
+                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 {isBatchEvaluating
                   ? "Memvalidasi..."
@@ -376,7 +376,7 @@ export default function DaftarLaporan() {
             )}
             <button
               onClick={() => setShowFilters(!showFilters)}
-              className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 text-sm"
+              className="px-4 py-2 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 text-sm font-medium transition-all duration-200"
             >
               Filter
             </button>
@@ -389,7 +389,7 @@ export default function DaftarLaporan() {
                   setSearchTerm(event.target.value);
                   setCurrentPage(1);
                 }}
-                className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg w-64 text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl w-64 text-gray-900 placeholder:text-gray-500 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
               />
               <svg
                 className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -426,7 +426,7 @@ export default function DaftarLaporan() {
                     setFilters({ ...filters, status: values });
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                   size={3}
                 >
                   <option value="PENDING_EVALUATION">Pending Evaluation</option>
@@ -451,7 +451,7 @@ export default function DaftarLaporan() {
                     setFilters({ ...filters, severityLevel: values });
                     setCurrentPage(1);
                   }}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                   size={3}
                 >
                   <option value="LOW">Low</option>
@@ -472,7 +472,7 @@ export default function DaftarLaporan() {
                       field: e.target.value as SortState["field"],
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white mb-2"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 mb-2"
                 >
                   <option value="CREATED_AT">Created At</option>
                   <option value="UPDATED_AT">Updated At</option>
@@ -488,7 +488,7 @@ export default function DaftarLaporan() {
                       direction: e.target.value as SortState["direction"],
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 bg-white"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                 >
                   <option value="ASC">Ascending</option>
                   <option value="DESC">Descending</option>
@@ -510,7 +510,7 @@ export default function DaftarLaporan() {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 mb-2"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 mb-2"
                 />
                 <input
                   type="date"
@@ -524,7 +524,7 @@ export default function DaftarLaporan() {
                       },
                     })
                   }
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900"
+                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
                 />
               </div>
             </div>
@@ -544,8 +544,11 @@ export default function DaftarLaporan() {
         )}
 
         {loading && (
-          <div className="py-8 text-center text-sm text-gray-500">
-            Memuat laporan...
+          <div className="py-12 text-center">
+            <div className="inline-flex items-center gap-3">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className="text-sm font-medium text-gray-600">Memuat laporan...</span>
+            </div>
           </div>
         )}
 
@@ -558,9 +561,9 @@ export default function DaftarLaporan() {
         {!loading && !error && (
           <>
             <div className="overflow-x-auto">
-              <table className="min-w-full bg-white">
+              <table className="min-w-full bg-white rounded-xl overflow-hidden">
                 <thead>
-                  <tr className="bg-gray-100 text-gray-600 text-sm leading-normal">
+                  <tr className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-semibold leading-normal">
                     <th className="py-3 px-4 text-center w-12">
                       <input
                         type="checkbox"
@@ -583,10 +586,12 @@ export default function DaftarLaporan() {
                   </tr>
                 </thead>
                 <tbody className="text-gray-600 text-sm">
-                  {reports.map((report) => (
+                  {reports.map((report, index) => (
                     <tr
                       key={report.rawId}
-                      className={`border-b border-gray-200 hover:bg-gray-50 ${
+                      className={`border-b border-gray-200 transition-colors ${
+                        index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
+                      } hover:bg-blue-50/50 ${
                         selectedReportIds.has(report.rawId) ? "bg-blue-50" : ""
                       }`}
                     >
@@ -667,7 +672,7 @@ export default function DaftarLaporan() {
                       handlePageChange(Math.max(1, currentPage - 1))
                     }
                     disabled={currentPage === 1}
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     aria-label="Previous page"
                   >
                     <svg
@@ -685,15 +690,15 @@ export default function DaftarLaporan() {
                   </button>
 
                   {getPageNumbers().map((page) => (
-                    <button
-                      key={page}
-                      onClick={() => handlePageChange(page)}
-                      className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded ${
-                        currentPage === page
-                          ? "bg-blue-500 text-white"
-                          : "border border-gray-300 text-gray-600 hover:bg-gray-100"
-                      }`}
-                    >
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
+                      currentPage === page
+                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                        : "border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
+                    }`}
+                  >
                       {page}
                     </button>
                   ))}
@@ -703,7 +708,7 @@ export default function DaftarLaporan() {
                       handlePageChange(Math.min(totalPages, currentPage + 1))
                     }
                     disabled={currentPage === totalPages}
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                     aria-label="Next page"
                   >
                     <svg

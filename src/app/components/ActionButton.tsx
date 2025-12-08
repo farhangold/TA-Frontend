@@ -13,7 +13,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
         return (
           <button
             onClick={onClick}
-            className="w-7 h-7 flex items-center justify-center bg-red-500 text-white rounded"
+            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
           >
             {/* Icon delete */}
             <svg
@@ -34,7 +34,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
         return (
           <button
             onClick={onClick}
-            className="w-7 h-7 flex items-center justify-center bg-indigo-600 text-white rounded"
+            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
           >
             {/* Icon detail bug (info) */}
             <svg
@@ -52,7 +52,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
         return (
           <button
             onClick={onClick}
-            className="w-7 h-7 flex items-center justify-center bg-green-600 text-white rounded"
+            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
           >
             {/* Icon validasi (centang) */}
             <svg
@@ -75,7 +75,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
         return (
           <button
             onClick={onClick}
-            className="w-7 h-7 flex items-center justify-center bg-yellow-600 text-white rounded"
+            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
           >
             {/* Icon upload CSV */}
             <svg

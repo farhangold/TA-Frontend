@@ -186,8 +186,13 @@ export default function Dashboard() {
   if (reportsLoading || statsLoading) {
     return (
       <DashboardLayout title="Dashboard">
-        <div className="bg-white rounded-lg p-6 shadow">
-          <p className="text-gray-500">Memuat data dashboard...</p>
+        <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-200/50">
+          <div className="py-12 text-center">
+            <div className="inline-flex items-center gap-3">
+              <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
+              <span className="text-sm font-medium text-gray-600">Memuat data dashboard...</span>
+            </div>
+          </div>
         </div>
       </DashboardLayout>
     );
@@ -198,8 +203,8 @@ export default function Dashboard() {
     console.error("Dashboard error details:", error);
     return (
       <DashboardLayout title="Dashboard">
-        <div className="bg-white rounded-lg p-6 shadow">
-          <div className="p-4 bg-red-50 border border-red-200 rounded-lg">
+        <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg border border-gray-200/50">
+          <div className="p-4 bg-red-50 border border-red-200 rounded-xl">
             <p className="text-red-600 font-semibold mb-2">Error memuat data dashboard</p>
             <p className="text-sm text-red-600">
               {error?.message || "Terjadi kesalahan saat memuat data. Silakan refresh halaman."}
@@ -228,7 +233,7 @@ export default function Dashboard() {
   return (
     <DashboardLayout title="Dashboard">
       {/* Total Laporan UAT */}
-      <div className="bg-white rounded-lg p-6 shadow">
+      <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50">
         <div className="flex justify-between items-start mb-4">
           <h2 className="text-lg text-gray-600 font-semibold">Total Laporan UAT</h2>
           <div className="text-right">
@@ -285,7 +290,7 @@ export default function Dashboard() {
       {/* Stat Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
         {/* Card 1 - Laporan Valid & Invalid */}
-        <div className="bg-white rounded-lg p-6 shadow">
+        <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-gray-200/50">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg  text-gray-600 font-medium">Laporan Valid & Invalid</h3>
             <ChevronRightIcon className="w-5 h-5 text-gray-400" />
@@ -356,7 +361,7 @@ export default function Dashboard() {
         </div>
 
         {/* Card 2 - Laporan Sedang Diverifikasi */}
-        <div className="bg-white rounded-lg p-6 shadow">
+        <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-gray-200/50">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg text-gray-600 font-medium">Laporan Sedang Diverifikasi</h3>
             <ChevronRightIcon className="w-5 h-5 text-gray-400" />
@@ -430,7 +435,7 @@ export default function Dashboard() {
         </div>
 
         {/* Card 3 - Presentase Validasi Sukses */}
-        <div className="bg-white rounded-lg p-6 shadow">
+        <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all duration-300 border border-gray-200/50">
           <div className="flex justify-between items-center mb-4">
             <h3 className="text-lg text-gray-600 font-medium">Presentase Validasi Sukses</h3>
             <ChevronRightIcon className="w-5 h-5 text-gray-400" />

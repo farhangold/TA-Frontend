@@ -54,18 +54,20 @@ const LoginPage = () => {
   return (
     <div className="min-h-screen flex">
       {/* Left side - Image/Illustration */}
-      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-600 via-blue-700 to-blue-800 relative overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
+      <div className="hidden lg:flex lg:w-1/2 bg-gradient-to-br from-blue-500 via-purple-600 to-blue-700 relative overflow-hidden">
+        <div className="absolute inset-0 bg-black/10 backdrop-blur-sm"></div>
         <div className="relative z-10 flex flex-col justify-center items-center text-white p-12">
           <div className="max-w-md">
-            <h2 className="text-4xl font-bold mb-4">Selamat Datang Kembali!</h2>
+            <h2 className="text-4xl font-bold mb-4 bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-100">
+              Selamat Datang Kembali!
+            </h2>
             <p className="text-blue-100 text-lg mb-8">
               Masuk ke akun Anda untuk melanjutkan mengelola laporan UAT dan
               hasil validasi.
             </p>
             <div className="space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="flex items-center space-x-3 group">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-200 group-hover:scale-110">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -80,10 +82,10 @@ const LoginPage = () => {
                     />
                   </svg>
                 </div>
-                <span>Kelola laporan UAT dengan mudah</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">Kelola laporan UAT dengan mudah</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="flex items-center space-x-3 group">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-200 group-hover:scale-110">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -98,10 +100,10 @@ const LoginPage = () => {
                     />
                   </svg>
                 </div>
-                <span>Validasi otomatis dan cepat</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">Validasi otomatis dan cepat</span>
               </div>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
+              <div className="flex items-center space-x-3 group">
+                <div className="w-10 h-10 bg-white/20 backdrop-blur-md rounded-xl flex items-center justify-center group-hover:bg-white/30 transition-all duration-200 group-hover:scale-110">
                   <svg
                     className="w-5 h-5"
                     fill="none"
@@ -116,7 +118,7 @@ const LoginPage = () => {
                     />
                   </svg>
                 </div>
-                <span>Dashboard analitik yang informatif</span>
+                <span className="group-hover:translate-x-1 transition-transform duration-200">Dashboard analitik yang informatif</span>
               </div>
             </div>
           </div>
@@ -127,10 +129,12 @@ const LoginPage = () => {
       </div>
 
       {/* Right side - Login Form */}
-      <div className="w-full lg:w-1/2 flex items-center justify-center bg-white px-6 py-12">
+      <div className="w-full lg:w-1/2 flex items-center justify-center bg-gradient-to-br from-gray-50 to-white px-6 py-12">
         <div className="w-full max-w-md">
           <div className="mb-10">
-            <h1 className="text-4xl font-bold text-gray-900 mb-3">Masuk</h1>
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-3">
+              Masuk
+            </h1>
             <p className="text-gray-700 text-base">
               Masuk ke akun Anda untuk melanjutkan mengelola laporan UAT.
             </p>
@@ -156,7 +160,7 @@ const LoginPage = () => {
                   required
                   value={email}
                   onChange={(event) => setEmail(event.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200"
                   placeholder="nama@perusahaan.com"
                 />
               </div>
@@ -181,7 +185,7 @@ const LoginPage = () => {
                   required
                   value={password}
                   onChange={(event) => setPassword(event.target.value)}
-                  className="w-full pl-10 pr-10 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-900 placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                  className="w-full pl-10 pr-10 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200"
                   placeholder="••••••••"
                 />
                 <button
@@ -227,10 +231,10 @@ const LoginPage = () => {
             {/* Form Error */}
             {formError && (
               <div
-                className="p-3 rounded-lg bg-red-50 border border-red-200"
+                className="p-4 rounded-xl bg-gradient-to-r from-red-50 to-rose-50 border-2 border-red-200 shadow-md animate-in fade-in duration-300"
                 role="alert"
               >
-                <p className="text-sm text-red-600">{formError}</p>
+                <p className="text-sm font-medium text-red-600">{formError}</p>
               </div>
             )}
 
@@ -238,7 +242,7 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-6 inline-flex justify-center items-center px-4 py-3.5 rounded-lg text-base font-semibold text-white bg-blue-600 hover:bg-blue-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-md hover:shadow-lg transform hover:-translate-y-0.5"
+              className="w-full mt-6 inline-flex justify-center items-center px-4 py-3.5 rounded-xl text-base font-semibold text-white bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 disabled:opacity-60 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95"
             >
               {loading ? (
                 <>
@@ -276,7 +280,7 @@ const LoginPage = () => {
               Belum punya akun?{" "}
               <Link
                 href="/register"
-                className="font-semibold text-blue-600 hover:text-blue-700 hover:underline transition-colors"
+                className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent hover:from-blue-700 hover:to-purple-700 transition-all duration-200"
               >
                 Daftar Sekarang
               </Link>
