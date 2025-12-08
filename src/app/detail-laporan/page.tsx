@@ -1,15 +1,25 @@
 
 "use client";
 
-import React, { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import React, { Suspense, useEffect } from "react";
+import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import { GET_EVALUATION } from "../graphql/evaluations";
 
 const DetailLaporanContent = () => {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const reportId = searchParams.get("reportId");
+
+  // Redirect to hasil-validasi page
+  useEffect(() => {
+    if (reportId) {
+      router.replace(`/hasil-validasi?reportId=${reportId}`);
+    } else {
+      router.replace("/hasil-validasi");
+    }
+  }, [reportId, router]);
 
   const { data, loading, error } = useQuery(GET_EVALUATION, {
     skip: !reportId,

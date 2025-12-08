@@ -13,7 +13,7 @@ const Sidebar = () => {
   const menuItems = [
     { icon: "dashboard", label: "Dashboard", path: "/dashboard" },
     { icon: "list", label: "Daftar Laporan", path: "/daftar-laporan" },
-    { icon: "details", label: "Detail Laporan", path: "/detail-laporan" },
+    { icon: "validation", label: "Hasil Validasi", path: "/hasil-validasi" },
   ];
 
   const adminMenuItems =

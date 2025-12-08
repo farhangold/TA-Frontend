@@ -164,99 +164,163 @@ export default function DaftarLaporan() {
     }
   };
 
-  const handleFileUpload = async (file: File) => {
+  const handleFileUpload = async (files: File[]) => {
+    let totalSuccessful = 0;
+    let totalFailed = 0;
+    let totalBugReports = 0;
+    let totalSuccessReports = 0;
+    const fileResults: Array<{
+      fileName: string;
+      successful: number;
+      failed: number;
+      errors: Array<{ row: number; message: string }>;
+      bugReports: number;
+      successReports: number;
+    }> = [];
+
     try {
-      const format = file.name.endsWith(".csv") ? "CSV" : "JSON";
-
-      // Read file content
-      const fileContent = await file.text();
-
-      // For JSON files, validate it's valid JSON
-      if (format === "JSON") {
+      // Process each file sequentially
+      for (const file of files) {
         try {
-          JSON.parse(fileContent);
-        } catch {
-          alert("File JSON tidak valid. Silakan periksa format file.");
-          return;
+          const format = file.name.endsWith(".csv") ? "CSV" : "JSON";
+
+          // Read file content
+          const fileContent = await file.text();
+
+          // For JSON files, validate it's valid JSON
+          if (format === "JSON") {
+            try {
+              JSON.parse(fileContent);
+            } catch {
+              fileResults.push({
+                fileName: file.name,
+                successful: 0,
+                failed: 0,
+                errors: [{ row: 0, message: "File JSON tidak valid" }],
+                bugReports: 0,
+                successReports: 0,
+              });
+              totalFailed++;
+              continue; // Skip to next file
+            }
+          }
+
+          const result = await uploadBatch({
+            variables: {
+              input: {
+                format,
+                data: fileContent,
+              },
+            },
+          });
+
+          if (result.data?.uploadBatchReports) {
+            const { successful, failed, errors, reports } =
+              result.data.uploadBatchReports;
+
+            // Count report types
+            type ReportWithType = { reportType?: string };
+            const bugReports =
+              reports?.filter(
+                (r: ReportWithType) => r.reportType === "BUG_REPORT"
+              ).length || 0;
+            const successReports =
+              reports?.filter(
+                (r: ReportWithType) => r.reportType === "SUCCESS_REPORT"
+              ).length || 0;
+
+            fileResults.push({
+              fileName: file.name,
+              successful,
+              failed,
+              errors: errors || [],
+              bugReports,
+              successReports,
+            });
+
+            totalSuccessful += successful;
+            totalFailed += failed;
+            totalBugReports += bugReports;
+            totalSuccessReports += successReports;
+          }
+        } catch (fileError: unknown) {
+          console.error(`Error uploading file ${file.name}:`, fileError);
+
+          // Extract error message for this file
+          let errorMessage = "Gagal mengunggah file";
+          if (
+            typeof fileError === "object" &&
+            fileError !== null &&
+            "graphQLErrors" in fileError &&
+            Array.isArray(
+              (fileError as { graphQLErrors?: unknown[] }).graphQLErrors
+            ) &&
+            (fileError as { graphQLErrors: unknown[] }).graphQLErrors.length >
+              0
+          ) {
+            const graphQLError = (
+              fileError as { graphQLErrors: Array<{ message?: string }> }
+            ).graphQLErrors[0];
+            if (graphQLError && typeof graphQLError.message === "string") {
+              errorMessage = graphQLError.message;
+            }
+          } else if (
+            typeof fileError === "object" &&
+            fileError !== null &&
+            "message" in fileError &&
+            typeof (fileError as { message: unknown }).message === "string"
+          ) {
+            errorMessage = (fileError as { message: string }).message;
+          }
+
+          fileResults.push({
+            fileName: file.name,
+            successful: 0,
+            failed: 0,
+            errors: [{ row: 0, message: errorMessage }],
+            bugReports: 0,
+            successReports: 0,
+          });
+          totalFailed++;
+          // Continue with next file even if this one fails
         }
       }
 
-      const result = await uploadBatch({
-        variables: {
-          input: {
-            format,
-            data: fileContent,
-          },
-        },
-      });
+      // Show comprehensive summary
+      let summaryMessage = `Upload Selesai!\n\nTotal: ${totalSuccessful} berhasil, ${totalFailed} gagal dari ${files.length} file(s)`;
 
-      if (result.data?.uploadBatchReports) {
-        const { successful, failed, errors, reports } =
-          result.data.uploadBatchReports;
-
-        // Show classification results if available
-        type ReportWithType = { reportType?: string };
-        const bugReports =
-          reports?.filter((r: ReportWithType) => r.reportType === "BUG_REPORT")
-            .length || 0;
-        const successReports =
-          reports?.filter(
-            (r: ReportWithType) => r.reportType === "SUCCESS_REPORT"
-          ).length || 0;
-
-        const classificationInfo =
-          reports && reports.length > 0
-            ? `\n\nKlasifikasi: ${bugReports} Bug Report, ${successReports} Success Report`
-            : "";
-
-        // Show success message
-        const errorMessages =
-          errors.length > 0
-            ? `\n\nError:\n${errors
-                .map(
-                  (e: { row: number; message: string }) =>
-                    `Baris ${e.row}: ${e.message}`
-                )
-                .join("\n")}`
-            : "";
-        alert(
-          `Upload selesai: ${successful} berhasil, ${failed} gagal.${classificationInfo}${errorMessages}`
-        );
-        await refetch();
+      if (totalBugReports > 0 || totalSuccessReports > 0) {
+        summaryMessage += `\n\nKlasifikasi Total:\n- ${totalBugReports} Bug Report\n- ${totalSuccessReports} Success Report`;
       }
+
+      // Add per-file breakdown if there are multiple files
+      if (files.length > 1) {
+        summaryMessage += `\n\nDetail per File:`;
+        fileResults.forEach((result) => {
+          summaryMessage += `\n\n📄 ${result.fileName}:`;
+          summaryMessage += `\n  ✅ ${result.successful} berhasil, ❌ ${result.failed} gagal`;
+          if (result.bugReports > 0 || result.successReports > 0) {
+            summaryMessage += `\n  🐛 ${result.bugReports} Bug Report, ✅ ${result.successReports} Success Report`;
+          }
+          if (result.errors.length > 0) {
+            summaryMessage += `\n  ⚠️ Error: ${result.errors.map((e) => e.message).join(", ")}`;
+          }
+        });
+      } else if (fileResults.length > 0) {
+        // Single file - show errors if any
+        const result = fileResults[0];
+        if (result.errors.length > 0) {
+          summaryMessage += `\n\nError:\n${result.errors
+            .map((e) => `Baris ${e.row}: ${e.message}`)
+            .join("\n")}`;
+        }
+      }
+
+      alert(summaryMessage);
+      await refetch();
     } catch (e: unknown) {
-      console.error("Error uploading batch:", e);
-
-      // Extract error message
-      let errorMessage = "Gagal mengunggah file. Silakan coba lagi.";
-
-      // Type guard for Apollo error with graphQLErrors
-      if (
-        typeof e === "object" &&
-        e !== null &&
-        "graphQLErrors" in e &&
-        Array.isArray((e as { graphQLErrors?: unknown[] }).graphQLErrors) &&
-        (e as { graphQLErrors: unknown[] }).graphQLErrors.length > 0
-      ) {
-        const graphQLError = (
-          e as { graphQLErrors: Array<{ message?: string }> }
-        ).graphQLErrors[0];
-        if (graphQLError && typeof graphQLError.message === "string") {
-          errorMessage = `Error: ${graphQLError.message}`;
-        }
-      } else if (
-        typeof e === "object" &&
-        e !== null &&
-        "message" in e &&
-        typeof (e as { message: unknown }).message === "string"
-      ) {
-        errorMessage = `Error: ${(e as { message: string }).message}`;
-      } else if (typeof e === "object" && e !== null && "networkError" in e) {
-        errorMessage =
-          "Tidak dapat terhubung ke server. Pastikan backend sedang berjalan.";
-      }
-
-      alert(errorMessage);
+      console.error("Error in upload process:", e);
+      alert("Terjadi kesalahan saat memproses upload. Silakan coba lagi.");
     } finally {
       setUploadCsvModalOpen(false);
     }
