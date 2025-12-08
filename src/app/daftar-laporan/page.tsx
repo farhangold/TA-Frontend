@@ -2,22 +2,19 @@
 
 import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
+import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/DashboardLayout";
 import ActionButton from "../components/ActionButton";
 import DetailBugModal from "../components/DetailBugModal";
 import UploadCsvModal from "../components/UploadCSVModal";
-import ValidationModal from "../components/ValidationModal";
 import DeleteConfirmationModal from "../components/DeleteModal";
-import CreateReportModal from "../components/CreateReportModal";
 import { useCurrentUser } from "../lib/auth";
 import {
   GET_UAT_REPORTS,
   DELETE_UAT_REPORT,
   UPLOAD_BATCH_REPORTS,
-  CREATE_UAT_REPORT,
 } from "../graphql/uatReports";
 import {
-  EVALUATE_REPORT,
   EVALUATE_BATCH_REPORTS,
 } from "../graphql/evaluations";
 
@@ -46,6 +43,7 @@ type SortState = {
 };
 
 export default function DaftarLaporan() {
+  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [filters, setFilters] = useState<FilterState>({});
@@ -61,10 +59,8 @@ export default function DaftarLaporan() {
 
   // Modal states
   const [detailModalOpen, setDetailModalOpen] = useState(false);
-  const [validationModalOpen, setValidationModalOpen] = useState(false);
   const [uploadCsvModalOpen, setUploadCsvModalOpen] = useState(false);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
-  const [createModalOpen, setCreateModalOpen] = useState(false);
 
   const [selectedReport, setSelectedReport] = useState<ReportRow | null>(null);
 
@@ -108,11 +104,9 @@ export default function DaftarLaporan() {
     fetchPolicy: "cache-and-network",
   });
 
-  const [evaluateReport] = useMutation(EVALUATE_REPORT);
   const [evaluateBatch] = useMutation(EVALUATE_BATCH_REPORTS);
   const [deleteReport] = useMutation(DELETE_UAT_REPORT);
   const [uploadBatch] = useMutation(UPLOAD_BATCH_REPORTS);
-  const [createReport, { loading: isCreating }] = useMutation(CREATE_UAT_REPORT);
 
   const reports: ReportRow[] = useMemo(() => {
     if (!data?.getUATReports) return [];
@@ -152,7 +146,7 @@ export default function DaftarLaporan() {
   };
 
   const handleAction = (
-    type: "detailBug" | "validation" | "uploadCSV" | "delete",
+    type: "detailBug" | "uploadCSV" | "delete",
     id: string,
   ) => {
     const report = reports.find((item) => item.id === id);
@@ -161,9 +155,8 @@ export default function DaftarLaporan() {
     setSelectedReport(report);
 
     if (type === "detailBug") {
-      setDetailModalOpen(true);
-    } else if (type === "validation") {
-      setValidationModalOpen(true);
+      // Navigate to detail page instead of opening modal
+      router.push(`/detail-laporan?reportId=${report.rawId}`);
     } else if (type === "uploadCSV") {
       setUploadCsvModalOpen(true);
     } else if (type === "delete") {
@@ -171,73 +164,22 @@ export default function DaftarLaporan() {
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleValidate = async (_isValid: boolean) => {
-    if (!selectedReport) return;
-
-    try {
-      await evaluateReport({
-        variables: { id: selectedReport.rawId },
-      });
-      // Backend determines validation status; refetch list for updated status
-      await refetch();
-    } catch (e) {
-      console.error("Error evaluating report:", e);
-    } finally {
-    setValidationModalOpen(false);
-    }
-  };
-
-  const handleCreateReport = async (input: {
-    testIdentity: {
-      testId: string;
-      title: string;
-      version: string;
-    };
-    testEnvironment: {
-      os: string;
-      browser: string;
-      device: string;
-      additionalInfo?: string;
-    };
-    stepsToReproduce: string[];
-    actualResult: string;
-    expectedResult: string;
-    supportingEvidence?: Array<{
-      type: string;
-      url: string;
-      description?: string;
-    }>;
-    severityLevel: string;
-    domain?: string;
-    additionalInfo?: string;
-  }) => {
-    try {
-      await createReport({
-        variables: { input },
-        refetchQueries: [
-          {
-            query: GET_UAT_REPORTS,
-            variables: {
-              filter: filterInput,
-              sort,
-              pagination: { page: currentPage, limit: ITEMS_PER_PAGE },
-            },
-          },
-        ],
-      });
-      setCreateModalOpen(false);
-      alert("Laporan berhasil dibuat!");
-    } catch (error: unknown) {
-      console.error("Error creating report:", error);
-      throw error; // Re-throw to let modal handle error display
-    }
-  };
-
   const handleFileUpload = async (file: File) => {
     try {
-      const fileContent = await file.text();
       const format = file.name.endsWith(".csv") ? "CSV" : "JSON";
+      
+      // Read file content
+      const fileContent = await file.text();
+      
+      // For JSON files, validate it's valid JSON
+      if (format === "JSON") {
+        try {
+          JSON.parse(fileContent);
+        } catch {
+          alert("File JSON tidak valid. Silakan periksa format file.");
+          return;
+        }
+      }
 
       const result = await uploadBatch({
         variables: {
@@ -249,7 +191,17 @@ export default function DaftarLaporan() {
       });
 
       if (result.data?.uploadBatchReports) {
-        const { successful, failed, errors } = result.data.uploadBatchReports;
+        const { successful, failed, errors, reports } = result.data.uploadBatchReports;
+        
+        // Show classification results if available
+        type ReportWithType = { reportType?: string };
+        const bugReports = reports?.filter((r: ReportWithType) => r.reportType === "BUG_REPORT").length || 0;
+        const successReports = reports?.filter((r: ReportWithType) => r.reportType === "SUCCESS_REPORT").length || 0;
+        
+        const classificationInfo = reports && reports.length > 0
+          ? `\n\nKlasifikasi: ${bugReports} Bug Report, ${successReports} Success Report`
+          : "";
+        
         // Show success message
         const errorMessages =
           errors.length > 0
@@ -261,13 +213,28 @@ export default function DaftarLaporan() {
                 .join("\n")}`
             : "";
         alert(
-          `Upload selesai: ${successful} berhasil, ${failed} gagal.${errorMessages}`,
+          `Upload selesai: ${successful} berhasil, ${failed} gagal.${classificationInfo}${errorMessages}`,
         );
         await refetch();
       }
-    } catch (e) {
+    } catch (e: any) {
       console.error("Error uploading batch:", e);
-      alert("Gagal mengunggah file. Silakan coba lagi.");
+      
+      // Extract error message
+      let errorMessage = "Gagal mengunggah file. Silakan coba lagi.";
+      
+      if (e?.graphQLErrors && e.graphQLErrors.length > 0) {
+        const graphQLError = e.graphQLErrors[0];
+        if (graphQLError.message) {
+          errorMessage = `Error: ${graphQLError.message}`;
+        }
+      } else if (e?.message) {
+        errorMessage = `Error: ${e.message}`;
+      } else if (e?.networkError) {
+        errorMessage = "Tidak dapat terhubung ke server. Pastikan backend sedang berjalan.";
+      }
+      
+      alert(errorMessage);
     } finally {
       setUploadCsvModalOpen(false);
     }
@@ -352,6 +319,28 @@ export default function DaftarLaporan() {
         <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Daftar Laporan Bug</h2>
           <div className="flex gap-2 items-center">
+            {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
+              <button
+                onClick={() => setUploadCsvModalOpen(true)}
+                className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm font-medium flex items-center gap-2 shadow-md"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                  />
+                </svg>
+                Upload File (JSON/CSV)
+              </button>
+            )}
             {selectedReportIds.size > 0 && (
               <button
                 onClick={handleBatchEvaluate}
@@ -361,14 +350,6 @@ export default function DaftarLaporan() {
                 {isBatchEvaluating
                   ? "Memvalidasi..."
                   : `Validasi Batch (${selectedReportIds.size})`}
-              </button>
-            )}
-            {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
-              <button
-                onClick={() => setCreateModalOpen(true)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm"
-              >
-                + Tambah Laporan
               </button>
             )}
             <button
@@ -621,12 +602,6 @@ export default function DaftarLaporan() {
                         onClick={() => handleAction("detailBug", report.id)}
                       />
                       <ActionButton
-                        type="validation"
-                            onClick={() =>
-                              handleAction("validation", report.id)
-                            }
-                      />
-                      <ActionButton
                         type="uploadCSV"
                             onClick={() =>
                               handleAction("uploadCSV", report.id)
@@ -738,39 +713,25 @@ export default function DaftarLaporan() {
         isOpen={detailModalOpen}
         onClose={() => setDetailModalOpen(false)}
         data={
-          selectedReport ?? {
-            id: "",
-            status: "",
-            date: "",
-            reporter: "",
-            description: "",
-          }
+          selectedReport
+            ? {
+                ...selectedReport,
+                rawId: selectedReport.rawId,
+              }
+            : {
+                id: "",
+                rawId: "",
+                status: "",
+                date: "",
+                reporter: "",
+                description: "",
+              }
         }
         type={
           selectedReport && selectedReport.status === "VALID"
             ? "bug"
             : "non-bug"
         }
-      />
-
-      <ValidationModal
-        isOpen={validationModalOpen}
-        onClose={() => setValidationModalOpen(false)}
-        data={
-          selectedReport ?? {
-            id: "",
-            status: "",
-            date: "",
-            reporter: "",
-            description: "",
-          }
-        }
-        type={
-          selectedReport && selectedReport.status === "VALID"
-            ? "bug"
-            : "non-bug"
-        }
-        onValidate={handleValidate}
       />
 
       <UploadCsvModal
@@ -786,18 +747,9 @@ export default function DaftarLaporan() {
         bugId={selectedReport?.rawId.slice(-6) ?? ""}
       />
 
-      <CreateReportModal
-        isOpen={createModalOpen}
-        onClose={() => setCreateModalOpen(false)}
-        onSubmit={handleCreateReport}
-        loading={isCreating}
-      />
-
       {(detailModalOpen ||
-        validationModalOpen ||
         uploadCsvModalOpen ||
-        deleteModalOpen ||
-        createModalOpen) && (
+        deleteModalOpen) && (
         <style jsx global>{`
           body {
             overflow: hidden;

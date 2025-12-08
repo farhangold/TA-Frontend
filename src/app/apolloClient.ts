@@ -11,7 +11,7 @@ import { setContext } from "@apollo/client/link/context";
 import { onError } from "@apollo/client/link/error";
 
 const httpLink = new HttpLink({
-  uri: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/graphql",
+  uri: process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/graphql",
   credentials: "include",
 });
 
@@ -62,7 +62,7 @@ const refreshToken = async (): Promise<string | null> => {
     `;
 
     const response = await fetch(
-      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/graphql",
+      process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:3000/graphql",
       {
         method: "POST",
         headers: {

@@ -1,0 +1,42 @@
+[
+  {
+    "testId": "TEST-101",
+    "title": "Successful User Registration",
+    "version": "1.0.0",
+    "environment": {
+      "os": "Windows 11",
+      "device": "Desktop",
+      "browser": "Chrome 120"
+    },
+    "description": "User registration form works correctly. All fields are validated properly, and user receives confirmation email. Account is created successfully in the database.",
+    "severityLevel": "LOW",
+    "domain": "User Registration"
+  },
+  {
+    "testId": "TEST-102",
+    "title": "Dashboard Loads Successfully",
+    "version": "1.0.0",
+    "environment": {
+      "os": "macOS",
+      "device": "Laptop",
+      "browser": "Safari 17"
+    },
+    "description": "Dashboard page loads correctly with all widgets displaying proper data. Navigation menu works smoothly, and all charts render without errors. Performance is good with loading time under 2 seconds.",
+    "severityLevel": "LOW",
+    "domain": "Dashboard"
+  },
+  {
+    "testId": "TEST-103",
+    "title": "Search Functionality Works",
+    "version": "1.0.0",
+    "environment": {
+      "os": "Ubuntu 22.04",
+      "device": "Desktop",
+      "browser": "Firefox 121"
+    },
+    "description": "Search feature returns accurate results. Filters work correctly, and results are displayed in a user-friendly format. Search is fast and responsive.",
+    "severityLevel": "LOW",
+    "domain": "Search"
+  }
+]
+

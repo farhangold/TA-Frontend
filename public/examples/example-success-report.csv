@@ -1,0 +1,5 @@
+testId,title,version,OS,Device,Browser,description,severityLevel,domain
+TEST-101,Successful User Registration,1.0.0,Windows 11,Desktop,Chrome 120,"User registration form works correctly. All fields are validated properly, and user receives confirmation email. Account is created successfully in the database.",LOW,User Registration
+TEST-102,Dashboard Loads Successfully,1.0.0,macOS,Laptop,Safari 17,"Dashboard page loads correctly with all widgets displaying proper data. Navigation menu works smoothly, and all charts render without errors. Performance is good with loading time under 2 seconds.",LOW,Dashboard
+TEST-103,Search Functionality Works,1.0.0,Ubuntu 22.04,Desktop,Firefox 121,"Search feature returns accurate results. Filters work correctly, and results are displayed in a user-friendly format. Search is fast and responsive.",LOW,Search
+

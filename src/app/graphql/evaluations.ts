@@ -33,6 +33,7 @@ export const GET_EVALUATION = gql`
     getEvaluation(reportId: $reportId) {
       _id
       reportId
+      reportType
       totalScore
       maxScore
       scorePercentage
@@ -45,12 +46,45 @@ export const GET_EVALUATION = gql`
       }
       report {
         _id
+        reportType
         testIdentity {
           testId
           title
           version
         }
+        testEnvironment {
+          os
+          browser
+          device
+          additionalInfo
+        }
+        stepsToReproduce
+        actualResult
+        expectedResult
+        supportingEvidence {
+          type
+          url
+          description
+        }
         severityLevel
+        domain
+        additionalInfo
+        status
+        createdAt
+        updatedAt
+      }
+      attributeScores {
+        attribute
+        score
+        maxScore
+        weight
+        weightedScore
+        passed
+      }
+      feedback {
+        attribute
+        message
+        level
       }
     }
   }
@@ -74,6 +108,7 @@ export const GET_EVALUATION_HISTORY = gql`
         node {
           _id
           reportId
+          reportType
           totalScore
           maxScore
           scorePercentage
@@ -86,6 +121,7 @@ export const GET_EVALUATION_HISTORY = gql`
           }
           report {
             _id
+            reportType
             testIdentity {
               testId
               title

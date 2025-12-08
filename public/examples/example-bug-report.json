@@ -1,0 +1,56 @@
+[
+  {
+    "testId": "TEST-001",
+    "title": "Login Button Not Responding",
+    "version": "1.0.0",
+    "environment": {
+      "os": "Windows 11",
+      "device": "Desktop",
+      "browser": "Chrome 120"
+    },
+    "step to reproduce": [
+      "Navigate to login page",
+      "Enter username and password",
+      "Click login button",
+      "Observe button does not respond"
+    ],
+    "description": "When clicking the login button, nothing happens. The button appears to be disabled or unresponsive. No error message is displayed.",
+    "evidence": [
+      {
+        "type": "SCREENSHOT",
+        "url": "https://example.com/screenshots/login-button.png",
+        "description": "Screenshot showing login button in unresponsive state"
+      }
+    ],
+    "expectedResult": "User should be redirected to dashboard after successful login",
+    "severityLevel": "HIGH",
+    "domain": "Authentication"
+  },
+  {
+    "testId": "TEST-002",
+    "title": "Form Validation Error",
+    "version": "1.0.0",
+    "environment": {
+      "os": "macOS",
+      "device": "Laptop",
+      "browser": "Safari 17"
+    },
+    "step to reproduce": [
+      "Open registration form",
+      "Leave email field empty",
+      "Submit form"
+    ],
+    "description": "Form submits without validation. Email field is required but form accepts empty value.",
+    "evidence": [
+      {
+        "type": "SCREENSHOT",
+        "url": "https://example.com/screenshots/form-validation.png",
+        "description": "Screenshot showing form submitted with empty email"
+      }
+    ],
+    "expectedResult": "Form should display validation error for empty email field",
+    "severityLevel": "MEDIUM",
+    "domain": "User Registration"
+  }
+]
+

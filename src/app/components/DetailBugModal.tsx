@@ -1,10 +1,12 @@
 import React from 'react';
+import { useRouter } from 'next/navigation';
 
 type DetailBugModalProps = {
   isOpen: boolean;
   onClose: () => void;
   data: {
     id: string;
+    rawId?: string;
     status: string;
     date: string;
     reporter: string;
@@ -14,7 +16,16 @@ type DetailBugModalProps = {
 };
 
 const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) => {
+  const router = useRouter();
+  
   if (!isOpen) return null;
+
+  const handleViewFullDetail = () => {
+    if (data.rawId) {
+      router.push(`/detail-laporan?reportId=${data.rawId}`);
+      onClose();
+    }
+  };
 
   const getStatusColor = (status: string) => {
     return status.toLowerCase() === 'bug' || status.toLowerCase() === 'invalid' 
@@ -77,6 +88,17 @@ const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) =>
                 {data.description}
               </div>
             </div>
+
+            {data.rawId && (
+              <div className="mt-6 pt-4 border-t">
+                <button
+                  onClick={handleViewFullDetail}
+                  className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
+                >
+                  Lihat Detail Lengkap dengan Evaluasi
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>

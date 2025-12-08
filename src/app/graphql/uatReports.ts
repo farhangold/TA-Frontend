@@ -20,6 +20,7 @@ export const GET_UAT_REPORTS = gql`
         cursor
         node {
           _id
+          reportType
           testIdentity {
             testId
             title
@@ -53,6 +54,7 @@ export const GET_UAT_REPORT = gql`
   query GetUATReport($id: String!) {
     getUATReport(id: $id) {
       _id
+      reportType
       testIdentity {
         testId
         title
@@ -87,43 +89,44 @@ export const GET_UAT_REPORT = gql`
   }
 `;
 
-export const CREATE_UAT_REPORT = gql`
-  mutation CreateUATReport($input: CreateUATReportInput!) {
-    createUATReport(input: $input) {
-      _id
-      testIdentity {
-        testId
-        title
-        version
-      }
-      testEnvironment {
-        os
-        browser
-        device
-        additionalInfo
-      }
-      stepsToReproduce
-      actualResult
-      expectedResult
-      supportingEvidence {
-        type
-        url
-        description
-      }
-      severityLevel
-      status
-      domain
-      additionalInfo
-      createdBy {
-        _id
-        name
-        email
-      }
-      createdAt
-      updatedAt
-    }
-  }
-`;
+// DEPRECATED: Manual form input is no longer supported. Use uploadBatchReports instead.
+// export const CREATE_UAT_REPORT = gql`
+//   mutation CreateUATReport($input: CreateUATReportInput!) {
+//     createUATReport(input: $input) {
+//       _id
+//       testIdentity {
+//         testId
+//         title
+//         version
+//       }
+//       testEnvironment {
+//         os
+//         browser
+//         device
+//         additionalInfo
+//       }
+//       stepsToReproduce
+//       actualResult
+//       expectedResult
+//       supportingEvidence {
+//         type
+//         url
+//         description
+//       }
+//       severityLevel
+//       status
+//       domain
+//       additionalInfo
+//       createdBy {
+//         _id
+//         name
+//         email
+//       }
+//       createdAt
+//       updatedAt
+//     }
+//   }
+// `;
 
 export const UPDATE_UAT_REPORT = gql`
   mutation UpdateUATReport($id: String!, $input: UpdateUATReportInput!) {
@@ -171,6 +174,7 @@ export const UPLOAD_BATCH_REPORTS = gql`
       failed
       reports {
         _id
+        reportType
         testIdentity {
           testId
           title

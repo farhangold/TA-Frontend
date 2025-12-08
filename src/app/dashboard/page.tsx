@@ -283,7 +283,7 @@ export default function Dashboard() {
       </div>
 
       {/* Stat Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-6">
         {/* Card 1 - Laporan Valid & Invalid */}
         <div className="bg-white rounded-lg p-6 shadow">
           <div className="flex justify-between items-center mb-4">
