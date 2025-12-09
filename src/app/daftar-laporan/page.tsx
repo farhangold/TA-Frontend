@@ -181,7 +181,7 @@ export default function DaftarLaporan() {
     try {
       // Process each file sequentially
       for (const file of files) {
-        try {
+    try {
           const format = file.name.endsWith(".csv") ? "CSV" : "JSON";
 
           // Read file content
@@ -205,16 +205,16 @@ export default function DaftarLaporan() {
             }
           }
 
-          const result = await uploadBatch({
-            variables: {
-              input: {
-                format,
-                data: fileContent,
-              },
-            },
-          });
+      const result = await uploadBatch({
+        variables: {
+          input: {
+            format,
+            data: fileContent,
+          },
+        },
+      });
 
-          if (result.data?.uploadBatchReports) {
+      if (result.data?.uploadBatchReports) {
             const { successful, failed, errors, reports } =
               result.data.uploadBatchReports;
 
@@ -337,7 +337,7 @@ export default function DaftarLaporan() {
     } catch (e) {
       console.error("Error deleting report:", e);
     } finally {
-      setDeleteModalOpen(false);
+    setDeleteModalOpen(false);
     }
   };
 
@@ -444,32 +444,32 @@ export default function DaftarLaporan() {
             >
               Filter
             </button>
-            <div className="relative">
-              <input
-                type="text"
+          <div className="relative">
+            <input
+              type="text"
                 placeholder="Cari berdasarkan domain"
-                value={searchTerm}
+              value={searchTerm}
                 onChange={(event) => {
                   setSearchTerm(event.target.value);
                   setCurrentPage(1);
                 }}
                 className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl w-64 text-gray-900 placeholder:text-gray-500 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-              />
-              <svg
-                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
-            </div>
+            />
+            <svg
+              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
           </div>
+        </div>
         </div>
 
         {showFilters && (
@@ -624,9 +624,9 @@ export default function DaftarLaporan() {
 
         {!loading && !error && (
           <>
-            <div className="overflow-x-auto">
+        <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-xl overflow-hidden">
-                <thead>
+            <thead>
                   <tr className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-semibold leading-normal">
                     <th className="py-3 px-4 text-center w-12">
                       <input
@@ -639,19 +639,19 @@ export default function DaftarLaporan() {
                         className="cursor-pointer"
                       />
                     </th>
-                    <th className="py-3 px-4 text-left w-24">ID</th>
-                    <th className="py-3 px-4 text-left">Deskripsi Bug</th>
-                    <th className="py-3 px-4 text-center w-28">Status</th>
+                <th className="py-3 px-4 text-left w-24">ID</th>
+                <th className="py-3 px-4 text-left">Deskripsi Bug</th>
+                <th className="py-3 px-4 text-center w-28">Status</th>
                     <th className="py-3 px-4 text-center w-36">
                       Tanggal Dikirim
                     </th>
-                    <th className="py-3 px-4 text-center w-32">Crowdworker</th>
-                    <th className="py-3 px-4 text-center w-32">Action</th>
-                  </tr>
-                </thead>
-                <tbody className="text-gray-600 text-sm">
+                <th className="py-3 px-4 text-center w-32">Crowdworker</th>
+                <th className="py-3 px-4 text-center w-32">Action</th>
+              </tr>
+            </thead>
+            <tbody className="text-gray-600 text-sm">
                   {reports.map((report, index) => (
-                    <tr
+                <tr
                       key={report.rawId}
                       className={`border-b border-gray-200 transition-colors ${
                         index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
@@ -667,43 +667,43 @@ export default function DaftarLaporan() {
                           className="cursor-pointer"
                         />
                       </td>
-                      <td className="py-3 px-4 text-left font-medium">
-                        {report.id}
-                      </td>
+                  <td className="py-3 px-4 text-left font-medium">
+                    {report.id}
+                  </td>
                       <td className="py-3 px-4 text-left">
                         {report.description}
                       </td>
-                      <td className="py-3 px-4">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs ${getStatusBadgeClass(
+                  <td className="py-3 px-4">
+                    <span
+                      className={`px-3 py-1 rounded-full text-xs ${getStatusBadgeClass(
                             report.status
-                          )}`}
-                        >
-                          {report.status}
-                        </span>
-                      </td>
-                      <td className="py-3 px-4 text-center">{report.date}</td>
+                      )}`}
+                    >
+                      {report.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-4 text-center">{report.date}</td>
                       <td className="py-3 px-4 text-center">
                         {report.reporter}
                       </td>
-                      <td className="py-3 px-4">
-                        <div className="flex justify-center space-x-1">
-                          <ActionButton
-                            type="detailBug"
-                            onClick={() => handleAction("detailBug", report.id)}
-                          />
-                          <ActionButton
-                            type="uploadCSV"
+                  <td className="py-3 px-4">
+                    <div className="flex justify-center space-x-1">
+                      <ActionButton
+                        type="detailBug"
+                        onClick={() => handleAction("detailBug", report.id)}
+                      />
+                      <ActionButton
+                        type="uploadCSV"
                             onClick={() => handleAction("uploadCSV", report.id)}
-                          />
-                          <ActionButton
-                            type="delete"
-                            onClick={() => handleAction("delete", report.id)}
-                          />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                      />
+                      <ActionButton
+                        type="delete"
+                        onClick={() => handleAction("delete", report.id)}
+                      />
+                    </div>
+                  </td>
+                </tr>
+              ))}
                   {reports.length === 0 && (
                     <tr>
                       <td
@@ -714,83 +714,83 @@ export default function DaftarLaporan() {
                       </td>
                     </tr>
                   )}
-                </tbody>
-              </table>
-            </div>
+            </tbody>
+          </table>
+        </div>
 
-            <div className="flex justify-between items-center mt-4 text-sm">
-              <div className="text-gray-600">
-                Showing{" "}
+        <div className="flex justify-between items-center mt-4 text-sm">
+          <div className="text-gray-600">
+            Showing{" "}
                 {totalCount === 0 ? 0 : (currentPage - 1) * ITEMS_PER_PAGE + 1}{" "}
                 to {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of{" "}
                 {totalCount} result
-              </div>
+          </div>
 
-              <div className="flex items-center space-x-1">
-                <span className="text-gray-600">
-                  Page {currentPage} of {totalPages}
-                </span>
-                <div className="flex ml-2">
-                  <button
+          <div className="flex items-center space-x-1">
+            <span className="text-gray-600">
+              Page {currentPage} of {totalPages}
+            </span>
+            <div className="flex ml-2">
+              <button
                     onClick={() =>
                       handlePageChange(Math.max(1, currentPage - 1))
                     }
-                    disabled={currentPage === 1}
+                disabled={currentPage === 1}
                     className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                    aria-label="Previous page"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
+                aria-label="Previous page"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
 
-                  {getPageNumbers().map((page) => (
-                  <button
-                    key={page}
-                    onClick={() => handlePageChange(page)}
+              {getPageNumbers().map((page) => (
+                <button
+                  key={page}
+                  onClick={() => handlePageChange(page)}
                     className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
-                      currentPage === page
+                    currentPage === page
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
                         : "border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
-                    }`}
-                  >
-                      {page}
-                    </button>
-                  ))}
+                  }`}
+                >
+                  {page}
+                </button>
+              ))}
 
-                  <button
-                    onClick={() =>
-                      handlePageChange(Math.min(totalPages, currentPage + 1))
-                    }
-                    disabled={currentPage === totalPages}
+              <button
+                onClick={() =>
+                  handlePageChange(Math.min(totalPages, currentPage + 1))
+                }
+                disabled={currentPage === totalPages}
                     className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                    aria-label="Next page"
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                      className="w-5 h-5"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </button>
-                </div>
-              </div>
+                aria-label="Next page"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </button>
             </div>
+          </div>
+        </div>
           </>
         )}
       </div>
@@ -805,13 +805,13 @@ export default function DaftarLaporan() {
                 rawId: selectedReport.rawId,
               }
             : {
-                id: "",
+            id: "",
                 rawId: "",
-                status: "",
-                date: "",
-                reporter: "",
-                description: "",
-              }
+            status: "",
+            date: "",
+            reporter: "",
+            description: "",
+          }
         }
         type={
           selectedReport && selectedReport.status === "VALID"

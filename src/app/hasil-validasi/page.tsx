@@ -240,7 +240,7 @@ function HasilValidasiContent() {
 
       // Format data for export
       const exportData = formatReportDataForExport(allReports);
-      const filename = generateFilename("laporan-valid", format);
+      const filename = generateFilename("laporan-valid");
 
       // Export based on format
       switch (format) {
@@ -277,7 +277,7 @@ function HasilValidasiContent() {
 
       // Format data for export
       const exportData = formatReportDataForExport(allReports);
-      const filename = generateFilename("laporan-invalid", format);
+      const filename = generateFilename("laporan-invalid");
 
       // Export based on format
       switch (format) {

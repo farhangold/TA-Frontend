@@ -231,7 +231,9 @@ const DetailReportModal = ({
                       Created At
                     </label>
                     <p className="text-gray-900 font-medium">
-                      {new Date(report.createdAt).toLocaleString("id-ID")}
+                      {report.createdAt
+                        ? new Date(report.createdAt).toLocaleString("id-ID")
+                        : "-"}
                     </p>
                   </div>
                 </div>
@@ -374,8 +376,13 @@ const DetailReportModal = ({
                               </span>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-600">
-                                  {attrScore.score.toFixed(1)} /{" "}
-                                  {attrScore.maxScore.toFixed(1)}
+                                  {attrScore.score !== undefined
+                                    ? attrScore.score.toFixed(1)
+                                    : "-"}{" "}
+                                  /{" "}
+                                  {attrScore.maxScore !== undefined
+                                    ? attrScore.maxScore.toFixed(1)
+                                    : "-"}
                                 </span>
                                 <span
                                   className={`px-2 py-1 rounded text-xs font-medium ${
@@ -397,7 +404,11 @@ const DetailReportModal = ({
                                 }`}
                                 style={{
                                   width: `${
-                                    (attrScore.score / attrScore.maxScore) * 100
+                                    attrScore.score !== undefined &&
+                                    attrScore.maxScore !== undefined &&
+                                    attrScore.maxScore > 0
+                                      ? (attrScore.score / attrScore.maxScore) * 100
+                                      : 0
                                   }%`,
                                 }}
                               ></div>
@@ -503,9 +514,9 @@ const DetailReportModal = ({
                       Evaluated At
                     </label>
                     <p className="text-gray-900 font-medium">
-                      {new Date(
-                        evaluation.evaluatedAt
-                      ).toLocaleString("id-ID")}
+                      {evaluation.evaluatedAt
+                        ? new Date(evaluation.evaluatedAt).toLocaleString("id-ID")
+                        : "-"}
                     </p>
                   </div>
                   {evaluation.evaluatedBy && (
