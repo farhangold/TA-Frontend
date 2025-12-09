@@ -29,6 +29,7 @@ type ReportRow = {
   reporter: string;
   score?: number;
   reportType?: string;
+  completenessStatus?: string;
 };
 
 function HasilValidasiContent() {
@@ -41,6 +42,7 @@ function HasilValidasiContent() {
     valid: boolean;
     invalid: boolean;
   }>({ valid: false, invalid: false });
+  const [evaluationsCache, setEvaluationsCache] = useState<Record<string, { completenessStatus?: string }>>({});
 
   // Check for reportId in URL query params (from redirect)
   useEffect(() => {
@@ -93,10 +95,18 @@ function HasilValidasiContent() {
   const {
     data: evaluationData,
     loading: evaluationLoading,
+    error: evaluationError,
   } = useQuery(GET_EVALUATION, {
     skip: !selectedReportId,
     variables: { reportId: selectedReportId || "" },
     fetchPolicy: "cache-and-network",
+    errorPolicy: "all",
+  });
+
+  // Lazy query for fetching evaluations for reports in table
+  const [getEvaluation] = useLazyQuery(GET_EVALUATION, {
+    fetchPolicy: "cache-first",
+    errorPolicy: "all",
   });
 
   // Lazy query for fetching all reports for export
@@ -121,6 +131,7 @@ function HasilValidasiContent() {
       }) => {
         const node = edge.node;
         const createdAt = new Date(node.createdAt);
+        const evaluation = evaluationsCache[node._id];
 
         return {
           rawId: node._id,
@@ -131,10 +142,11 @@ function HasilValidasiContent() {
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
           reportType: node.reportType,
+          completenessStatus: evaluation?.completenessStatus,
         };
       },
     );
-  }, [validData]);
+  }, [validData, evaluationsCache]);
 
   const invalidReports: ReportRow[] = useMemo(() => {
     if (!invalidData?.getUATReports) return [];
@@ -153,6 +165,7 @@ function HasilValidasiContent() {
       }) => {
         const node = edge.node;
         const createdAt = new Date(node.createdAt);
+        const evaluation = evaluationsCache[node._id];
 
         return {
           rawId: node._id,
@@ -163,15 +176,50 @@ function HasilValidasiContent() {
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
           reportType: node.reportType,
+          completenessStatus: evaluation?.completenessStatus,
         };
       },
     );
-  }, [invalidData]);
+  }, [invalidData, evaluationsCache]);
 
   const validTotalCount = validData?.getUATReports?.totalCount ?? 0;
   const invalidTotalCount = invalidData?.getUATReports?.totalCount ?? 0;
   const validTotalPages = Math.max(1, Math.ceil(validTotalCount / ITEMS_PER_PAGE));
   const invalidTotalPages = Math.max(1, Math.ceil(invalidTotalCount / ITEMS_PER_PAGE));
+
+  // Fetch evaluations for all reports in table
+  useEffect(() => {
+    const allReportIds = [
+      ...(validData?.getUATReports?.edges?.map((e: { node: { _id: string } }) => e.node._id) || []),
+      ...(invalidData?.getUATReports?.edges?.map((e: { node: { _id: string } }) => e.node._id) || []),
+    ];
+
+    const reportIdsToFetch = allReportIds.filter((reportId: string) => !evaluationsCache[reportId]);
+
+    if (reportIdsToFetch.length === 0) return;
+
+    reportIdsToFetch.forEach((reportId: string) => {
+      getEvaluation({
+        variables: { reportId },
+      }).then((result) => {
+        if (result.data?.getEvaluation) {
+          setEvaluationsCache((prev) => ({
+            ...prev,
+            [reportId]: {
+              completenessStatus: result.data.getEvaluation.completenessStatus,
+            },
+          }));
+        }
+      }).catch(() => {
+        // Ignore errors, evaluation might not exist
+        setEvaluationsCache((prev) => ({
+          ...prev,
+          [reportId]: {},
+        }));
+      });
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [validData?.getUATReports?.edges, invalidData?.getUATReports?.edges]);
 
   const handleViewDetail = (rawId: string) => {
     setSelectedReportId(rawId);
@@ -183,6 +231,13 @@ function HasilValidasiContent() {
     if (status === "INVALID" || status === "FAILED")
       return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
     return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
+  };
+
+  const getCompletenessBadgeClass = (status?: string) => {
+    if (!status) return "bg-gray-200 text-gray-600";
+    if (status === "COMPLETE")
+      return "bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md";
+    return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-md";
   };
 
   const getPageNumbers = (currentPage: number, totalPages: number) => {
@@ -365,6 +420,7 @@ function HasilValidasiContent() {
                   <th className="py-3 px-4 text-left w-24">ID</th>
                   <th className="py-3 px-4 text-left">Deskripsi</th>
                   <th className="py-3 px-4 text-center w-28">Status</th>
+                  <th className="py-3 px-4 text-center w-32">Completeness</th>
                   <th className="py-3 px-4 text-center w-36">Tanggal</th>
                   <th className="py-3 px-4 text-center w-32">Pelapor</th>
                   <th className="py-3 px-4 text-center w-32">Aksi</th>
@@ -373,7 +429,7 @@ function HasilValidasiContent() {
               <tbody className="text-gray-600 text-sm">
                 {reports.length === 0 ? (
                   <tr>
-                    <td colSpan={6} className="text-center py-8">
+                    <td colSpan={7} className="text-center py-8">
                       Tidak ada laporan ditemukan.
                     </td>
                   </tr>
@@ -399,6 +455,19 @@ function HasilValidasiContent() {
                         >
                           {report.status}
                         </span>
+                      </td>
+                      <td className="py-3 px-4 text-center">
+                        {report.completenessStatus ? (
+                          <span
+                            className={`px-3 py-1 rounded-full text-xs font-medium ${getCompletenessBadgeClass(
+                              report.completenessStatus
+                            )}`}
+                          >
+                            {report.completenessStatus === "COMPLETE" ? "✓ Complete" : "⚠ Incomplete"}
+                          </span>
+                        ) : (
+                          <span className="text-gray-400 text-xs">-</span>
+                        )}
                       </td>
                       <td className="py-3 px-4 text-center">{report.date}</td>
                       <td className="py-3 px-4 text-center">
@@ -518,6 +587,7 @@ function HasilValidasiContent() {
         }}
         evaluation={evaluationData?.getEvaluation}
         loading={evaluationLoading}
+        error={evaluationError}
       />
     </DashboardLayout>
   );

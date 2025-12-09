@@ -9,6 +9,8 @@ type EvaluationData = {
   maxScore?: number;
   scorePercentage?: number;
   validationStatus?: string;
+  completenessStatus?: string;
+  incompleteAttributes?: string[];
   evaluatedAt?: string;
   evaluatedBy?: {
     name?: string;
@@ -55,7 +57,8 @@ type EvaluationData = {
   feedback?: Array<{
     attribute?: string;
     message?: string;
-    level?: string;
+    severity?: string;
+    suggestion?: string;
   }>;
 };
 
@@ -64,6 +67,7 @@ type DetailReportModalProps = {
   onClose: () => void;
   evaluation: EvaluationData | null | undefined;
   loading: boolean;
+  error?: Error | { message?: string };
 };
 
 const DetailReportModal = ({
@@ -71,6 +75,7 @@ const DetailReportModal = ({
   onClose,
   evaluation,
   loading,
+  error,
 }: DetailReportModalProps) => {
   if (!isOpen) return null;
 
@@ -89,6 +94,26 @@ const DetailReportModal = ({
     if (reportType === "BUG_REPORT")
       return "bg-gradient-to-r from-red-400 to-rose-500 text-white";
     return "bg-gradient-to-r from-green-400 to-emerald-500 text-white";
+  };
+
+  const getCompletenessBadgeClass = (status: string) => {
+    if (status === "COMPLETE")
+      return "bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md";
+    return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-md";
+  };
+
+  const getAttributeDisplayName = (attribute: string) => {
+    const names: Record<string, string> = {
+      TEST_IDENTITY: "Test Identity",
+      TEST_ENVIRONMENT: "Test Environment",
+      STEPS_TO_REPRODUCE: "Steps to Reproduce",
+      ACTUAL_RESULT: "Actual Result",
+      EXPECTED_RESULT: "Expected Result",
+      SUPPORTING_EVIDENCE: "Supporting Evidence",
+      SEVERITY_LEVEL: "Severity Level",
+      INFORMATION_CONSISTENCY: "Information Consistency",
+    };
+    return names[attribute] || attribute.replace(/_/g, " ");
   };
 
   return (
@@ -133,9 +158,20 @@ const DetailReportModal = ({
 
           {!loading && !evaluation && (
             <div className="py-12 text-center">
-              <p className="text-gray-500">
-                Tidak ada data evaluasi untuk laporan ini.
-              </p>
+              {error ? (
+                <div className="space-y-2">
+                  <p className="text-red-600 font-medium">
+                    Error memuat data evaluasi
+                  </p>
+                  <p className="text-sm text-gray-500">
+                    {error.message || "Terjadi kesalahan saat memuat data"}
+                  </p>
+                </div>
+              ) : (
+                <p className="text-gray-500">
+                  Tidak ada data evaluasi untuk laporan ini.
+                </p>
+              )}
             </div>
           )}
 
@@ -144,7 +180,7 @@ const DetailReportModal = ({
               {/* Status & Score Section */}
               <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200/50 shadow-md">
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-3 flex-wrap">
                     <span
                       className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeClass(
                         status || "PENDING"
@@ -156,6 +192,17 @@ const DetailReportModal = ({
                           ? "INVALID"
                           : "PENDING"}
                     </span>
+                    {evaluation.completenessStatus && (
+                      <span
+                        className={`px-4 py-2 rounded-full text-sm font-semibold ${getCompletenessBadgeClass(
+                          evaluation.completenessStatus
+                        )}`}
+                      >
+                        {evaluation.completenessStatus === "COMPLETE"
+                          ? "✓ Complete"
+                          : "⚠ Incomplete"}
+                      </span>
+                    )}
                     {report.reportType && (
                       <span
                         className={`px-4 py-2 rounded-full text-sm font-semibold ${getReportTypeBadge(
@@ -179,6 +226,71 @@ const DetailReportModal = ({
                   </div>
                 </div>
               </div>
+
+              {/* Completeness Details Section */}
+              {evaluation.completenessStatus === "INCOMPLETE" &&
+                evaluation.incompleteAttributes &&
+                evaluation.incompleteAttributes.length > 0 && (
+                  <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-200 shadow-lg">
+                    <div className="flex items-start gap-3">
+                      <div className="mt-0.5">
+                        <svg
+                          className="w-6 h-6 text-orange-600"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                        >
+                          <path
+                            fillRule="evenodd"
+                            d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                            clipRule="evenodd"
+                          />
+                        </svg>
+                      </div>
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-orange-900 mb-2">
+                          Atribut Tidak Lengkap
+                        </h3>
+                        <p className="text-sm text-orange-800 mb-3">
+                          Laporan ini memiliki{" "}
+                          {evaluation.incompleteAttributes.length} atribut yang
+                          belum lengkap:
+                        </p>
+                        <div className="flex flex-wrap gap-2">
+                          {evaluation.incompleteAttributes.map((attr, index) => (
+                            <span
+                              key={index}
+                              className="px-3 py-1 bg-white border border-orange-300 rounded-lg text-sm font-medium text-orange-900 shadow-sm"
+                            >
+                              {getAttributeDisplayName(attr)}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+              {/* Complete Status Message */}
+              {evaluation.completenessStatus === "COMPLETE" && (
+                <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-xl p-4 border-2 border-emerald-200 shadow-md">
+                  <div className="flex items-center gap-3">
+                    <svg
+                      className="w-5 h-5 text-emerald-600"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                    <p className="text-sm font-medium text-emerald-900">
+                      Semua atribut yang diperlukan telah lengkap dan valid.
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {/* Report Information */}
               <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-xl p-6 shadow-lg border border-gray-200/50">
@@ -365,15 +477,31 @@ const DetailReportModal = ({
                     </h3>
                     <div className="space-y-3">
                       {evaluation.attributeScores.map(
-                        (attrScore: { attribute?: string; score?: number; maxScore?: number; weight?: number; weightedScore?: number; passed?: boolean }, index: number) => (
-                          <div
-                            key={index}
-                            className="p-4 bg-gray-50 rounded-lg border border-gray-200"
-                          >
+                        (attrScore: { attribute?: string; score?: number; maxScore?: number; weight?: number; weightedScore?: number; passed?: boolean }, index: number) => {
+                          const isIncomplete =
+                            evaluation.incompleteAttributes?.includes(
+                              attrScore.attribute || ""
+                            );
+                          return (
+                            <div
+                              key={index}
+                              className={`p-4 rounded-lg border ${
+                                isIncomplete
+                                  ? "bg-orange-50 border-orange-200"
+                                  : "bg-gray-50 border-gray-200"
+                              }`}
+                            >
                             <div className="flex items-center justify-between mb-2">
-                              <span className="font-semibold text-gray-900">
-                                {attrScore.attribute}
-                              </span>
+                              <div className="flex items-center gap-2">
+                                <span className="font-semibold text-gray-900">
+                                  {attrScore.attribute}
+                                </span>
+                                {isIncomplete && (
+                                  <span className="px-2 py-0.5 bg-orange-200 text-orange-800 rounded text-xs font-medium">
+                                    Tidak Lengkap
+                                  </span>
+                                )}
+                              </div>
                               <div className="flex items-center gap-2">
                                 <span className="text-sm text-gray-600">
                                   {attrScore.score !== undefined
@@ -418,7 +546,8 @@ const DetailReportModal = ({
                               {attrScore.weightedScore?.toFixed(2) || 0}
                             </div>
                           </div>
-                        )
+                          );
+                        }
                       )}
                     </div>
                   </div>
@@ -431,13 +560,13 @@ const DetailReportModal = ({
                     Feedback
                   </h3>
                   <div className="space-y-3">
-                    {evaluation.feedback.map((fb: { attribute?: string; message?: string; level?: string }, index: number) => (
+                    {evaluation.feedback.map((fb: { attribute?: string; message?: string; severity?: string; suggestion?: string }, index: number) => (
                       <div
                         key={index}
                         className={`p-4 rounded-lg border ${
-                          fb.level === "ERROR"
+                          fb.severity === "ERROR"
                             ? "bg-red-50 border-red-200"
-                            : fb.level === "WARNING"
+                            : fb.severity === "WARNING"
                               ? "bg-amber-50 border-amber-200"
                               : "bg-blue-50 border-blue-200"
                         }`}
@@ -445,14 +574,14 @@ const DetailReportModal = ({
                         <div className="flex items-start gap-3">
                           <div
                             className={`mt-0.5 ${
-                              fb.level === "ERROR"
+                              fb.severity === "ERROR"
                                 ? "text-red-600"
-                                : fb.level === "WARNING"
+                                : fb.severity === "WARNING"
                                   ? "text-amber-600"
                                   : "text-blue-600"
                             }`}
                           >
-                            {fb.level === "ERROR" ? (
+                            {fb.severity === "ERROR" ? (
                               <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
@@ -464,7 +593,7 @@ const DetailReportModal = ({
                                   clipRule="evenodd"
                                 />
                               </svg>
-                            ) : fb.level === "WARNING" ? (
+                            ) : fb.severity === "WARNING" ? (
                               <svg
                                 className="w-5 h-5"
                                 fill="currentColor"
@@ -494,7 +623,12 @@ const DetailReportModal = ({
                             <div className="font-semibold text-gray-900 mb-1">
                               {fb.attribute}
                             </div>
-                            <p className="text-sm text-gray-700">{fb.message}</p>
+                            <p className="text-sm text-gray-700 mb-2">{fb.message}</p>
+                            {fb.suggestion && (
+                              <p className="text-sm text-gray-600 italic">
+                                💡 Saran: {fb.suggestion}
+                              </p>
+                            )}
                           </div>
                         </div>
                       </div>

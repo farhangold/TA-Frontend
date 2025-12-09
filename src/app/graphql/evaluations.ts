@@ -10,6 +10,8 @@ export const EVALUATE_REPORT = gql`
       totalScore
       scorePercentage
       validationStatus
+      completenessStatus
+      incompleteAttributes
       evaluatedAt
     }
   }
@@ -23,6 +25,8 @@ export const EVALUATE_BATCH_REPORTS = gql`
       totalScore
       scorePercentage
       validationStatus
+      completenessStatus
+      incompleteAttributes
       evaluatedAt
     }
   }
@@ -38,6 +42,8 @@ export const GET_EVALUATION = gql`
       maxScore
       scorePercentage
       validationStatus
+      completenessStatus
+      incompleteAttributes
       evaluatedAt
       evaluatedBy {
         _id
@@ -84,7 +90,8 @@ export const GET_EVALUATION = gql`
       feedback {
         attribute
         message
-        level
+        severity
+        suggestion
       }
     }
   }
@@ -113,6 +120,8 @@ export const GET_EVALUATION_HISTORY = gql`
           maxScore
           scorePercentage
           validationStatus
+          completenessStatus
+          incompleteAttributes
           evaluatedAt
           evaluatedBy {
             _id

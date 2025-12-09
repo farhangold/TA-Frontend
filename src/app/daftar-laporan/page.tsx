@@ -22,13 +22,12 @@ type ReportRow = {
   id: string;
   rawId: string;
   description: string;
-  status: string;
   date: string;
   reporter: string;
+  status?: string; // Kept for DetailBugModal compatibility, but not displayed in table
 };
 
 type FilterState = {
-  status?: string[];
   severityLevel?: string[];
   domain?: string;
   createdBy?: string;
@@ -36,7 +35,7 @@ type FilterState = {
 };
 
 type SortState = {
-  field: "CREATED_AT" | "UPDATED_AT" | "SCORE" | "SEVERITY" | "STATUS";
+  field: "CREATED_AT" | "UPDATED_AT" | "SCORE" | "SEVERITY";
   direction: "ASC" | "DESC";
 };
 
@@ -66,15 +65,11 @@ export default function DaftarLaporan() {
 
   const filterInput = useMemo(() => {
     const filter: {
-      status?: string[];
       severityLevel?: string[];
       domain?: string;
       createdBy?: string;
       dateRange?: { from: string; to: string };
     } = {};
-    if (filters.status && filters.status.length > 0) {
-      filter.status = filters.status;
-    }
     if (filters.severityLevel && filters.severityLevel.length > 0) {
       filter.severityLevel = filters.severityLevel;
     }
@@ -130,9 +125,9 @@ export default function DaftarLaporan() {
             node.testIdentity?.title ??
             node.actualResult ??
             "Tidak ada deskripsi",
-          status: node.status,
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
+          status: node.status, // Kept for DetailBugModal compatibility
         };
       }
     );
@@ -392,12 +387,6 @@ export default function DaftarLaporan() {
     return pageNumbers;
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    if (status === "VALID") return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
-    if (status === "INVALID" || status === "FAILED")
-      return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
-    return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
-  };
 
   return (
     <DashboardLayout title="Daftar Laporan">
@@ -474,32 +463,7 @@ export default function DaftarLaporan() {
 
         {showFilters && (
           <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Status
-                </label>
-                <select
-                  multiple
-                  value={filters.status || []}
-                  onChange={(e) => {
-                    const values = Array.from(
-                      e.target.selectedOptions,
-                      (option) => option.value
-                    );
-                    setFilters({ ...filters, status: values });
-                    setCurrentPage(1);
-                  }}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                  size={3}
-                >
-                  <option value="PENDING_EVALUATION">Pending Evaluation</option>
-                  <option value="EVALUATING">Evaluating</option>
-                  <option value="VALID">Valid</option>
-                  <option value="INVALID">Invalid</option>
-                  <option value="FAILED">Failed</option>
-                </select>
-              </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-900 mb-1">
                   Severity
@@ -542,7 +506,6 @@ export default function DaftarLaporan() {
                   <option value="UPDATED_AT">Updated At</option>
                   <option value="SCORE">Score</option>
                   <option value="SEVERITY">Severity</option>
-                  <option value="STATUS">Status</option>
                 </select>
                 <select
                   value={sort.direction}
@@ -641,7 +604,6 @@ export default function DaftarLaporan() {
                     </th>
                 <th className="py-3 px-4 text-left w-24">ID</th>
                 <th className="py-3 px-4 text-left">Deskripsi Bug</th>
-                <th className="py-3 px-4 text-center w-28">Status</th>
                     <th className="py-3 px-4 text-center w-36">
                       Tanggal Dikirim
                     </th>
@@ -673,15 +635,6 @@ export default function DaftarLaporan() {
                       <td className="py-3 px-4 text-left">
                         {report.description}
                       </td>
-                  <td className="py-3 px-4">
-                    <span
-                      className={`px-3 py-1 rounded-full text-xs ${getStatusBadgeClass(
-                            report.status
-                      )}`}
-                    >
-                      {report.status}
-                    </span>
-                  </td>
                   <td className="py-3 px-4 text-center">{report.date}</td>
                       <td className="py-3 px-4 text-center">
                         {report.reporter}
@@ -707,7 +660,7 @@ export default function DaftarLaporan() {
                   {reports.length === 0 && (
                     <tr>
                       <td
-                        colSpan={7}
+                        colSpan={6}
                         className="py-6 text-center text-sm text-gray-500"
                       >
                         Tidak ada laporan yang ditemukan.
@@ -803,6 +756,7 @@ export default function DaftarLaporan() {
             ? {
                 ...selectedReport,
                 rawId: selectedReport.rawId,
+                status: selectedReport.status || "",
               }
             : {
             id: "",
