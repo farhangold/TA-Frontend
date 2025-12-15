@@ -7,7 +7,10 @@ import DashboardLayout from "../components/DashboardLayout";
 import ActionButton from "../components/ActionButton";
 import ExportButton from "../components/ExportButton";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
-import { GET_EVALUATION, DELETE_EVALUATION_BY_REPORT } from "../graphql/evaluations";
+import {
+  GET_EVALUATION,
+  DELETE_EVALUATION_BY_REPORT,
+} from "../graphql/evaluations";
 import DetailReportModal from "../components/DetailReportModal";
 import {
   exportToCSV,
@@ -42,8 +45,12 @@ function HasilValidasiContent() {
     valid: boolean;
     invalid: boolean;
   }>({ valid: false, invalid: false });
-  const [evaluationsCache, setEvaluationsCache] = useState<Record<string, { completenessStatus?: string }>>({});
-  const [deleteTargetReportId, setDeleteTargetReportId] = useState<string | null>(null);
+  const [evaluationsCache, setEvaluationsCache] = useState<
+    Record<string, { completenessStatus?: string }>
+  >({});
+  const [deleteTargetReportId, setDeleteTargetReportId] = useState<
+    string | null
+  >(null);
 
   // Check for reportId in URL query params (from redirect)
   useEffect(() => {
@@ -117,15 +124,13 @@ function HasilValidasiContent() {
     fetchPolicy: "network-only",
   });
 
-  const [deleteEvaluationMutation, { loading: deleteEvaluationLoading }] = useMutation(
-    DELETE_EVALUATION_BY_REPORT,
-    {
+  const [deleteEvaluationMutation, { loading: deleteEvaluationLoading }] =
+    useMutation(DELETE_EVALUATION_BY_REPORT, {
       onError: (error) => {
         console.error("Error deleting evaluation:", error);
         alert("Gagal menghapus hasil validasi. Silakan coba lagi.");
       },
-    }
-  );
+    });
 
   const validReports: ReportRow[] = useMemo(() => {
     if (!validData?.getUATReports) return [];
@@ -150,14 +155,16 @@ function HasilValidasiContent() {
           rawId: node._id,
           id: `#${node.testIdentity?.testId ?? node._id.slice(-6)}`,
           description:
-            node.testIdentity?.title ?? node.actualResult ?? "Tidak ada deskripsi",
+            node.testIdentity?.title ??
+            node.actualResult ??
+            "Tidak ada deskripsi",
           status: node.status,
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
           reportType: node.reportType,
           completenessStatus: evaluation?.completenessStatus,
         };
-      },
+      }
     );
   }, [validData, evaluationsCache]);
 
@@ -184,52 +191,69 @@ function HasilValidasiContent() {
           rawId: node._id,
           id: `#${node.testIdentity?.testId ?? node._id.slice(-6)}`,
           description:
-            node.testIdentity?.title ?? node.actualResult ?? "Tidak ada deskripsi",
+            node.testIdentity?.title ??
+            node.actualResult ??
+            "Tidak ada deskripsi",
           status: node.status,
           date: createdAt.toLocaleDateString("id-ID"),
           reporter: node.createdBy?.name ?? node.createdBy?.email ?? "-",
           reportType: node.reportType,
           completenessStatus: evaluation?.completenessStatus,
         };
-      },
+      }
     );
   }, [invalidData, evaluationsCache]);
 
   const validTotalCount = validData?.getUATReports?.totalCount ?? 0;
   const invalidTotalCount = invalidData?.getUATReports?.totalCount ?? 0;
-  const validTotalPages = Math.max(1, Math.ceil(validTotalCount / ITEMS_PER_PAGE));
-  const invalidTotalPages = Math.max(1, Math.ceil(invalidTotalCount / ITEMS_PER_PAGE));
+  const validTotalPages = Math.max(
+    1,
+    Math.ceil(validTotalCount / ITEMS_PER_PAGE)
+  );
+  const invalidTotalPages = Math.max(
+    1,
+    Math.ceil(invalidTotalCount / ITEMS_PER_PAGE)
+  );
 
   // Fetch evaluations for all reports in table
   useEffect(() => {
     const allReportIds = [
-      ...(validData?.getUATReports?.edges?.map((e: { node: { _id: string } }) => e.node._id) || []),
-      ...(invalidData?.getUATReports?.edges?.map((e: { node: { _id: string } }) => e.node._id) || []),
+      ...(validData?.getUATReports?.edges?.map(
+        (e: { node: { _id: string } }) => e.node._id
+      ) || []),
+      ...(invalidData?.getUATReports?.edges?.map(
+        (e: { node: { _id: string } }) => e.node._id
+      ) || []),
     ];
 
-    const reportIdsToFetch = allReportIds.filter((reportId: string) => !evaluationsCache[reportId]);
+    const reportIdsToFetch = allReportIds.filter(
+      (reportId: string) => !evaluationsCache[reportId]
+    );
 
     if (reportIdsToFetch.length === 0) return;
 
     reportIdsToFetch.forEach((reportId: string) => {
       getEvaluation({
         variables: { reportId },
-      }).then((result) => {
-        if (result.data?.getEvaluation) {
+      })
+        .then((result) => {
+          if (result.data?.getEvaluation) {
+            setEvaluationsCache((prev) => ({
+              ...prev,
+              [reportId]: {
+                completenessStatus:
+                  result.data.getEvaluation.completenessStatus,
+              },
+            }));
+          }
+        })
+        .catch(() => {
+          // Ignore errors, evaluation might not exist
           setEvaluationsCache((prev) => ({
             ...prev,
-            [reportId]: {
-              completenessStatus: result.data.getEvaluation.completenessStatus,
-            },
+            [reportId]: {},
           }));
-        }
-      }).catch(() => {
-        // Ignore errors, evaluation might not exist
-        setEvaluationsCache((prev) => ({
-          ...prev,
-          [reportId]: {},
-        }));
-      });
+        });
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [validData?.getUATReports?.edges, invalidData?.getUATReports?.edges]);
@@ -260,6 +284,7 @@ function HasilValidasiContent() {
 
         // Hapus cache evaluasi untuk laporan ini
         setEvaluationsCache((prev) => {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           const { [reportId]: _removed, ...rest } = prev;
           return rest;
         });
@@ -272,7 +297,7 @@ function HasilValidasiContent() {
       } else {
         alert("Gagal menghapus hasil validasi. Silakan coba lagi.");
       }
-    } catch (error) {
+    } catch {
       // onError handler pada mutation sudah menampilkan alert
     } finally {
       setDeleteTargetReportId(null);
@@ -280,7 +305,8 @@ function HasilValidasiContent() {
   };
 
   const getStatusBadgeClass = (status: string) => {
-    if (status === "VALID") return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
+    if (status === "VALID")
+      return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
     if (status === "INVALID" || status === "FAILED")
       return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
     return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
@@ -325,7 +351,9 @@ function HasilValidasiContent() {
       });
 
       if (result.data?.getUATReports) {
-        return result.data.getUATReports.edges.map((edge: { node: unknown }) => edge.node);
+        return result.data.getUATReports.edges.map(
+          (edge: { node: unknown }) => edge.node
+        );
       }
       return [];
     } catch (error) {
@@ -340,7 +368,7 @@ function HasilValidasiContent() {
     try {
       // Fetch all valid reports
       const allReports = await fetchAllReportsForExport("VALID");
-      
+
       if (allReports.length === 0) {
         alert("Tidak ada data untuk diekspor.");
         return;
@@ -363,7 +391,9 @@ function HasilValidasiContent() {
           break;
       }
 
-      alert(`Berhasil mengekspor ${allReports.length} laporan valid ke format ${format}`);
+      alert(
+        `Berhasil mengekspor ${allReports.length} laporan valid ke format ${format}`
+      );
     } catch (error) {
       console.error("Error exporting valid reports:", error);
       alert("Gagal mengekspor laporan. Silakan coba lagi.");
@@ -377,7 +407,7 @@ function HasilValidasiContent() {
     try {
       // Fetch all invalid reports
       const allReports = await fetchAllReportsForExport("INVALID");
-      
+
       if (allReports.length === 0) {
         alert("Tidak ada data untuk diekspor.");
         return;
@@ -400,7 +430,9 @@ function HasilValidasiContent() {
           break;
       }
 
-      alert(`Berhasil mengekspor ${allReports.length} laporan invalid ke format ${format}`);
+      alert(
+        `Berhasil mengekspor ${allReports.length} laporan invalid ke format ${format}`
+      );
     } catch (error) {
       console.error("Error exporting invalid reports:", error);
       alert("Gagal mengekspor laporan. Silakan coba lagi.");
@@ -419,7 +451,7 @@ function HasilValidasiContent() {
     onPageChange: (page: number) => void,
     title: string,
     badgeColor: string,
-    onRefresh?: () => void,
+    onRefresh?: () => void
   ) => (
     <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -427,7 +459,9 @@ function HasilValidasiContent() {
           {title}
         </h2>
         <div className="flex items-center gap-3">
-          <span className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}>
+          <span
+            className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}
+          >
             Total: {totalCount}
           </span>
           {onRefresh && (
@@ -462,7 +496,9 @@ function HasilValidasiContent() {
         <div className="py-12 text-center">
           <div className="inline-flex items-center gap-3">
             <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin"></div>
-            <span className="text-sm font-medium text-gray-600">Memuat laporan...</span>
+            <span className="text-sm font-medium text-gray-600">
+              Memuat laporan...
+            </span>
           </div>
         </div>
       )}
@@ -525,7 +561,9 @@ function HasilValidasiContent() {
                               report.completenessStatus
                             )}`}
                           >
-                            {report.completenessStatus === "COMPLETE" ? "✓ Complete" : "⚠ Incomplete"}
+                            {report.completenessStatus === "COMPLETE"
+                              ? "✓ Complete"
+                              : "⚠ Incomplete"}
                           </span>
                         ) : (
                           <span className="text-gray-400 text-xs">-</span>
@@ -589,7 +627,9 @@ function HasilValidasiContent() {
                 ))}
 
                 <button
-                  onClick={() => onPageChange(Math.min(totalPages, currentPage + 1))}
+                  onClick={() =>
+                    onPageChange(Math.min(totalPages, currentPage + 1))
+                  }
                   disabled={currentPage === totalPages}
                   className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
@@ -685,4 +725,3 @@ export default function HasilValidasi() {
     </Suspense>
   );
 }
-
