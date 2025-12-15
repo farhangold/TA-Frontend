@@ -3,6 +3,7 @@
 import React, { useState, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
+import Button from "../components/Button";
 import { useCurrentUser } from "../lib/auth";
 import { GET_AUDIT_LOGS } from "../graphql/auditLogs";
 
@@ -163,7 +164,8 @@ export default function AuditLogsPage() {
                 }}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
               />
-              <button
+              <Button
+                type="button"
                 onClick={() => {
                   setFilterAction([]);
                   setFilterEntity([]);
@@ -172,10 +174,12 @@ export default function AuditLogsPage() {
                   setDateTo("");
                   setCurrentPage(1);
                 }}
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800"
+                size="sm"
+                variant="ghost"
+                className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
               >
                 Clear Filters
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -272,22 +276,28 @@ export default function AuditLogsPage() {
                   <span className="text-gray-600">
                     Page {currentPage} of {totalPages}
                   </span>
-                  <button
+                  <Button
+                    type="button"
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
+                    size="sm"
+                    variant="outline"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Previous
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
                     onClick={() =>
                       setCurrentPage(Math.min(totalPages, currentPage + 1))
                     }
                     disabled={currentPage === totalPages}
+                    size="sm"
+                    variant="outline"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Next
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}

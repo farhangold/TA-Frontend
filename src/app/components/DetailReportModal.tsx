@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Button from "./Button";
 
 type EvaluationData = {
   reportId?: string;
@@ -128,11 +129,14 @@ const DetailReportModal = ({
           <h2 className="text-2xl font-bold text-white">Detail Laporan</h2>
           <div className="flex items-center gap-3">
             {evaluation?.reportId && onDeleteEvaluation && (
-              <button
+              <Button
                 type="button"
+                size="sm"
+                variant="danger"
+                loading={!!deleteLoading}
                 disabled={deleteLoading}
                 onClick={() => onDeleteEvaluation(evaluation.reportId as string)}
-                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold shadow-md disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold shadow-md"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -147,9 +151,12 @@ const DetailReportModal = ({
                   />
                 </svg>
                 {deleteLoading ? "Menghapus..." : "Hapus Hasil Validasi"}
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
             >
@@ -167,7 +174,7 @@ const DetailReportModal = ({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
         </div>
 

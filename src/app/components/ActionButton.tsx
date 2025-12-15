@@ -1,5 +1,6 @@
 // src/app/components/ActionButton.tsx
 import React from "react";
+import Button from "./Button";
 
 type ActionButtonProps = {
   type: "delete" | "detailBug" | "validation" | "uploadCSV";
@@ -11,9 +12,12 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
     switch (type) {
       case "delete":
         return (
-          <button
+          <Button
+            type="button"
+            size="icon"
+            variant="danger"
             onClick={onClick}
-            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+            className="rounded-lg bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             {/* Icon delete */}
             <svg
@@ -28,13 +32,16 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
                 clipRule="evenodd"
               />
             </svg>
-          </button>
+          </Button>
         );
       case "detailBug":
         return (
-          <button
+          <Button
+            type="button"
+            size="icon"
+            variant="primary"
             onClick={onClick}
-            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+            className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             {/* Icon detail bug (info) */}
             <svg
@@ -46,13 +53,16 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
               <path d="M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z" />
               <path d="M11 10h2v6h-2zM11 7h2v2h-2z" />
             </svg>
-          </button>
+          </Button>
         );
       case "validation":
         return (
-          <button
+          <Button
+            type="button"
+            size="icon"
+            variant="success"
             onClick={onClick}
-            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+            className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             {/* Icon validasi (centang) */}
             <svg
@@ -69,13 +79,16 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
                 d="M5 13l4 4L19 7"
               />
             </svg>
-          </button>
+          </Button>
         );
       case "uploadCSV":
         return (
-          <button
+          <Button
+            type="button"
+            size="icon"
+            variant="secondary"
             onClick={onClick}
-            className="w-8 h-8 flex items-center justify-center bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-lg shadow-md hover:shadow-lg hover:scale-110 active:scale-95 transition-all duration-200"
+            className="rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
             {/* Icon upload CSV */}
             <svg
@@ -92,7 +105,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
                 d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1M16 12l-4-4-4 4m4-4v9"
               />
             </svg>
-          </button>
+          </Button>
         );
       default:
         return null;

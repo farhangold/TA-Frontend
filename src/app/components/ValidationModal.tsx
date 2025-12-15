@@ -1,4 +1,5 @@
 import React from "react";
+import Button from "./Button";
 
 type ValidationModalProps = {
   isOpen: boolean;
@@ -33,7 +34,13 @@ const ValidationModal = ({
       <div className="fixed top-0 right-0 h-full bg-white shadow-xl w-full max-w-md transform animate-slide-in-right">
         <div className="p-6 h-full overflow-y-auto">
           <div className="flex items-center mb-4">
-            <button onClick={onClose} className="mr-2 text-gray-800">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={onClose}
+              className="mr-2 text-gray-800"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 fill="none"
@@ -48,7 +55,7 @@ const ValidationModal = ({
                   d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18"
                 />
               </svg>
-            </button>
+            </Button>
             <h2 className="text-lg text-gray-800 font-medium">
               Lakukan Validasi
             </h2>
@@ -146,18 +153,24 @@ const ValidationModal = ({
             </div>
 
             <div className="flex gap-2 mt-6">
-              <button
+              <Button
+                type="button"
+                variant="danger"
+                size="md"
                 onClick={() => onValidate(false)}
                 className="flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"
               >
                 Invalid
-              </button>
-              <button
+              </Button>
+              <Button
+                type="button"
+                variant="primary"
+                size="md"
                 onClick={() => onValidate(true)}
                 className="flex-1 bg-blue-500 text-white py-2 px-4 rounded hover:bg-blue-600 transition-colors"
               >
                 Valid
-              </button>
+              </Button>
             </div>
           </div>
         </div>

@@ -1,5 +1,6 @@
-import React from 'react';
-import { useRouter } from 'next/navigation';
+import React from "react";
+import { useRouter } from "next/navigation";
+import Button from "./Button";
 
 type DetailBugModalProps = {
   isOpen: boolean;
@@ -38,11 +39,17 @@ const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) =>
       <div className="fixed top-0 right-0 h-full bg-white/95 backdrop-blur-lg shadow-2xl w-full max-w-md transform animate-slide-in-right rounded-l-2xl">
         <div className="p-6 h-full overflow-y-auto">
           <div className="flex items-center mb-4">
-            <button onClick={onClose} className="mr-3 p-2 rounded-full hover:bg-gray-100 transition-colors">
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
+              onClick={onClose}
+              className="mr-3 p-2 rounded-full hover:bg-gray-100 transition-colors"
+            >
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 text-gray-600">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
               </svg>
-            </button>
+            </Button>
             <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">Detail {type === 'bug' ? 'Bug' : 'Non-Bug'}</h2>
           </div>
           
@@ -91,12 +98,15 @@ const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) =>
 
             {data.rawId && (
               <div className="mt-6 pt-4 border-t">
-                <button
+                <Button
+                  type="button"
                   onClick={handleViewFullDetail}
+                  size="md"
+                  variant="primary"
                   className="w-full px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors text-sm font-medium"
                 >
                   Lihat Detail Lengkap dengan Evaluasi
-                </button>
+                </Button>
               </div>
             )}
           </div>

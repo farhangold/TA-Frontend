@@ -4,6 +4,7 @@ import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/DashboardLayout";
+import Button from "../components/Button";
 import ActionButton from "../components/ActionButton";
 import DetailBugModal from "../components/DetailBugModal";
 import UploadCsvModal from "../components/UploadCSVModal";
@@ -431,8 +432,11 @@ export default function DaftarLaporan() {
           <h2 className="text-xl font-semibold">Daftar Laporan Bug</h2>
           <div className="flex gap-2 items-center">
             {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
-              <button
+              <Button
+                type="button"
                 onClick={() => setUploadCsvModalOpen(true)}
+                size="md"
+                variant="primary"
                 className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 text-sm font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 <svg
@@ -450,49 +454,61 @@ export default function DaftarLaporan() {
                   />
                 </svg>
                 Upload File (JSON/CSV)
-              </button>
+              </Button>
             )}
             {selectedReportIds.size > 0 && (
               <>
-                <button
+                <Button
+                  type="button"
                   onClick={handleBatchEvaluate}
                   disabled={isBatchEvaluating || isDeleting}
+                  size="sm"
+                  variant="primary"
                   className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
                 >
                   {isBatchEvaluating
                     ? "Memvalidasi..."
                     : `Validasi Batch (${selectedReportIds.size})`}
-                </button>
-                <button
+                </Button>
+                <Button
+                  type="button"
                   onClick={() => {
                     setDeleteMode("bulkSelected");
                     setDeleteModalOpen(true);
                   }}
                   disabled={isDeleting}
+                  size="sm"
+                  variant="danger"
                   className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
                 >
                   {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
-                </button>
+                </Button>
               </>
             )}
             {totalCount > 0 && user?.role === "ADMIN" && (
-              <button
+              <Button
+                type="button"
                 onClick={() => {
                   setDeleteMode("all");
                   setDeleteModalOpen(true);
                 }}
                 disabled={isDeleting}
+                size="sm"
+                variant="danger"
                 className="px-4 py-2 bg-gradient-to-r from-red-700 to-black text-white rounded-xl hover:from-red-800 hover:to-gray-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 {isDeleting ? "Menghapus semua..." : "Hapus Semua Data"}
-              </button>
+              </Button>
             )}
-            <button
+            <Button
+              type="button"
               onClick={() => setShowFilters(!showFilters)}
+              size="sm"
+              variant="outline"
               className="px-4 py-2 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 text-sm font-medium transition-all duration-200"
             >
               Filter
-            </button>
+            </Button>
           <div className="relative">
             <input
               type="text"
@@ -616,16 +632,19 @@ export default function DaftarLaporan() {
               </div>
             </div>
             <div className="mt-3 flex justify-end">
-              <button
+              <Button
+                type="button"
                 onClick={() => {
                   setFilters({});
                   setSearchTerm("");
                   setCurrentPage(1);
                 }}
+                size="sm"
+                variant="ghost"
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
               >
                 Clear Filters
-              </button>
+              </Button>
             </div>
           </div>
         )}
@@ -744,12 +763,15 @@ export default function DaftarLaporan() {
               Page {currentPage} of {totalPages}
             </span>
             <div className="flex ml-2">
-              <button
-                    onClick={() =>
-                      handlePageChange(Math.max(1, currentPage - 1))
-                    }
+              <Button
+                type="button"
+                onClick={() =>
+                  handlePageChange(Math.max(1, currentPage - 1))
+                }
                 disabled={currentPage === 1}
-                    className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                size="sm"
+                variant="outline"
+                className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 aria-label="Previous page"
               >
                 <svg
@@ -764,28 +786,34 @@ export default function DaftarLaporan() {
                     clipRule="evenodd"
                   />
                 </svg>
-              </button>
+              </Button>
 
               {getPageNumbers().map((page) => (
-                <button
+                <Button
                   key={page}
+                  type="button"
                   onClick={() => handlePageChange(page)}
-                    className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
+                  size="sm"
+                  variant={currentPage === page ? "primary" : "outline"}
+                  className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
                     currentPage === page
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                        : "border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
+                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
+                      : "border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
                   }`}
                 >
                   {page}
-                </button>
+                </Button>
               ))}
 
-              <button
+              <Button
+                type="button"
                 onClick={() =>
                   handlePageChange(Math.min(totalPages, currentPage + 1))
                 }
                 disabled={currentPage === totalPages}
-                    className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
+                size="sm"
+                variant="outline"
+                className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 aria-label="Next page"
               >
                 <svg
@@ -800,7 +828,7 @@ export default function DaftarLaporan() {
                     clipRule="evenodd"
                   />
                 </svg>
-              </button>
+              </Button>
             </div>
           </div>
         </div>

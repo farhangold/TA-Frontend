@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
+import Button from "../components/Button";
 import { useCurrentUser } from "../lib/auth";
 import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
@@ -116,7 +117,7 @@ export default function UsersPage() {
   return (
     <DashboardLayout title="User Management">
       <div className="bg-white rounded-lg p-6 shadow">
-        <div className="flex justify-between items-center mb-4">
+          <div className="flex justify-between items-center mb-4">
           <h2 className="text-xl font-semibold">Daftar Pengguna</h2>
           <div className="flex gap-2 items-center">
             <input
@@ -139,12 +140,15 @@ export default function UsersPage() {
               <option value="REVIEWER">Reviewer</option>
               <option value="VIEWER">Viewer</option>
             </select>
-            <button
+            <Button
+              type="button"
               onClick={() => setShowCreateModal(true)}
+              size="sm"
+              variant="primary"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               + Tambah Pengguna
-            </button>
+            </Button>
           </div>
         </div>
 
@@ -198,12 +202,15 @@ export default function UsersPage() {
                         {new Date(u.createdAt).toLocaleDateString("id-ID")}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <button
+                        <Button
+                          type="button"
                           onClick={() => handleEdit(u)}
+                          size="sm"
+                          variant="primary"
                           className="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 text-xs"
                         >
                           Edit
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -232,22 +239,28 @@ export default function UsersPage() {
                   <span className="text-gray-600">
                     Page {currentPage} of {totalPages}
                   </span>
-                  <button
+                  <Button
+                    type="button"
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
+                    size="sm"
+                    variant="outline"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Previous
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
                     onClick={() =>
                       setCurrentPage(Math.min(totalPages, currentPage + 1))
                     }
                     disabled={currentPage === totalPages}
+                    size="sm"
+                    variant="outline"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Next
-                  </button>
+                  </Button>
                 </div>
               </div>
             )}
@@ -367,19 +380,23 @@ function CreateUserModal({
             </select>
           </div>
           <div className="flex gap-2 justify-end">
-            <button
+            <Button
               type="button"
               onClick={onClose}
+              size="sm"
+              variant="outline"
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              size="sm"
+              variant="primary"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               Simpan
-            </button>
+            </Button>
           </div>
         </form>
       </div>
@@ -483,19 +500,23 @@ function EditUserModal({
             </select>
           </div>
           <div className="flex gap-2 justify-end">
-            <button
+            <Button
               type="button"
               onClick={onClose}
+              size="sm"
+              variant="outline"
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Batal
-            </button>
-            <button
+            </Button>
+            <Button
               type="submit"
+              size="sm"
+              variant="primary"
               className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
             >
               Simpan
-            </button>
+            </Button>
           </div>
         </form>
       </div>

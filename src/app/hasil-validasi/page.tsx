@@ -6,6 +6,7 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import ActionButton from "../components/ActionButton";
 import ExportButton from "../components/ExportButton";
+import Button from "../components/Button";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
 import {
   GET_EVALUATION,
@@ -390,29 +391,6 @@ function HasilValidasiContent() {
     }
   };
 
-  const handleDeleteAllForStatus = async (
-    status: "VALID" | "INVALID",
-    label: string,
-    clearSelection: () => void
-  ) => {
-    try {
-      setBulkDeleteLoading(true);
-      const allReports = await fetchAllReportsForExport(status);
-      const allIds = allReports
-        .map((report: { _id?: string }) => report._id)
-        .filter((id: string | undefined): id is string => !!id);
-
-      if (allIds.length === 0) {
-        alert(`Tidak ada hasil validasi pada daftar ${label} yang dapat dihapus.`);
-        return;
-      }
-
-      await performBulkDelete(allIds, label, clearSelection);
-    } finally {
-      setBulkDeleteLoading(false);
-    }
-  };
-
   const getStatusBadgeClass = (status: string) => {
     if (status === "VALID")
       return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
@@ -580,12 +558,15 @@ function HasilValidasiContent() {
             Total: {totalCount}
           </span>
           {onRefresh && (
-            <button
+            <Button
+              type="button"
+              size="sm"
+              variant="outline"
               onClick={onRefresh}
               className="px-3 py-1 rounded-xl border border-gray-300 text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >
               Refresh
-            </button>
+            </Button>
           )}
           {title.includes("Valid") ? (
             <ExportButton
@@ -605,8 +586,10 @@ function HasilValidasiContent() {
             />
           )}
           <div className="flex items-center gap-2 ml-2">
-            <button
+            <Button
               type="button"
+              size="sm"
+              variant="danger"
               onClick={onBulkDelete}
               disabled={
                 !onBulkDelete ||
@@ -621,24 +604,26 @@ function HasilValidasiContent() {
               }`}
             >
               Hapus Terpilih
-            </button>
-            <button
+            </Button>
+            <Button
               type="button"
+              size="sm"
+              variant="danger"
               onClick={onDeleteAll}
               disabled={
                 !onDeleteAll ||
-                totalCount === 0 ||
+                reports.length === 0 ||
                 loading ||
                 !!isBulkDeleting
               }
               className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-all duration-200 ${
-                totalCount === 0 || loading || isBulkDeleting
+                reports.length === 0 || loading || isBulkDeleting
                   ? "border-gray-200 text-gray-400 cursor-not-allowed"
                   : "border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
               }`}
             >
-              Hapus Semua
-            </button>
+              Hapus Semua (Halaman)
+            </Button>
           </div>
         </div>
       </div>
@@ -764,9 +749,12 @@ function HasilValidasiContent() {
                 Menampilkan {reports.length} dari {totalCount} laporan
               </div>
               <div className="flex items-center">
-                <button
+                <Button
+                  type="button"
                   onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
+                  size="sm"
+                  variant="outline"
                   className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Previous page"
                 >
@@ -782,12 +770,15 @@ function HasilValidasiContent() {
                       clipRule="evenodd"
                     />
                   </svg>
-                </button>
+                </Button>
 
                 {getPageNumbers(currentPage, totalPages).map((page) => (
-                  <button
+                  <Button
                     key={page}
+                    type="button"
                     onClick={() => onPageChange(page)}
+                    size="sm"
+                    variant={currentPage === page ? "primary" : "outline"}
                     className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
                       currentPage === page
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
@@ -795,14 +786,17 @@ function HasilValidasiContent() {
                     }`}
                   >
                     {page}
-                  </button>
+                  </Button>
                 ))}
 
-                <button
+                <Button
+                  type="button"
                   onClick={() =>
                     onPageChange(Math.min(totalPages, currentPage + 1))
                   }
                   disabled={currentPage === totalPages}
+                  size="sm"
+                  variant="outline"
                   className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
                 >
@@ -818,7 +812,7 @@ function HasilValidasiContent() {
                       clipRule="evenodd"
                     />
                   </svg>
-                </button>
+                </Button>
               </div>
             </div>
           )}
@@ -859,8 +853,8 @@ function HasilValidasiContent() {
             () => setSelectedValidIds([])
           ),
         () =>
-          handleDeleteAllForStatus(
-            "VALID",
+          performBulkDelete(
+            validReports.map((r) => r.rawId),
             "Laporan Valid",
             () => setSelectedValidIds([])
           ),
@@ -897,8 +891,8 @@ function HasilValidasiContent() {
             () => setSelectedInvalidIds([])
           ),
         () =>
-          handleDeleteAllForStatus(
-            "INVALID",
+          performBulkDelete(
+            invalidReports.map((r) => r.rawId),
             "Laporan Invalid/Reject",
             () => setSelectedInvalidIds([])
           ),

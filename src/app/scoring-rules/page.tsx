@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
+import Button from "../components/Button";
 import { useCurrentUser } from "../lib/auth";
 import {
   GET_SCORING_RULES,
@@ -256,12 +257,15 @@ export default function ScoringRulesPage() {
               </p>
             </div>
             {user?.role === "ADMIN" && (
-              <button
+              <Button
+                type="button"
                 onClick={handleUpdateThreshold}
+                size="sm"
+                variant="primary"
                 className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
               >
                 Simpan Threshold
-              </button>
+              </Button>
             )}
           </div>
           {validationConfig && (
@@ -282,8 +286,11 @@ export default function ScoringRulesPage() {
               Scoring Rules
             </h2>
             {user?.role === "ADMIN" && (
-              <button
+              <Button
+                type="button"
                 onClick={handleResetToDefault}
+                size="sm"
+                variant={showResetConfirm ? "danger" : "secondary"}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   showResetConfirm
                     ? "bg-red-600 text-white hover:bg-red-700"
@@ -291,7 +298,7 @@ export default function ScoringRulesPage() {
                 }`}
               >
                 {showResetConfirm ? "Konfirmasi Reset" : "Reset ke Default"}
-              </button>
+              </Button>
             )}
           </div>
 
@@ -351,11 +358,14 @@ export default function ScoringRulesPage() {
                       )}
                     </td>
                     <td className="py-3 px-4 text-center">
-                      <button
+                      <Button
+                        type="button"
                         onClick={() =>
                           handleToggleRule(rule.attribute, rule.isActive)
                         }
                         disabled={user?.role !== "ADMIN"}
+                        size="sm"
+                        variant="secondary"
                         className={`px-3 py-1 rounded-full text-xs font-medium ${
                           rule.isActive
                             ? "bg-green-100 text-green-800"
@@ -367,32 +377,41 @@ export default function ScoringRulesPage() {
                         }`}
                       >
                         {rule.isActive ? "Active" : "Inactive"}
-                      </button>
+                      </Button>
                     </td>
                     {user?.role === "ADMIN" && (
                       <td className="py-3 px-4 text-center">
                         {editingRule?._id === rule._id ? (
                           <div className="flex gap-2 justify-center">
-                            <button
+                            <Button
+                              type="button"
                               onClick={handleSaveEdit}
+                              size="sm"
+                              variant="primary"
                               className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
                             >
                               Simpan
-                            </button>
-                            <button
+                            </Button>
+                            <Button
+                              type="button"
                               onClick={handleCancelEdit}
+                              size="sm"
+                              variant="secondary"
                               className="px-3 py-1 bg-gray-200 text-gray-700 rounded text-xs hover:bg-gray-300"
                             >
                               Batal
-                            </button>
+                            </Button>
                           </div>
                         ) : (
-                          <button
+                          <Button
+                            type="button"
                             onClick={() => handleEditClick(rule)}
+                            size="sm"
+                            variant="primary"
                             className="px-3 py-1 bg-blue-600 text-white rounded text-xs hover:bg-blue-700"
                           >
                             Edit
-                          </button>
+                          </Button>
                         )}
                       </td>
                     )}

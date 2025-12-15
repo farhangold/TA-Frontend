@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import Button from "./Button";
 
 type UploadCsvModalProps = {
   isOpen: boolean;
@@ -108,7 +109,10 @@ const UploadCsvModal = ({
                 <p className="text-xs text-gray-500">JSON atau CSV</p>
               </div>
             </div>
-            <button
+            <Button
+              type="button"
+              size="icon"
+              variant="ghost"
               onClick={() => {
                 if (!isUploading) onClose();
               }}
@@ -129,7 +133,7 @@ const UploadCsvModal = ({
                   d="M6 18L18 6M6 6l12 12"
                 />
               </svg>
-            </button>
+            </Button>
           </div>
 
           <p className="text-sm text-gray-600 mb-6 leading-relaxed">
@@ -140,8 +144,11 @@ const UploadCsvModal = ({
 
           {/* Upload Information Section - Collapsible */}
           <div className="mb-4">
-            <button
+            <Button
+              type="button"
               onClick={() => setShowInfo(!showInfo)}
+              variant="ghost"
+              size="sm"
               className="w-full flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
             >
               <div className="flex items-center gap-2">
@@ -179,7 +186,7 @@ const UploadCsvModal = ({
                   d="M19.5 8.25l-7.5 7.5-7.5-7.5"
                 />
               </svg>
-            </button>
+            </Button>
 
             {showInfo && (
               <div className="mt-2 p-4 bg-blue-50 border border-blue-200 rounded-lg">
@@ -240,12 +247,15 @@ const UploadCsvModal = ({
           <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
             <div className="flex items-center justify-between mb-2">
               <p className="text-sm font-medium text-gray-900">Contoh File:</p>
-              <button
-                onClick={() => setShowExamples(!showExamples)}
-                className="text-xs text-blue-600 hover:text-blue-800"
-              >
+                <Button
+                  type="button"
+                  onClick={() => setShowExamples(!showExamples)}
+                  variant="ghost"
+                  size="sm"
+                  className="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 h-auto"
+                >
                 {showExamples ? "Sembunyikan" : "Lihat Format"}
-              </button>
+                </Button>
             </div>
             <div className="flex gap-2 flex-wrap">
               <a
@@ -283,26 +293,32 @@ const UploadCsvModal = ({
           {showExamples && (
             <div className="mb-4 p-3 bg-gray-50 rounded-lg border border-gray-200">
               <div className="flex gap-2 mb-3 border-b border-gray-300">
-                <button
+                <Button
+                  type="button"
                   onClick={() => setActiveTab("json")}
-                  className={`px-3 py-1 text-sm font-medium ${
+                  variant="ghost"
+                  size="sm"
+                  className={`px-3 py-1 text-sm font-medium rounded-none ${
                     activeTab === "json"
                       ? "text-blue-600 border-b-2 border-blue-600"
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   JSON Format
-                </button>
-                <button
+                </Button>
+                <Button
+                  type="button"
                   onClick={() => setActiveTab("csv")}
-                  className={`px-3 py-1 text-sm font-medium ${
+                  variant="ghost"
+                  size="sm"
+                  className={`px-3 py-1 text-sm font-medium rounded-none ${
                     activeTab === "csv"
                       ? "text-blue-600 border-b-2 border-blue-600"
                       : "text-gray-600 hover:text-gray-900"
                   }`}
                 >
                   CSV Format
-                </button>
+                </Button>
               </div>
               {activeTab === "json" ? (
                 <div className="text-xs">
@@ -453,15 +469,18 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                     <p className="text-sm font-semibold text-gray-800">
                       {selectedFiles.length} file dipilih
                     </p>
-                    <button
+                    <Button
+                      type="button"
                       onClick={(e) => {
                         e.stopPropagation();
                         handleClearAll();
                       }}
-                      className="text-xs text-red-600 hover:text-red-800 font-medium"
+                      size="sm"
+                      variant="ghost"
+                      className="text-xs text-red-600 hover:text-red-800 font-medium px-0 py-0 h-auto"
                     >
                       Hapus Semua
-                    </button>
+                    </Button>
                   </div>
                   <div className="max-h-48 overflow-y-auto space-y-2">
                     {selectedFiles.map((file, index) => (
@@ -494,7 +513,8 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                             {formatFileSize(file.size)}
                           </p>
                         </div>
-                        <button
+                        <Button
+                          type="button"
                           onClick={(e) => {
                             e.stopPropagation();
                             if (!isUploading) {
@@ -502,23 +522,25 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                             }
                           }}
                           disabled={isUploading}
+                          size="icon"
+                          variant="danger"
                           className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors flex-shrink-0"
                         >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            fill="none"
+                            viewBox="0 0 24 24"
                             strokeWidth={2}
-                  stroke="currentColor"
+                            stroke="currentColor"
                             className="w-4 h-4 text-red-600"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
                               d="M6 18L18 6M6 6l12 12"
-                  />
-                </svg>
-                        </button>
+                            />
+                          </svg>
+                        </Button>
                       </div>
                     ))}
                   </div>
@@ -531,18 +553,24 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
           </div>
 
           <div className="flex justify-between gap-4 mt-6">
-            <button
+            <Button
+              type="button"
               onClick={() => {
                 if (!isUploading) onClose();
               }}
               disabled={isUploading}
+              size="md"
+              variant="secondary"
               className="flex-1 py-3 px-4 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
               {isUploading ? "Sedang mengunggah..." : "Batal"}
-            </button>
-            <button
+            </Button>
+            <Button
+              type="button"
               onClick={handleUpload}
               disabled={selectedFiles.length === 0 || isUploading}
+              size="md"
+              variant={selectedFiles.length > 0 && !isUploading ? "primary" : "secondary"}
               className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
                 selectedFiles.length > 0 && !isUploading
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
@@ -579,7 +607,7 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
               ) : (
                 "Pilih File Dulu"
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

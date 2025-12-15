@@ -1,4 +1,5 @@
-import React from 'react';
+import React from "react";
+import Button from "./Button";
 
 type DeleteConfirmationModalProps = {
   isOpen: boolean;
@@ -49,18 +50,24 @@ const DeleteConfirmationModal = ({
         
         {/* Action buttons */}
         <div className="flex space-x-4 w-full">
-          <button 
+          <Button
+            type="button"
+            variant="danger"
+            size="md"
             onClick={onConfirm}
             className="flex-1 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white py-3 px-6 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
           >
             Iya
-          </button>
-          <button 
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            size="md"
             onClick={onClose}
             className="flex-1 bg-white hover:bg-gray-50 text-gray-700 py-3 px-6 rounded-xl border-2 border-gray-300 hover:border-gray-400 font-semibold transition-all duration-200"
           >
             Tidak
-          </button>
+          </Button>
         </div>
       </div>
     </div>

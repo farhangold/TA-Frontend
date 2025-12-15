@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
+import Button from "../components/Button";
 import { useCurrentUser } from "../lib/auth";
 import { UPDATE_USER } from "../graphql/users";
 
@@ -106,20 +107,26 @@ export default function PengaturanPage() {
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500"
                     placeholder="Masukkan nama"
                   />
-                  <button
+                  <Button
+                    type="button"
                     onClick={handleSaveName}
                     disabled={isSaving || !nameValue.trim()}
+                    size="sm"
+                    variant="primary"
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium disabled:bg-gray-400 disabled:cursor-not-allowed"
                   >
                     {isSaving ? "Menyimpan..." : "Simpan"}
-                  </button>
-                  <button
+                  </Button>
+                  <Button
+                    type="button"
                     onClick={handleCancelEdit}
                     disabled={isSaving}
+                    size="sm"
+                    variant="secondary"
                     className="px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300 transition-colors text-sm font-medium disabled:bg-gray-100 disabled:cursor-not-allowed"
                   >
                     Batal
-                  </button>
+                  </Button>
                 </div>
               ) : (
                 <div className="flex items-center gap-2">
@@ -129,12 +136,15 @@ export default function PengaturanPage() {
                     disabled
                     className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 bg-gray-100 cursor-not-allowed"
                   />
-                  <button
+                  <Button
+                    type="button"
                     onClick={() => setEditName(true)}
+                    size="sm"
+                    variant="primary"
                     className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-medium"
                   >
                     Edit
-                  </button>
+                  </Button>
                 </div>
               )}
             </div>
