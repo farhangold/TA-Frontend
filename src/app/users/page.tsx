@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
 import StatusBadge from "../components/StatusBadge";
+import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import { useCurrentUser } from "../lib/auth";
 import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
@@ -162,9 +163,10 @@ export default function UsersPage() {
         )}
 
         {error && !loading && (
-          <div className="py-8 text-center text-sm text-red-600">
-            Gagal memuat data pengguna.
-          </div>
+          <TableErrorState
+            message="Gagal memuat data pengguna."
+            onRetry={() => refetch()}
+          />
         )}
 
         {!loading && !error && (
@@ -209,11 +211,8 @@ export default function UsersPage() {
                   ))}
                   {filteredUsers.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={5}
-                        className="py-6 text-center text-sm text-gray-500"
-                      >
-                        Tidak ada pengguna yang ditemukan.
+                      <td colSpan={5}>
+                        <TableEmptyState message="Tidak ada pengguna yang ditemukan." />
                       </td>
                     </tr>
                   )}

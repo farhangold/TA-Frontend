@@ -11,6 +11,7 @@ import DetailBugModal from "../components/DetailBugModal";
 import UploadCsvModal from "../components/UploadCSVModal";
 import DeleteConfirmationModal from "../components/DeleteModal";
 import { useCurrentUser } from "../lib/auth";
+import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import {
   GET_UAT_REPORTS,
   DELETE_UAT_REPORT,
@@ -661,9 +662,10 @@ export default function DaftarLaporan() {
         )}
 
         {error && !loading && (
-          <div className="py-8 text-center text-sm text-red-600">
-            Gagal memuat data laporan.
-          </div>
+          <TableErrorState
+            message="Gagal memuat data laporan."
+            onRetry={() => refetch()}
+          />
         )}
 
         {!loading && !error && (
@@ -740,11 +742,8 @@ export default function DaftarLaporan() {
               ))}
                   {reports.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={6}
-                        className="py-6 text-center text-sm text-gray-500"
-                      >
-                        Tidak ada laporan yang ditemukan.
+                      <td colSpan={6}>
+                        <TableEmptyState message="Tidak ada laporan yang ditemukan." />
                       </td>
                     </tr>
                   )}

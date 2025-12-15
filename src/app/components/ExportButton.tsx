@@ -65,13 +65,9 @@ const ExportButton = ({
         onClick={() => !isDisabled && setIsOpen(!isOpen)}
         disabled={isDisabled}
         loading={loading}
-        size="md"
+        size="sm"
         variant={isDisabled ? "secondary" : "primary"}
-        className={`px-4 py-2 shadow-lg flex items-center gap-2 ${
-          isDisabled
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:shadow-xl hover:scale-105 active:scale-95"
-        }`}
+        className="flex items-center gap-2 text-sm font-semibold"
         title={isDisabled ? "Tidak ada data untuk diekspor" : "Ekspor laporan"}
       >
         {!loading && (

@@ -6,6 +6,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
+import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import { useCurrentUser } from "../lib/auth";
 import { GET_AUDIT_LOGS } from "../graphql/auditLogs";
 
@@ -190,9 +191,10 @@ export default function AuditLogsPage() {
         )}
 
         {error && !loading && (
-          <div className="py-8 text-center text-sm text-red-600">
-            Gagal memuat audit logs.
-          </div>
+          <TableErrorState
+            message="Gagal memuat audit logs."
+            // No direct refetch here; user can adjust filters or reload page
+          />
         )}
 
         {!loading && !error && (
@@ -252,11 +254,8 @@ export default function AuditLogsPage() {
                   ))}
                   {logs.length === 0 && (
                     <tr>
-                      <td
-                        colSpan={7}
-                        className="py-6 text-center text-sm text-gray-500"
-                      >
-                        Tidak ada audit log yang ditemukan.
+                      <td colSpan={7}>
+                        <TableEmptyState message="Tidak ada audit log yang ditemukan." />
                       </td>
                     </tr>
                   )}

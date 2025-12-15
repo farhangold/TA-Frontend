@@ -9,6 +9,7 @@ import ExportButton from "../components/ExportButton";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
 import StatusBadge from "../components/StatusBadge";
+import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import Button from "../components/Button";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
 import {
@@ -600,9 +601,10 @@ function HasilValidasiContent() {
       )}
 
       {error && !loading && (
-        <div className="py-8 text-center text-sm text-red-600">
-          Gagal memuat data laporan.
-        </div>
+        <TableErrorState
+          message="Gagal memuat data laporan."
+          onRetry={onRefresh}
+        />
       )}
 
       {!loading && !error && (
@@ -634,8 +636,8 @@ function HasilValidasiContent() {
               <tbody className="text-gray-600 text-sm">
                 {reports.length === 0 ? (
                   <tr>
-                    <td colSpan={8} className="text-center py-8">
-                      Tidak ada laporan ditemukan.
+                    <td colSpan={8}>
+                      <TableEmptyState message="Tidak ada laporan ditemukan." />
                     </td>
                   </tr>
                 ) : (
