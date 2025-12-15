@@ -2,12 +2,12 @@
 
 import React, { useMemo, useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { useQuery, useLazyQuery } from "@apollo/client";
+import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import ActionButton from "../components/ActionButton";
 import ExportButton from "../components/ExportButton";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
-import { GET_EVALUATION } from "../graphql/evaluations";
+import { GET_EVALUATION, DELETE_EVALUATION_BY_REPORT } from "../graphql/evaluations";
 import DetailReportModal from "../components/DetailReportModal";
 import {
   exportToCSV,
@@ -43,6 +43,7 @@ function HasilValidasiContent() {
     invalid: boolean;
   }>({ valid: false, invalid: false });
   const [evaluationsCache, setEvaluationsCache] = useState<Record<string, { completenessStatus?: string }>>({});
+  const [deleteTargetReportId, setDeleteTargetReportId] = useState<string | null>(null);
 
   // Check for reportId in URL query params (from redirect)
   useEffect(() => {
@@ -115,6 +116,16 @@ function HasilValidasiContent() {
   const [fetchAllReports] = useLazyQuery(GET_UAT_REPORTS, {
     fetchPolicy: "network-only",
   });
+
+  const [deleteEvaluationMutation, { loading: deleteEvaluationLoading }] = useMutation(
+    DELETE_EVALUATION_BY_REPORT,
+    {
+      onError: (error) => {
+        console.error("Error deleting evaluation:", error);
+        alert("Gagal menghapus hasil validasi. Silakan coba lagi.");
+      },
+    }
+  );
 
   const validReports: ReportRow[] = useMemo(() => {
     if (!validData?.getUATReports) return [];
@@ -226,6 +237,46 @@ function HasilValidasiContent() {
   const handleViewDetail = (rawId: string) => {
     setSelectedReportId(rawId);
     setDetailModalOpen(true);
+  };
+
+  const handleDeleteEvaluation = async (reportId: string) => {
+    if (!reportId) return;
+
+    const confirmed = window.confirm(
+      "Apakah Anda yakin ingin menghapus hasil validasi untuk laporan ini?\n\nTindakan ini hanya menghapus hasil evaluasi (skor & feedback), laporan aslinya tetap tersimpan."
+    );
+    if (!confirmed) {
+      return;
+    }
+
+    try {
+      setDeleteTargetReportId(reportId);
+      const result = await deleteEvaluationMutation({
+        variables: { reportId },
+      });
+
+      if (result.data?.deleteEvaluationByReport) {
+        alert("Hasil validasi berhasil dihapus.");
+
+        // Hapus cache evaluasi untuk laporan ini
+        setEvaluationsCache((prev) => {
+          const { [reportId]: _removed, ...rest } = prev;
+          return rest;
+        });
+
+        // Tutup modal detail jika sedang melihat laporan yang sama
+        if (selectedReportId === reportId) {
+          setDetailModalOpen(false);
+          setSelectedReportId(null);
+        }
+      } else {
+        alert("Gagal menghapus hasil validasi. Silakan coba lagi.");
+      }
+    } catch (error) {
+      // onError handler pada mutation sudah menampilkan alert
+    } finally {
+      setDeleteTargetReportId(null);
+    }
   };
 
   const getStatusBadgeClass = (status: string) => {
@@ -607,6 +658,8 @@ function HasilValidasiContent() {
         evaluation={evaluationData?.getEvaluation}
         loading={evaluationLoading}
         error={evaluationError}
+        onDeleteEvaluation={handleDeleteEvaluation}
+        deleteLoading={deleteEvaluationLoading && !!deleteTargetReportId}
       />
     </DashboardLayout>
   );

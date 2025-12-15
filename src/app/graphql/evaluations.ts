@@ -144,4 +144,10 @@ export const GET_EVALUATION_HISTORY = gql`
   }
 `;
 
+export const DELETE_EVALUATION_BY_REPORT = gql`
+  mutation DeleteEvaluationByReport($reportId: String!) {
+    deleteEvaluationByReport(reportId: $reportId)
+  }
+`;
+
 

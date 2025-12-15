@@ -68,6 +68,8 @@ type DetailReportModalProps = {
   evaluation: EvaluationData | null | undefined;
   loading: boolean;
   error?: Error | { message?: string };
+  onDeleteEvaluation?: (reportId: string) => void;
+  deleteLoading?: boolean;
 };
 
 const DetailReportModal = ({
@@ -76,6 +78,8 @@ const DetailReportModal = ({
   evaluation,
   loading,
   error,
+  onDeleteEvaluation,
+  deleteLoading,
 }: DetailReportModalProps) => {
   if (!isOpen) return null;
 
@@ -122,25 +126,49 @@ const DetailReportModal = ({
         {/* Header */}
         <div className="sticky top-0 bg-gradient-to-r from-blue-500 to-purple-600 px-6 py-4 flex items-center justify-between z-10">
           <h2 className="text-2xl font-bold text-white">Detail Laporan</h2>
-          <button
-            onClick={onClose}
-            className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth={2}
-              stroke="currentColor"
-              className="w-5 h-5 text-white"
+          <div className="flex items-center gap-3">
+            {evaluation?.reportId && onDeleteEvaluation && (
+              <button
+                type="button"
+                disabled={deleteLoading}
+                onClick={() => onDeleteEvaluation(evaluation.reportId as string)}
+                className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-red-500/90 hover:bg-red-600 text-white text-xs font-semibold shadow-md disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {deleteLoading ? "Menghapus..." : "Hapus Hasil Validasi"}
+              </button>
+            )}
+            <button
+              onClick={onClose}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth={2}
+                stroke="currentColor"
+                className="w-5 h-5 text-white"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+          </div>
         </div>
 
         {/* Content */}
