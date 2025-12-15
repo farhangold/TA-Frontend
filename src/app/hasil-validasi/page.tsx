@@ -6,6 +6,8 @@ import { useQuery, useLazyQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import ActionButton from "../components/ActionButton";
 import ExportButton from "../components/ExportButton";
+import CardSection from "../components/CardSection";
+import Pagination from "../components/Pagination";
 import Button from "../components/Button";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
 import {
@@ -546,17 +548,17 @@ function HasilValidasiContent() {
     onDeleteAll?: () => void,
     isBulkDeleting?: boolean
   ) => (
-    <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 mb-6">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-          {title}
-        </h2>
+    <CardSection
+      title={title}
+      badge={
+        <span
+          className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}
+        >
+          Total: {totalCount}
+        </span>
+      }
+      actions={
         <div className="flex items-center gap-3">
-          <span
-            className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}
-          >
-            Total: {totalCount}
-          </span>
           {onRefresh && (
             <Button
               type="button"
@@ -626,8 +628,9 @@ function HasilValidasiContent() {
             </Button>
           </div>
         </div>
-      </div>
-
+      }
+      className="mb-6"
+    >
       {loading && (
         <div className="py-12 text-center">
           <div className="inline-flex items-center gap-3">
@@ -748,77 +751,16 @@ function HasilValidasiContent() {
               <div className="text-sm text-gray-600">
                 Menampilkan {reports.length} dari {totalCount} laporan
               </div>
-              <div className="flex items-center">
-                <Button
-                  type="button"
-                  onClick={() => onPageChange(Math.max(1, currentPage - 1))}
-                  disabled={currentPage === 1}
-                  size="sm"
-                  variant="secondary"
-                  className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                  aria-label="Previous page"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Button>
-
-                {getPageNumbers(currentPage, totalPages).map((page) => (
-                  <Button
-                    key={page}
-                    type="button"
-                    onClick={() => onPageChange(page)}
-                    size="sm"
-                    variant={currentPage === page ? "primary" : "secondary"}
-                    className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
-                      currentPage === page
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
-                        : "border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400"
-                    }`}
-                  >
-                    {page}
-                  </Button>
-                ))}
-
-                <Button
-                  type="button"
-                  onClick={() =>
-                    onPageChange(Math.min(totalPages, currentPage + 1))
-                  }
-                  disabled={currentPage === totalPages}
-                  size="sm"
-                  variant="secondary"
-                  className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
-                  aria-label="Next page"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 20 20"
-                    fill="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </Button>
-              </div>
+              <Pagination
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onChange={onPageChange}
+              />
             </div>
           )}
         </>
       )}
-    </div>
+    </CardSection>
   );
 
   return (

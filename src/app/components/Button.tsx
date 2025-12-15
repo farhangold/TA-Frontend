@@ -18,21 +18,19 @@ export type ButtonProps = {
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 const baseClasses =
-  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
 const variantClasses: Record<ButtonVariant, string> = {
-  primary:
-    "bg-blue-600 text-white hover:bg-blue-700 focus-visible:ring-blue-500",
+  primary: "bg-blue-600 text-white hover:bg-blue-700",
   secondary:
-    "bg-white text-gray-900 border border-gray-300 hover:bg-gray-100 focus-visible:ring-gray-300",
-  ternary:
-    "bg-transparent text-red-600 hover:bg-red-50 focus-visible:ring-red-400",
+    "bg-white text-gray-900 border border-gray-300 hover:bg-gray-100",
+  ternary: "bg-transparent text-red-600 hover:bg-red-50",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {
-  sm: "px-3 py-1.5 text-xs",
-  md: "px-4 py-2.5 text-sm",
-  lg: "px-4 py-3.5 text-base",
+  sm: "px-3 py-1.5 text-sm",
+  md: "px-4 py-2 text-sm",
+  lg: "px-5 py-2.5 text-base",
   icon: "w-9 h-9 text-sm",
 };
 

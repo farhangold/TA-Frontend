@@ -4,6 +4,8 @@ import React, { useMemo, useState } from "react";
 import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/DashboardLayout";
+import CardSection from "../components/CardSection";
+import Pagination from "../components/Pagination";
 import Button from "../components/Button";
 import ActionButton from "../components/ActionButton";
 import DetailBugModal from "../components/DetailBugModal";
@@ -427,9 +429,9 @@ export default function DaftarLaporan() {
 
   return (
     <DashboardLayout title="Daftar Laporan">
-      <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Daftar Laporan Bug</h2>
+      <CardSection
+        title="Daftar Laporan Bug"
+        actions={
           <div className="flex gap-2 items-center">
             {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
               <Button
@@ -509,33 +511,34 @@ export default function DaftarLaporan() {
             >
               Filter
             </Button>
-          <div className="relative">
-            <input
-              type="text"
+            <div className="relative">
+              <input
+                type="text"
                 placeholder="Cari berdasarkan domain"
-              value={searchTerm}
+                value={searchTerm}
                 onChange={(event) => {
                   setSearchTerm(event.target.value);
                   setCurrentPage(1);
                 }}
                 className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl w-64 text-gray-900 placeholder:text-gray-500 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-            />
-            <svg
-              className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            >
-              <circle cx="11" cy="11" r="8" />
-              <line x1="21" y1="21" x2="16.65" y2="16.65" />
-            </svg>
+              />
+              <svg
+                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <circle cx="11" cy="11" r="8" />
+                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+              </svg>
+            </div>
           </div>
-        </div>
-        </div>
+        }
+      >
 
         {showFilters && (
           <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
