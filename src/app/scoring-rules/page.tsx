@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
+import CardSection from "../components/CardSection";
 import { useCurrentUser } from "../lib/auth";
 import {
   GET_SCORING_RULES,
@@ -234,10 +235,7 @@ export default function ScoringRulesPage() {
     <DashboardLayout title="Scoring Rules">
       <div className="space-y-6">
         {/* Validation Threshold Section */}
-        <div className="bg-white rounded-lg p-6 shadow">
-          <h2 className="text-xl font-semibold text-gray-800 mb-4">
-            Validation Threshold
-          </h2>
+        <CardSection title="Validation Threshold">
           <div className="flex items-center gap-4">
             <div className="flex-1">
               <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -277,14 +275,11 @@ export default function ScoringRulesPage() {
               )}
             </p>
           )}
-        </div>
+        </CardSection>
 
         {/* Scoring Rules Table */}
-        <div className="bg-white rounded-lg p-6 shadow">
+        <CardSection title="Scoring Rules">
           <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-semibold text-gray-800">
-              Scoring Rules
-            </h2>
             {user?.role === "ADMIN" && (
               <Button
                 type="button"
@@ -426,7 +421,7 @@ export default function ScoringRulesPage() {
               Tidak ada scoring rules yang ditemukan.
             </p>
           )}
-        </div>
+        </CardSection>
       </div>
     </DashboardLayout>
   );

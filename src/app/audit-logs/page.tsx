@@ -4,6 +4,8 @@ import React, { useState, useMemo } from "react";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
+import CardSection from "../components/CardSection";
+import Pagination from "../components/Pagination";
 import { useCurrentUser } from "../lib/auth";
 import { GET_AUDIT_LOGS } from "../graphql/auditLogs";
 
@@ -85,105 +87,102 @@ export default function AuditLogsPage() {
 
   return (
     <DashboardLayout title="Audit Logs">
-      <div className="bg-white rounded-lg p-6 shadow">
-        <div className="mb-4">
-          <h2 className="text-xl font-semibold mb-4">Audit Logs</h2>
-
-          {/* Filters */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Action
-              </label>
-              <div className="space-y-1">
-                {[
-                  "CREATE",
-                  "UPDATE",
-                  "DELETE",
-                  "EVALUATE",
-                  "EXPORT",
-                  "LOGIN",
-                  "LOGOUT",
-                  "CONFIG_CHANGE",
-                ].map((action) => (
-                  <label key={action} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={filterAction.includes(action)}
-                      onChange={() => handleActionToggle(action)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{action}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Entity
-              </label>
-              <div className="space-y-1">
-                {[
-                  "UAT_REPORT",
-                  "EVALUATION",
-                  "SCORING_RULE",
-                  "VALIDATION_CONFIG",
-                  "USER",
-                ].map((entity) => (
-                  <label key={entity} className="flex items-center">
-                    <input
-                      type="checkbox"
-                      checked={filterEntity.includes(entity)}
-                      onChange={() => handleEntityToggle(entity)}
-                      className="mr-2"
-                    />
-                    <span className="text-sm">{entity}</span>
-                  </label>
-                ))}
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-900 mb-2">
-                Date Range
-              </label>
-              <input
-                type="date"
-                value={dateFrom}
-                onChange={(e) => {
-                  setDateFrom(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 text-gray-900"
-              />
-              <input
-                type="date"
-                value={dateTo}
-                onChange={(e) => {
-                  setDateTo(e.target.value);
-                  setCurrentPage(1);
-                }}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
-              />
-              <Button
-                type="button"
-                onClick={() => {
-                  setFilterAction([]);
-                  setFilterEntity([]);
-                  setFilterUserId("");
-                  setDateFrom("");
-                  setDateTo("");
-                  setCurrentPage(1);
-                }}
-                size="sm"
-                variant="secondary"
-                className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
-              >
-                Clear Filters
-              </Button>
+      <CardSection
+        title="Audit Logs"
+      >
+        {/* Filters */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Action
+            </label>
+            <div className="space-y-1">
+              {[
+                "CREATE",
+                "UPDATE",
+                "DELETE",
+                "EVALUATE",
+                "EXPORT",
+                "LOGIN",
+                "LOGOUT",
+                "CONFIG_CHANGE",
+              ].map((action) => (
+                <label key={action} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={filterAction.includes(action)}
+                    onChange={() => handleActionToggle(action)}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">{action}</span>
+                </label>
+              ))}
             </div>
           </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Entity
+            </label>
+            <div className="space-y-1">
+              {[
+                "UAT_REPORT",
+                "EVALUATION",
+                "SCORING_RULE",
+                "VALIDATION_CONFIG",
+                "USER",
+              ].map((entity) => (
+                <label key={entity} className="flex items-center">
+                  <input
+                    type="checkbox"
+                    checked={filterEntity.includes(entity)}
+                    onChange={() => handleEntityToggle(entity)}
+                    className="mr-2"
+                  />
+                  <span className="text-sm">{entity}</span>
+                </label>
+              ))}
+            </div>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-900 mb-2">
+              Date Range
+            </label>
+            <input
+              type="date"
+              value={dateFrom}
+              onChange={(e) => {
+                setDateFrom(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 text-gray-900"
+            />
+            <input
+              type="date"
+              value={dateTo}
+              onChange={(e) => {
+                setDateTo(e.target.value);
+                setCurrentPage(1);
+              }}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+            />
+            <Button
+              type="button"
+              onClick={() => {
+                setFilterAction([]);
+                setFilterEntity([]);
+                setFilterUserId("");
+                setDateFrom("");
+                setDateTo("");
+                setCurrentPage(1);
+              }}
+              size="sm"
+              variant="secondary"
+              className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
+            >
+              Clear Filters
+            </Button>
+          </div>
         </div>
-
         {loading && (
           <div className="py-8 text-center text-sm text-gray-500">
             Memuat audit logs...
@@ -272,38 +271,16 @@ export default function AuditLogsPage() {
                   {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of{" "}
                   {totalCount} result
                 </div>
-                <div className="flex items-center space-x-1">
-                  <span className="text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    size="sm"
-                    variant="secondary"
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() =>
-                      setCurrentPage(Math.min(totalPages, currentPage + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    size="sm"
-                    variant="secondary"
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-                  >
-                    Next
-                  </Button>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onChange={setCurrentPage}
+                />
               </div>
             )}
           </>
         )}
-      </div>
+      </CardSection>
     </DashboardLayout>
   );
 }

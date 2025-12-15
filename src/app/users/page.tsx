@@ -4,6 +4,8 @@ import React, { useState } from "react";
 import { useQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
+import CardSection from "../components/CardSection";
+import Pagination from "../components/Pagination";
 import { useCurrentUser } from "../lib/auth";
 import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
@@ -116,9 +118,9 @@ export default function UsersPage() {
 
   return (
     <DashboardLayout title="User Management">
-      <div className="bg-white rounded-lg p-6 shadow">
-          <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-semibold">Daftar Pengguna</h2>
+      <CardSection
+        title="Daftar Pengguna"
+        actions={
           <div className="flex gap-2 items-center">
             <input
               type="text"
@@ -150,8 +152,8 @@ export default function UsersPage() {
               + Tambah Pengguna
             </Button>
           </div>
-        </div>
-
+        }
+      >
         {loading && (
           <div className="py-8 text-center text-sm text-gray-500">
             Memuat pengguna...
@@ -235,38 +237,16 @@ export default function UsersPage() {
                   {Math.min(currentPage * ITEMS_PER_PAGE, totalCount)} of{" "}
                   {totalCount} result
                 </div>
-                <div className="flex items-center space-x-1">
-                  <span className="text-gray-600">
-                    Page {currentPage} of {totalPages}
-                  </span>
-                  <Button
-                    type="button"
-                    onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
-                    disabled={currentPage === 1}
-                    size="sm"
-                    variant="secondary"
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-                  >
-                    Previous
-                  </Button>
-                  <Button
-                    type="button"
-                    onClick={() =>
-                      setCurrentPage(Math.min(totalPages, currentPage + 1))
-                    }
-                    disabled={currentPage === totalPages}
-                    size="sm"
-                    variant="secondary"
-                    className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
-                  >
-                    Next
-                  </Button>
-                </div>
+                <Pagination
+                  currentPage={currentPage}
+                  totalPages={totalPages}
+                  onChange={setCurrentPage}
+                />
               </div>
             )}
           </>
         )}
-      </div>
+      </CardSection>
 
       {/* Create User Modal */}
       {showCreateModal && (

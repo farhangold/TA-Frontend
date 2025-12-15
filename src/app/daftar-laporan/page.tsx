@@ -5,7 +5,6 @@ import { useMutation, useQuery } from "@apollo/client";
 import { useRouter } from "next/navigation";
 import DashboardLayout from "../components/DashboardLayout";
 import CardSection from "../components/CardSection";
-import Pagination from "../components/Pagination";
 import Button from "../components/Button";
 import ActionButton from "../components/ActionButton";
 import DetailBugModal from "../components/DetailBugModal";
@@ -837,7 +836,7 @@ export default function DaftarLaporan() {
         </div>
           </>
         )}
-      </div>
+      </CardSection>
 
       <DetailBugModal
         isOpen={detailModalOpen}

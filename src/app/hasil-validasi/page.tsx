@@ -408,21 +408,6 @@ function HasilValidasiContent() {
     return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-md";
   };
 
-  const getPageNumbers = (currentPage: number, totalPages: number) => {
-    const pageNumbers: number[] = [];
-    let startPage = Math.max(1, currentPage - 2);
-    const endPage = Math.min(totalPages, startPage + 4);
-
-    if (endPage - startPage < 4) {
-      startPage = Math.max(1, endPage - 4);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pageNumbers.push(i);
-    }
-    return pageNumbers;
-  };
-
   // Fetch all reports for export (without pagination)
   const fetchAllReportsForExport = async (status: "VALID" | "INVALID") => {
     try {
