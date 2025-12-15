@@ -53,6 +53,7 @@ export default function DaftarLaporan() {
     new Set()
   );
   const [isBatchEvaluating, setIsBatchEvaluating] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
 
   // Modal states
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -160,6 +161,10 @@ export default function DaftarLaporan() {
   };
 
   const handleFileUpload = async (files: File[]) => {
+    if (files.length === 0) return;
+
+    setIsUploading(true);
+
     let totalSuccessful = 0;
     let totalFailed = 0;
     let totalBugReports = 0;
@@ -320,6 +325,7 @@ export default function DaftarLaporan() {
       alert("Terjadi kesalahan saat memproses upload. Silakan coba lagi.");
     } finally {
       setUploadCsvModalOpen(false);
+      setIsUploading(false);
     }
   };
 
@@ -778,8 +784,13 @@ export default function DaftarLaporan() {
 
       <UploadCsvModal
         isOpen={uploadCsvModalOpen}
-        onClose={() => setUploadCsvModalOpen(false)}
+        onClose={() => {
+          if (!isUploading) {
+            setUploadCsvModalOpen(false);
+          }
+        }}
         onUpload={handleFileUpload}
+        isUploading={isUploading}
       />
 
       <DeleteConfirmationModal
@@ -795,6 +806,18 @@ export default function DaftarLaporan() {
             overflow: hidden;
           }
         `}</style>
+      )}
+
+      {isUploading && (
+        <div className="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm flex items-center justify-center">
+          <div className="bg-white rounded-2xl px-6 py-4 shadow-xl flex items-center gap-3 max-w-md mx-4">
+            <div className="w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin" />
+            <div className="text-sm font-medium text-gray-700">
+              Mengupload laporan... Mohon tunggu hingga proses selesai. Website
+              akan aktif kembali setelah upload selesai.
+            </div>
+          </div>
+        </div>
       )}
     </DashboardLayout>
   );

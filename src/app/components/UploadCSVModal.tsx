@@ -3,10 +3,16 @@ import React, { useState, useRef } from "react";
 type UploadCsvModalProps = {
   isOpen: boolean;
   onClose: () => void;
-  onUpload: (files: File[]) => void;
+  onUpload: (files: File[]) => Promise<void> | void;
+  isUploading?: boolean;
 };
 
-const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
+const UploadCsvModal = ({
+  isOpen,
+  onClose,
+  onUpload,
+  isUploading = false,
+}: UploadCsvModalProps) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [activeTab, setActiveTab] = useState<"json" | "csv">("json");
   const [showExamples, setShowExamples] = useState(false);
@@ -47,14 +53,15 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
     }
   };
 
-  const handleUpload = () => {
-    if (selectedFiles.length > 0) {
-      onUpload(selectedFiles);
-      setSelectedFiles([]);
-      if (fileInputRef.current) {
-        fileInputRef.current.value = "";
-      }
-      onClose();
+  const handleUpload = async () => {
+    if (selectedFiles.length === 0 || isUploading) return;
+
+    await onUpload(selectedFiles);
+
+    // Bersihkan input setelah upload selesai
+    setSelectedFiles([]);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -102,8 +109,11 @@ const UploadCsvModal = ({ isOpen, onClose, onUpload }: UploadCsvModalProps) => {
               </div>
             </div>
             <button
-              onClick={onClose}
-              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 flex items-center justify-center transition-colors"
+              onClick={() => {
+                if (!isUploading) onClose();
+              }}
+              disabled={isUploading}
+              className="w-8 h-8 rounded-full bg-gray-100 hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors"
             >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -371,16 +381,16 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                 ? "border-green-400 bg-gradient-to-br from-green-50 to-emerald-50 shadow-lg scale-[1.02]"
                 : "border-purple-300 bg-gradient-to-br from-purple-50 via-pink-50 to-blue-50 hover:border-purple-400 hover:shadow-lg hover:scale-[1.01]"
             }`}
-            onDragOver={handleDragOver}
-            onDrop={handleDrop}
-            onClick={handleBrowseClick}
+            onDragOver={isUploading ? undefined : handleDragOver}
+            onDrop={isUploading ? undefined : handleDrop}
+            onClick={isUploading ? undefined : handleBrowseClick}
           >
             <input
               type="file"
               multiple
               className="hidden"
               accept=".csv,.json"
-              onChange={handleFileChange}
+              onChange={isUploading ? undefined : handleFileChange}
               ref={fileInputRef}
             />
 
@@ -487,9 +497,12 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
-                            handleRemoveFile(index);
+                            if (!isUploading) {
+                              handleRemoveFile(index);
+                            }
                           }}
-                          className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 flex items-center justify-center transition-colors flex-shrink-0"
+                          disabled={isUploading}
+                          className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors flex-shrink-0"
                         >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -519,37 +532,49 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
 
           <div className="flex justify-between gap-4 mt-6">
             <button
-              onClick={onClose}
-              className="flex-1 py-3 px-4 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+              onClick={() => {
+                if (!isUploading) onClose();
+              }}
+              disabled={isUploading}
+              className="flex-1 py-3 px-4 rounded-xl bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 disabled:opacity-40 disabled:cursor-not-allowed transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Batal
+              {isUploading ? "Sedang mengunggah..." : "Batal"}
             </button>
             <button
               onClick={handleUpload}
-              disabled={selectedFiles.length === 0}
+              disabled={selectedFiles.length === 0 || isUploading}
               className={`flex-1 py-3 px-4 rounded-xl font-medium transition-all duration-200 ${
-                selectedFiles.length > 0
+                selectedFiles.length > 0 && !isUploading
                   ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white hover:from-blue-600 hover:to-purple-700 shadow-lg hover:shadow-xl hover:scale-[1.02] active:scale-[0.98]"
                   : "bg-gray-200 text-gray-400 cursor-not-allowed"
               }`}
             >
               {selectedFiles.length > 0 ? (
                 <span className="flex items-center justify-center gap-2">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    strokeWidth={2}
-                    stroke="currentColor"
-                    className="w-5 h-5"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
-                    />
-                  </svg>
-                  Upload {selectedFiles.length} File
+                  {isUploading ? (
+                    <>
+                      <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                      <span>Mengupload...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        strokeWidth={2}
+                        stroke="currentColor"
+                        className="w-5 h-5"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5"
+                        />
+                      </svg>
+                      <span>Upload {selectedFiles.length} File</span>
+                    </>
+                  )}
                 </span>
               ) : (
                 "Pilih File Dulu"
