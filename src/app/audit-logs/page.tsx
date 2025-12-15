@@ -9,6 +9,7 @@ import Pagination from "../components/Pagination";
 import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import { useCurrentUser } from "../lib/auth";
 import { GET_AUDIT_LOGS } from "../graphql/auditLogs";
+import StatusBadge from "../components/StatusBadge";
 
 const ITEMS_PER_PAGE = 20;
 
@@ -226,14 +227,18 @@ export default function AuditLogsPage() {
                         {log.user?.name || log.user?.email || "-"}
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-1 bg-blue-100 text-blue-800 rounded text-xs">
-                          {log.action}
-                        </span>
+                        <StatusBadge
+                          kind="generic"
+                          value={log.action}
+                          className="text-[11px] px-2 py-0.5"
+                        />
                       </td>
                       <td className="py-3 px-4">
-                        <span className="px-2 py-1 bg-green-100 text-green-800 rounded text-xs">
-                          {log.entity}
-                        </span>
+                        <StatusBadge
+                          kind="generic"
+                          value={log.entity}
+                          className="text-[11px] px-2 py-0.5"
+                        />
                       </td>
                       <td className="py-3 px-4 font-mono text-xs">
                         {log.entityId}

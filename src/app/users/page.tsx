@@ -8,6 +8,7 @@ import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
 import StatusBadge from "../components/StatusBadge";
 import { TableEmptyState, TableErrorState } from "../components/TableStates";
+import FormField from "../components/FormField";
 import { useCurrentUser } from "../lib/auth";
 import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
@@ -290,10 +291,7 @@ function CreateUserModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4 text-gray-900">Tambah Pengguna</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Nama
-            </label>
+          <FormField label="Nama" required>
             <input
               type="text"
               required
@@ -303,11 +301,8 @@ function CreateUserModal({
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Email
-            </label>
+          </FormField>
+          <FormField label="Email" required>
             <input
               type="email"
               required
@@ -317,11 +312,8 @@ function CreateUserModal({
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Password
-            </label>
+          </FormField>
+          <FormField label="Password" required description="Minimal 6 karakter.">
             <input
               type="password"
               required
@@ -332,11 +324,8 @@ function CreateUserModal({
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Role
-            </label>
+          </FormField>
+          <FormField label="Role" required>
             <select
               value={formData.role}
               onChange={(e) =>
@@ -348,7 +337,7 @@ function CreateUserModal({
               <option value="REVIEWER">Reviewer</option>
               <option value="VIEWER">Viewer</option>
             </select>
-          </div>
+          </FormField>
           <div className="flex gap-2 justify-end">
             <Button
               type="button"
