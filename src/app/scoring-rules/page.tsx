@@ -5,6 +5,8 @@ import { useQuery, useMutation } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
 import CardSection from "../components/CardSection";
+import FormField from "../components/FormField";
+import { TableErrorState } from "../components/TableStates";
 import { useCurrentUser } from "../lib/auth";
 import {
   GET_SCORING_RULES,
@@ -237,10 +239,11 @@ export default function ScoringRulesPage() {
         {/* Validation Threshold Section */}
         <CardSection title="Validation Threshold">
           <div className="flex items-center gap-4">
-            <div className="flex-1">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
-                Threshold (%)
-              </label>
+            <FormField
+              label="Threshold (%)"
+              description="Laporan dengan skor di atas threshold ini akan dianggap valid."
+              className="flex-1"
+            >
               <input
                 type="number"
                 min="0"
@@ -250,10 +253,7 @@ export default function ScoringRulesPage() {
                 disabled={user?.role !== "ADMIN"}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
               />
-              <p className="text-xs text-gray-500 mt-1">
-                Laporan dengan skor di atas threshold ini akan dianggap valid.
-              </p>
-            </div>
+            </FormField>
             {user?.role === "ADMIN" && (
               <Button
                 type="button"
@@ -297,26 +297,31 @@ export default function ScoringRulesPage() {
             )}
           </div>
 
-          <div className="overflow-x-auto">
-            <table className="min-w-full bg-white">
-              <thead>
-                <tr className="bg-gray-100 text-gray-600 text-sm leading-normal">
-                  <th className="py-3 px-4 text-left">Attribute</th>
-                  <th className="py-3 px-4 text-left">Description</th>
-                  <th className="py-3 px-4 text-left">Criteria</th>
-                  <th className="py-3 px-4 text-center">Weight</th>
-                  <th className="py-3 px-4 text-center">Status</th>
-                  {user?.role === "ADMIN" && (
-                    <th className="py-3 px-4 text-center">Actions</th>
-                  )}
-                </tr>
-              </thead>
-              <tbody className="text-gray-600 text-sm">
-                {rules.map((rule) => (
-                  <tr
-                    key={rule._id}
-                    className="border-b border-gray-200 hover:bg-gray-50"
-                  >
+          {rulesError && !rulesLoading && (
+            <TableErrorState message="Gagal memuat scoring rules. Pastikan Anda memiliki akses yang diperlukan." />
+          )}
+
+          {!rulesLoading && !rulesError && (
+            <div className="overflow-x-auto">
+              <table className="min-w-full bg-white">
+                <thead>
+                  <tr className="bg-gray-100 text-gray-600 text-sm leading-normal">
+                    <th className="py-3 px-4 text-left">Attribute</th>
+                    <th className="py-3 px-4 text-left">Description</th>
+                    <th className="py-3 px-4 text-left">Criteria</th>
+                    <th className="py-3 px-4 text-center">Weight</th>
+                    <th className="py-3 px-4 text-center">Status</th>
+                    {user?.role === "ADMIN" && (
+                      <th className="py-3 px-4 text-center">Actions</th>
+                    )}
+                  </tr>
+                </thead>
+                <tbody className="text-gray-600 text-sm">
+                  {rules.map((rule) => (
+                    <tr
+                      key={rule._id}
+                      className="border-b border-gray-200 hover:bg-gray-50"
+                    >
                     <td className="py-3 px-4 text-left font-medium">
                       {getAttributeLabel(rule.attribute)}
                     </td>
@@ -415,11 +420,6 @@ export default function ScoringRulesPage() {
               </tbody>
             </table>
           </div>
-
-          {rules.length === 0 && (
-            <p className="text-center text-gray-500 py-8">
-              Tidak ada scoring rules yang ditemukan.
-            </p>
           )}
         </CardSection>
       </div>

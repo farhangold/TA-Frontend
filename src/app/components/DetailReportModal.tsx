@@ -2,6 +2,7 @@
 
 import React from "react";
 import Button from "./Button";
+import StatusBadge from "./StatusBadge";
 
 type EvaluationData = {
   reportId?: string;
@@ -86,26 +87,6 @@ const DetailReportModal = ({
 
   const report = evaluation?.report;
   const status = evaluation?.validationStatus;
-
-  const getStatusBadgeClass = (status: string) => {
-    if (status === "VALID")
-      return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
-    if (status === "INVALID" || status === "FAILED")
-      return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
-    return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
-  };
-
-  const getReportTypeBadge = (reportType: string) => {
-    if (reportType === "BUG_REPORT")
-      return "bg-gradient-to-r from-red-400 to-rose-500 text-white";
-    return "bg-gradient-to-r from-green-400 to-emerald-500 text-white";
-  };
-
-  const getCompletenessBadgeClass = (status: string) => {
-    if (status === "COMPLETE")
-      return "bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md";
-    return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-md";
-  };
 
   const getAttributeDisplayName = (attribute: string) => {
     const names: Record<string, string> = {
@@ -216,38 +197,22 @@ const DetailReportModal = ({
               <div className="bg-gradient-to-br from-gray-50 to-white rounded-xl p-6 border border-gray-200/50 shadow-md">
                 <div className="flex flex-wrap items-center justify-between gap-4">
                   <div className="flex items-center gap-3 flex-wrap">
-                    <span
-                      className={`px-4 py-2 rounded-full text-sm font-semibold ${getStatusBadgeClass(
-                        status || "PENDING"
-                      )}`}
-                    >
-                      {status === "VALID"
-                        ? "VALID"
-                        : status === "INVALID"
-                          ? "INVALID"
-                          : "PENDING"}
-                    </span>
-                    {evaluation.completenessStatus && (
-                      <span
-                        className={`px-4 py-2 rounded-full text-sm font-semibold ${getCompletenessBadgeClass(
-                          evaluation.completenessStatus
-                        )}`}
-                      >
-                        {evaluation.completenessStatus === "COMPLETE"
-                          ? "✓ Complete"
-                          : "⚠ Incomplete"}
-                      </span>
-                    )}
+                    <StatusBadge
+                      kind="validation"
+                      value={status || "PENDING"}
+                      className="text-xs px-3 py-1"
+                    />
+                    <StatusBadge
+                      kind="completeness"
+                      value={evaluation.completenessStatus}
+                      className="text-xs px-3 py-1"
+                    />
                     {report.reportType && (
-                      <span
-                        className={`px-4 py-2 rounded-full text-sm font-semibold ${getReportTypeBadge(
-                          report.reportType
-                        )}`}
-                      >
-                        {report.reportType === "BUG_REPORT"
-                          ? "Bug Report"
-                          : "Success Report"}
-                      </span>
+                      <StatusBadge
+                        kind="reportType"
+                        value={report.reportType}
+                        className="text-xs px-3 py-1"
+                      />
                     )}
                   </div>
                   <div className="text-right">

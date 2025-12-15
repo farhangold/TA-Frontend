@@ -7,6 +7,7 @@ import Button from "../components/Button";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
 import { TableEmptyState, TableErrorState } from "../components/TableStates";
+import FormField from "../components/FormField";
 import { useCurrentUser } from "../lib/auth";
 import { GET_AUDIT_LOGS } from "../graphql/auditLogs";
 import StatusBadge from "../components/StatusBadge";
@@ -94,10 +95,7 @@ export default function AuditLogsPage() {
       >
         {/* Filters */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4 p-4 bg-gray-50 rounded-lg">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">
-              Action
-            </label>
+          <FormField label="Action">
             <div className="space-y-1">
               {[
                 "CREATE",
@@ -120,11 +118,8 @@ export default function AuditLogsPage() {
                 </label>
               ))}
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Entity
-            </label>
+          </FormField>
+          <FormField label="Entity">
             <div className="space-y-1">
               {[
                 "UAT_REPORT",
@@ -144,46 +139,45 @@ export default function AuditLogsPage() {
                 </label>
               ))}
             </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-2">
-              Date Range
-            </label>
-            <input
-              type="date"
-              value={dateFrom}
-              onChange={(e) => {
-                setDateFrom(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg mb-2 text-gray-900"
-            />
-            <input
-              type="date"
-              value={dateTo}
-              onChange={(e) => {
-                setDateTo(e.target.value);
-                setCurrentPage(1);
-              }}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
-            />
-            <Button
-              type="button"
-              onClick={() => {
-                setFilterAction([]);
-                setFilterEntity([]);
-                setFilterUserId("");
-                setDateFrom("");
-                setDateTo("");
-                setCurrentPage(1);
-              }}
-              size="sm"
-              variant="secondary"
-              className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
-            >
-              Clear Filters
-            </Button>
-          </div>
+          </FormField>
+          <FormField label="Date Range">
+            <div className="space-y-2">
+              <input
+                type="date"
+                value={dateFrom}
+                onChange={(e) => {
+                  setDateFrom(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+              />
+              <input
+                type="date"
+                value={dateTo}
+                onChange={(e) => {
+                  setDateTo(e.target.value);
+                  setCurrentPage(1);
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900"
+              />
+              <Button
+                type="button"
+                onClick={() => {
+                  setFilterAction([]);
+                  setFilterEntity([]);
+                  setFilterUserId("");
+                  setDateFrom("");
+                  setDateTo("");
+                  setCurrentPage(1);
+                }}
+                size="sm"
+                variant="secondary"
+                className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
+              >
+                Clear Filters
+              </Button>
+            </div>
+          </FormField>
         </div>
         {loading && (
           <div className="py-8 text-center text-sm text-gray-500">

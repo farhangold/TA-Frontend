@@ -22,7 +22,7 @@ const baseClasses =
 
 const variantClasses: Record<ButtonVariant, string> = {
   primary:
-    "bg-blue-600 text-white shadow-sm hover:bg-blue-700 focus-visible:ring-blue-500",
+    "bg-gradient-to-r from-blue-500 to-blue-600 text-white shadow-sm hover:from-blue-600 hover:to-blue-700 focus-visible:ring-blue-500",
   secondary:
     "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50",
   ternary:

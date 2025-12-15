@@ -5,6 +5,7 @@ import React, { Suspense, useEffect } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { useQuery } from "@apollo/client";
 import DashboardLayout from "../components/DashboardLayout";
+import { TableEmptyState, TableErrorState } from "../components/TableStates";
 import { GET_EVALUATION } from "../graphql/evaluations";
 
 const DetailLaporanContent = () => {
@@ -48,10 +49,10 @@ const DetailLaporanContent = () => {
     <DashboardLayout title="Detail Laporan">
       <div className="bg-white rounded-lg p-6 shadow space-y-6">
         {!reportId && (
-          <p className="text-sm text-gray-500">
-            Tidak ada Report ID yang dipilih. Buka halaman Daftar Laporan dan
-            pilih satu laporan untuk melihat detail evaluasinya.
-          </p>
+          <TableEmptyState
+            title="Belum ada laporan dipilih"
+            message="Buka halaman Daftar Laporan dan pilih satu laporan untuk melihat detail evaluasinya."
+          />
         )}
 
         {reportId && loading && (
@@ -59,9 +60,9 @@ const DetailLaporanContent = () => {
         )}
 
         {reportId && error && !loading && (
-          <p className="text-sm text-red-600">
-            Gagal memuat detail laporan. Pastikan laporan sudah dievaluasi.
-          </p>
+          <TableErrorState
+            message="Gagal memuat detail laporan. Pastikan laporan sudah dievaluasi."
+          />
         )}
 
         {reportId && evaluation && report && (

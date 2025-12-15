@@ -12,6 +12,7 @@ import UploadCsvModal from "../components/UploadCSVModal";
 import DeleteConfirmationModal from "../components/DeleteModal";
 import { useCurrentUser } from "../lib/auth";
 import { TableEmptyState, TableErrorState } from "../components/TableStates";
+import FormField from "../components/FormField";
 import {
   GET_UAT_REPORTS,
   DELETE_UAT_REPORT,
@@ -487,54 +488,43 @@ export default function DaftarLaporan() {
                 </Button>
               </>
             )}
-            {totalCount > 0 && user?.role === "ADMIN" && (
+            <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white">
               <Button
                 type="button"
-                onClick={() => {
-                  setDeleteMode("all");
-                  setDeleteModalOpen(true);
-                }}
-                disabled={isDeleting}
+                onClick={() => setShowFilters(!showFilters)}
                 size="sm"
-                variant="ternary"
-                className="text-sm font-semibold"
+                variant="secondary"
+                className="rounded-none border-0 px-3 py-2 text-sm font-medium bg-white hover:bg-gray-50"
               >
-                {isDeleting ? "Menghapus semua..." : "Hapus Semua Data"}
+                Filter
               </Button>
-            )}
-            <Button
-              type="button"
-              onClick={() => setShowFilters(!showFilters)}
-              size="sm"
-              variant="secondary"
-              className="text-sm font-medium"
-            >
-              Filter
-            </Button>
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="Cari berdasarkan domain"
-                value={searchTerm}
-                onChange={(event) => {
-                  setSearchTerm(event.target.value);
-                  setCurrentPage(1);
-                }}
-                className="pl-10 pr-4 py-3 border-2 border-gray-300 rounded-xl w-64 text-gray-900 placeholder:text-gray-500 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-              />
-              <svg
-                className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <circle cx="11" cy="11" r="8" />
-                <line x1="21" y1="21" x2="16.65" y2="16.65" />
-              </svg>
+              <div className="relative">
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                  <svg
+                    className="w-5 h-5"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <circle cx="11" cy="11" r="8" />
+                    <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                  </svg>
+                </span>
+                <input
+                  type="text"
+                  placeholder="Cari berdasarkan domain"
+                  value={searchTerm}
+                  onChange={(event) => {
+                    setSearchTerm(event.target.value);
+                    setCurrentPage(1);
+                  }}
+                  className="pl-10 pr-3 py-2 w-64 text-sm text-gray-900 placeholder:text-gray-500 bg-white border-0 focus:outline-none focus:ring-0"
+                />
+              </div>
             </div>
           </div>
         }
@@ -543,10 +533,7 @@ export default function DaftarLaporan() {
         {showFilters && (
           <div className="mb-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Severity
-                </label>
+              <FormField label="Severity">
                 <select
                   multiple
                   value={filters.severityLevel || []}
@@ -566,73 +553,71 @@ export default function DaftarLaporan() {
                   <option value="HIGH">High</option>
                   <option value="CRITICAL">Critical</option>
                 </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Sort By
-                </label>
-                <select
-                  value={sort.field}
-                  onChange={(e) =>
-                    setSort({
-                      ...sort,
-                      field: e.target.value as SortState["field"],
-                    })
-                  }
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 mb-2"
-                >
-                  <option value="CREATED_AT">Created At</option>
-                  <option value="UPDATED_AT">Updated At</option>
-                  <option value="SCORE">Score</option>
-                  <option value="SEVERITY">Severity</option>
-                </select>
-                <select
-                  value={sort.direction}
-                  onChange={(e) =>
-                    setSort({
-                      ...sort,
-                      direction: e.target.value as SortState["direction"],
-                    })
-                  }
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                >
-                  <option value="ASC">Ascending</option>
-                  <option value="DESC">Descending</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-900 mb-1">
-                  Date Range
-                </label>
-                <input
-                  type="date"
-                  value={filters.dateRange?.from || ""}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      dateRange: {
-                        from: e.target.value,
-                        to: filters.dateRange?.to || "",
-                      },
-                    })
-                  }
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200 mb-2"
-                />
-                <input
-                  type="date"
-                  value={filters.dateRange?.to || ""}
-                  onChange={(e) =>
-                    setFilters({
-                      ...filters,
-                      dateRange: {
-                        from: filters.dateRange?.from || "",
-                        to: e.target.value,
-                      },
-                    })
-                  }
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
-                />
-              </div>
+              </FormField>
+              <FormField label="Sort By">
+                <div className="space-y-2">
+                  <select
+                    value={sort.field}
+                    onChange={(e) =>
+                      setSort({
+                        ...sort,
+                        field: e.target.value as SortState["field"],
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  >
+                    <option value="CREATED_AT">Created At</option>
+                    <option value="UPDATED_AT">Updated At</option>
+                    <option value="SCORE">Score</option>
+                    <option value="SEVERITY">Severity</option>
+                  </select>
+                  <select
+                    value={sort.direction}
+                    onChange={(e) =>
+                      setSort({
+                        ...sort,
+                        direction: e.target.value as SortState["direction"],
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  >
+                    <option value="ASC">Ascending</option>
+                    <option value="DESC">Descending</option>
+                  </select>
+                </div>
+              </FormField>
+              <FormField label="Date Range">
+                <div className="space-y-2">
+                  <input
+                    type="date"
+                    value={filters.dateRange?.from || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        dateRange: {
+                          from: e.target.value,
+                          to: filters.dateRange?.to || "",
+                        },
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  />
+                  <input
+                    type="date"
+                    value={filters.dateRange?.to || ""}
+                    onChange={(e) =>
+                      setFilters({
+                        ...filters,
+                        dateRange: {
+                          from: filters.dateRange?.from || "",
+                          to: e.target.value,
+                        },
+                      })
+                    }
+                    className="w-full px-4 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all duration-200"
+                  />
+                </div>
+              </FormField>
             </div>
             <div className="mt-3 flex justify-end">
               <Button
@@ -670,7 +655,41 @@ export default function DaftarLaporan() {
 
         {!loading && !error && (
           <>
-        <div className="overflow-x-auto">
+            {selectedReportIds.size > 0 && (
+              <div className="flex items-center justify-between mb-3 text-xs sm:text-sm text-gray-700 bg-yellow-50 border border-yellow-200 rounded-lg px-3 py-2">
+                <span>
+                  {selectedReportIds.size} laporan dipilih
+                </span>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    onClick={handleBatchEvaluate}
+                    disabled={isBatchEvaluating || isDeleting}
+                    size="sm"
+                    variant="primary"
+                    className="text-xs sm:text-sm font-semibold"
+                  >
+                    {isBatchEvaluating
+                      ? "Memvalidasi..."
+                      : `Validasi Batch (${selectedReportIds.size})`}
+                  </Button>
+                  <Button
+                    type="button"
+                    onClick={() => {
+                      setDeleteMode("bulkSelected");
+                      setDeleteModalOpen(true);
+                    }}
+                    disabled={isDeleting}
+                    size="sm"
+                    variant="ternary"
+                    className="text-xs sm:text-sm font-semibold"
+                  >
+                    {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
+                  </Button>
+                </div>
+              </div>
+            )}
+            <div className="overflow-x-auto">
               <table className="min-w-full bg-white rounded-xl overflow-hidden">
             <thead>
                   <tr className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-semibold leading-normal">

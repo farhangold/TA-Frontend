@@ -403,10 +403,7 @@ function EditUserModal({
       <div className="bg-white rounded-lg p-6 w-full max-w-md">
         <h2 className="text-xl font-semibold mb-4 text-gray-900">Edit Pengguna</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Nama
-            </label>
+          <FormField label="Nama" required>
             <input
               type="text"
               required
@@ -416,22 +413,19 @@ function EditUserModal({
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Email
-            </label>
+          </FormField>
+          <FormField label="Email">
             <input
               type="email"
               value={user.email}
               disabled
               className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-100 text-gray-700"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Password Baru (kosongkan jika tidak ingin mengubah)
-            </label>
+          </FormField>
+          <FormField
+            label="Password Baru"
+            description="Kosongkan jika tidak ingin mengubah (minimal 6 karakter)."
+          >
             <input
               type="password"
               minLength={6}
@@ -441,11 +435,8 @@ function EditUserModal({
               }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg text-gray-900 placeholder:text-gray-500"
             />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-900 mb-1">
-              Role
-            </label>
+          </FormField>
+          <FormField label="Role" required>
             <select
               value={formData.role}
               onChange={(e) =>
@@ -457,7 +448,7 @@ function EditUserModal({
               <option value="REVIEWER">Reviewer</option>
               <option value="VIEWER">Viewer</option>
             </select>
-          </div>
+          </FormField>
           <div className="flex gap-2 justify-end">
             <Button
               type="button"

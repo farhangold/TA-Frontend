@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import Button from "./Button";
+import StatusBadge from "./StatusBadge";
 
 type UploadCsvModalProps = {
   isOpen: boolean;
@@ -433,12 +434,16 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                     Drop file di sini atau klik untuk memilih
                   </p>
                   <p className="text-sm text-gray-500 flex items-center gap-2">
-                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">
-                      JSON
-                    </span>
-                    <span className="px-2 py-1 bg-white/60 rounded-md text-xs font-medium">
-                      CSV
-                    </span>
+                    <StatusBadge
+                      kind="generic"
+                      value="JSON"
+                      className="bg-white/60 text-gray-700 text-[10px] px-2 py-0.5"
+                    />
+                    <StatusBadge
+                      kind="generic"
+                      value="CSV"
+                      className="bg-white/60 text-gray-700 text-[10px] px-2 py-0.5"
+                    />
                     <span className="text-gray-400">•</span>
                     <span>Multiple files</span>
                     <span className="text-gray-400">•</span>
