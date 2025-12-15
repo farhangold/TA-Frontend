@@ -8,6 +8,7 @@ import ActionButton from "../components/ActionButton";
 import ExportButton from "../components/ExportButton";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
+import StatusBadge from "../components/StatusBadge";
 import Button from "../components/Button";
 import { GET_UAT_REPORTS } from "../graphql/uatReports";
 import {
@@ -393,21 +394,6 @@ function HasilValidasiContent() {
     }
   };
 
-  const getStatusBadgeClass = (status: string) => {
-    if (status === "VALID")
-      return "bg-gradient-to-r from-green-400 to-emerald-500 text-white shadow-md";
-    if (status === "INVALID" || status === "FAILED")
-      return "bg-gradient-to-r from-red-400 to-rose-500 text-white shadow-md";
-    return "bg-gradient-to-r from-amber-400 to-orange-500 text-white shadow-md animate-pulse";
-  };
-
-  const getCompletenessBadgeClass = (status?: string) => {
-    if (!status) return "bg-gray-200 text-gray-600";
-    if (status === "COMPLETE")
-      return "bg-gradient-to-r from-emerald-400 to-teal-500 text-white shadow-md";
-    return "bg-gradient-to-r from-orange-400 to-amber-500 text-white shadow-md";
-  };
-
   // Fetch all reports for export (without pagination)
   const fetchAllReportsForExport = async (status: "VALID" | "INVALID") => {
     try {
@@ -537,21 +523,15 @@ function HasilValidasiContent() {
       title={title}
       badge={
         <span
-          className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}
+          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${badgeColor}`}
         >
           Total: {totalCount}
         </span>
       }
       actions={
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
           {onRefresh && (
-            <Button
-              type="button"
-              size="sm"
-              variant="secondary"
-              onClick={onRefresh}
-              className="px-3 py-1 rounded-xl border border-gray-300 text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
-            >
+            <Button type="button" size="sm" variant="secondary">
               Refresh
             </Button>
           )}
@@ -572,7 +552,7 @@ function HasilValidasiContent() {
               disabled={totalCount === 0}
             />
           )}
-          <div className="flex items-center gap-2 ml-2">
+          <div className="flex items-center gap-2 ml-3">
             <Button
               type="button"
               size="sm"
@@ -584,11 +564,7 @@ function HasilValidasiContent() {
                 loading ||
                 !!isBulkDeleting
               }
-              className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-all duration-200 ${
-                selectedIds.length === 0 || loading || isBulkDeleting
-                  ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                  : "border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
-              }`}
+              className="text-xs font-semibold"
             >
               Hapus Terpilih
             </Button>
@@ -603,11 +579,7 @@ function HasilValidasiContent() {
                 loading ||
                 !!isBulkDeleting
               }
-              className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-all duration-200 ${
-                reports.length === 0 || loading || isBulkDeleting
-                  ? "border-gray-200 text-gray-400 cursor-not-allowed"
-                  : "border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
-              }`}
+              className="text-xs font-semibold"
             >
               Hapus Semua (Halaman)
             </Button>
@@ -691,28 +663,14 @@ function HasilValidasiContent() {
                         {report.description}
                       </td>
                       <td className="py-3 px-4 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusBadgeClass(
-                            report.status
-                          )}`}
-                        >
-                          {report.status}
-                        </span>
+                        <StatusBadge kind="validation" value={report.status} />
                       </td>
                       <td className="py-3 px-4 text-center">
-                        {report.completenessStatus ? (
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${getCompletenessBadgeClass(
-                              report.completenessStatus
-                            )}`}
-                          >
-                            {report.completenessStatus === "COMPLETE"
-                              ? "✓ Complete"
-                              : "⚠ Incomplete"}
-                          </span>
-                        ) : (
-                          <span className="text-gray-400 text-xs">-</span>
-                        )}
+                        <StatusBadge
+                          kind="completeness"
+                          value={report.completenessStatus}
+                          className="capitalize"
+                        />
                       </td>
                       <td className="py-3 px-4 text-center">{report.date}</td>
                       <td className="py-3 px-4 text-center">

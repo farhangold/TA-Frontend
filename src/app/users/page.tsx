@@ -6,6 +6,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import Button from "../components/Button";
 import CardSection from "../components/CardSection";
 import Pagination from "../components/Pagination";
+import StatusBadge from "../components/StatusBadge";
 import { useCurrentUser } from "../lib/auth";
 import { GET_USERS, REGISTER_USER, UPDATE_USER } from "../graphql/users";
 
@@ -147,7 +148,7 @@ export default function UsersPage() {
               onClick={() => setShowCreateModal(true)}
               size="sm"
               variant="primary"
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600"
+              className="text-sm font-semibold"
             >
               + Tambah Pengguna
             </Button>
@@ -188,17 +189,7 @@ export default function UsersPage() {
                       <td className="py-3 px-4">{u.name}</td>
                       <td className="py-3 px-4">{u.email}</td>
                       <td className="py-3 px-4 text-center">
-                        <span
-                          className={`px-3 py-1 rounded-full text-xs ${
-                            u.role === "ADMIN"
-                              ? "bg-purple-300 text-purple-800"
-                              : u.role === "REVIEWER"
-                                ? "bg-blue-300 text-blue-800"
-                                : "bg-gray-300 text-gray-800"
-                          }`}
-                        >
-                          {u.role}
-                        </span>
+                        <StatusBadge kind="role" value={u.role} />
                       </td>
                       <td className="py-3 px-4 text-center">
                         {new Date(u.createdAt).toLocaleDateString("id-ID")}

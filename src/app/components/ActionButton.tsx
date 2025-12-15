@@ -17,7 +17,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
             size="icon"
             variant="ternary"
             onClick={onClick}
-            className="rounded-lg bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
+            className="rounded-lg bg-white text-red-600 border border-red-300 hover:bg-red-50 hover:border-red-400 shadow-sm"
           >
             {/* Icon delete */}
             <svg
@@ -41,7 +41,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
             size="icon"
             variant="primary"
             onClick={onClick}
-            className="rounded-lg bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
+            className="rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 shadow-sm"
           >
             {/* Icon detail bug (info) */}
             <svg
@@ -62,7 +62,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
             size="icon"
             variant="primary"
             onClick={onClick}
-            className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
+            className="rounded-lg bg-emerald-50 text-emerald-600 hover:bg-emerald-100 shadow-sm"
           >
             {/* Icon validasi (centang) */}
             <svg
@@ -88,7 +88,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
             size="icon"
             variant="secondary"
             onClick={onClick}
-            className="rounded-lg bg-gradient-to-r from-amber-500 to-orange-600 text-white shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
+            className="rounded-lg bg-amber-50 text-amber-600 hover:bg-amber-100 shadow-sm"
           >
             {/* Icon upload CSV */}
             <svg

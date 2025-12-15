@@ -431,14 +431,14 @@ export default function DaftarLaporan() {
       <CardSection
         title="Daftar Laporan Bug"
         actions={
-          <div className="flex gap-2 items-center">
+          <div className="flex gap-3 items-center">
             {user && (user.role === "ADMIN" || user.role === "REVIEWER") && (
               <Button
                 type="button"
                 onClick={() => setUploadCsvModalOpen(true)}
-                size="md"
+                size="sm"
                 variant="primary"
-                className="px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 text-sm font-semibold flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 transition-all duration-200"
+                className="flex items-center gap-2 text-sm font-semibold"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -465,7 +465,7 @@ export default function DaftarLaporan() {
                   disabled={isBatchEvaluating || isDeleting}
                   size="sm"
                   variant="primary"
-                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                  className="text-sm font-semibold"
                 >
                   {isBatchEvaluating
                     ? "Memvalidasi..."
@@ -480,7 +480,7 @@ export default function DaftarLaporan() {
                   disabled={isDeleting}
                   size="sm"
                   variant="ternary"
-                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                  className="text-sm font-semibold"
                 >
                   {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
                 </Button>
@@ -496,7 +496,7 @@ export default function DaftarLaporan() {
                 disabled={isDeleting}
                 size="sm"
                 variant="ternary"
-                className="px-4 py-2 bg-gradient-to-r from-red-700 to-black text-white rounded-xl hover:from-red-800 hover:to-gray-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                className="text-sm font-semibold"
               >
                 {isDeleting ? "Menghapus semua..." : "Hapus Semua Data"}
               </Button>
@@ -506,7 +506,7 @@ export default function DaftarLaporan() {
               onClick={() => setShowFilters(!showFilters)}
               size="sm"
               variant="secondary"
-              className="px-4 py-2 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 text-sm font-medium transition-all duration-200"
+              className="text-sm font-medium"
             >
               Filter
             </Button>
