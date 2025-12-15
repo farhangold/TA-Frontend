@@ -13,6 +13,8 @@ import {
   GET_UAT_REPORTS,
   DELETE_UAT_REPORT,
   UPLOAD_BATCH_REPORTS,
+  DELETE_ALL_UAT_REPORTS,
+  DELETE_BULK_UAT_REPORTS,
 } from "../graphql/uatReports";
 import { EVALUATE_BATCH_REPORTS } from "../graphql/evaluations";
 
@@ -54,6 +56,10 @@ export default function DaftarLaporan() {
   );
   const [isBatchEvaluating, setIsBatchEvaluating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteMode, setDeleteMode] = useState<
+    "single" | "bulkSelected" | "all"
+  >("single");
 
   // Modal states
   const [detailModalOpen, setDetailModalOpen] = useState(false);
@@ -100,6 +106,8 @@ export default function DaftarLaporan() {
 
   const [evaluateBatch] = useMutation(EVALUATE_BATCH_REPORTS);
   const [deleteReport] = useMutation(DELETE_UAT_REPORT);
+  const [deleteBulkReports] = useMutation(DELETE_BULK_UAT_REPORTS);
+  const [deleteAllReports] = useMutation(DELETE_ALL_UAT_REPORTS);
   const [uploadBatch] = useMutation(UPLOAD_BATCH_REPORTS);
 
   const reports: ReportRow[] = useMemo(() => {
@@ -156,6 +164,7 @@ export default function DaftarLaporan() {
     } else if (type === "uploadCSV") {
       setUploadCsvModalOpen(true);
     } else if (type === "delete") {
+      setDeleteMode("single");
       setDeleteModalOpen(true);
     }
   };
@@ -330,17 +339,36 @@ export default function DaftarLaporan() {
   };
 
   const handleDeleteConfirm = async () => {
-    if (!selectedReport) return;
+    setIsDeleting(true);
 
     try {
-      await deleteReport({
-        variables: { id: selectedReport.rawId },
-      });
+      if (deleteMode === "single") {
+        if (!selectedReport) return;
+
+        await deleteReport({
+          variables: { id: selectedReport.rawId },
+        });
+      } else if (deleteMode === "bulkSelected") {
+        if (selectedReportIds.size === 0) return;
+
+        await deleteBulkReports({
+          variables: { ids: Array.from(selectedReportIds) },
+        });
+        setSelectedReportIds(new Set());
+      } else if (deleteMode === "all") {
+        await deleteAllReports();
+        setSelectedReportIds(new Set());
+        setCurrentPage(1);
+      }
+
       await refetch();
     } catch (e) {
-      console.error("Error deleting report:", e);
+      console.error("Error deleting report(s):", e);
+      alert("Gagal menghapus laporan. Silakan coba lagi.");
     } finally {
-    setDeleteModalOpen(false);
+      setIsDeleting(false);
+      setDeleteModalOpen(false);
+      setDeleteMode("single");
     }
   };
 
@@ -425,14 +453,38 @@ export default function DaftarLaporan() {
               </button>
             )}
             {selectedReportIds.size > 0 && (
+              <>
+                <button
+                  onClick={handleBatchEvaluate}
+                  disabled={isBatchEvaluating || isDeleting}
+                  className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                >
+                  {isBatchEvaluating
+                    ? "Memvalidasi..."
+                    : `Validasi Batch (${selectedReportIds.size})`}
+                </button>
+                <button
+                  onClick={() => {
+                    setDeleteMode("bulkSelected");
+                    setDeleteModalOpen(true);
+                  }}
+                  disabled={isDeleting}
+                  className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                >
+                  {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
+                </button>
+              </>
+            )}
+            {totalCount > 0 && user?.role === "ADMIN" && (
               <button
-                onClick={handleBatchEvaluate}
-                disabled={isBatchEvaluating}
-                className="px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-xl hover:from-blue-600 hover:to-purple-700 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100 text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
+                onClick={() => {
+                  setDeleteMode("all");
+                  setDeleteModalOpen(true);
+                }}
+                disabled={isDeleting}
+                className="px-4 py-2 bg-gradient-to-r from-red-700 to-black text-white rounded-xl hover:from-red-800 hover:to-gray-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
               >
-                {isBatchEvaluating
-                  ? "Memvalidasi..."
-                  : `Validasi Batch (${selectedReportIds.size})`}
+                {isDeleting ? "Menghapus semua..." : "Hapus Semua Data"}
               </button>
             )}
             <button
@@ -795,9 +847,25 @@ export default function DaftarLaporan() {
 
       <DeleteConfirmationModal
         isOpen={deleteModalOpen}
-        onClose={() => setDeleteModalOpen(false)}
+        onClose={() => {
+          if (!isDeleting) {
+            setDeleteModalOpen(false);
+            setDeleteMode("single");
+          }
+        }}
         onConfirm={handleDeleteConfirm}
-        bugId={selectedReport?.rawId.slice(-6) ?? ""}
+        bugId={
+          deleteMode === "single" && selectedReport
+            ? selectedReport.rawId.slice(-6)
+            : undefined
+        }
+        title={
+          deleteMode === "single"
+            ? "Anda yakin ingin menghapus Bug ini?"
+            : deleteMode === "bulkSelected"
+            ? `Anda yakin ingin menghapus ${selectedReportIds.size} laporan terpilih?`
+            : "Anda yakin ingin menghapus SEMUA data laporan?"
+        }
       />
 
       {(detailModalOpen || uploadCsvModalOpen || deleteModalOpen) && (

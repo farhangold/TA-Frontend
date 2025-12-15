@@ -198,6 +198,18 @@ export const DELETE_UAT_REPORT = gql`
   }
 `;
 
+export const DELETE_BULK_UAT_REPORTS = gql`
+  mutation DeleteBulkUATReports($ids: [String!]!) {
+    deleteBulkUATReports(ids: $ids)
+  }
+`;
+
+export const DELETE_ALL_UAT_REPORTS = gql`
+  mutation DeleteAllUATReports {
+    deleteAllUATReports
+  }
+`;
+
 export const GET_DASHBOARD_STATS = gql`
   query GetDashboardStats {
     getDashboardStats {

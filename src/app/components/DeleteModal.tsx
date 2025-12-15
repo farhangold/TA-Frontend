@@ -4,10 +4,17 @@ type DeleteConfirmationModalProps = {
   isOpen: boolean;
   onClose: () => void;
   onConfirm: () => void;
-  bugId: string;
+  bugId?: string;
+  title?: string;
 };
 
-const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, bugId }: DeleteConfirmationModalProps) => {
+const DeleteConfirmationModal = ({
+  isOpen,
+  onClose,
+  onConfirm,
+  bugId,
+  title,
+}: DeleteConfirmationModalProps) => {
   if (!isOpen) return null;
 
   return (
@@ -32,11 +39,13 @@ const DeleteConfirmationModal = ({ isOpen, onClose, onConfirm, bugId }: DeleteCo
         
         {/* Text content */}
         <h2 className="text-3xl font-bold mb-4 text-black">
-          Anda yakin ingin menghapus Bug ini?
+          {title || 'Anda yakin ingin menghapus Bug ini?'}
         </h2>
-        <p className="text-gray-600 mb-8">
-          &quot;ID: #{bugId}&quot;
-        </p>
+        {bugId && (
+          <p className="text-gray-600 mb-8">
+            &quot;ID: #{bugId}&quot;
+          </p>
+        )}
         
         {/* Action buttons */}
         <div className="flex space-x-4 w-full">
