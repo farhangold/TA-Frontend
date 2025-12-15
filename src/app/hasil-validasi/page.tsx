@@ -51,6 +51,9 @@ function HasilValidasiContent() {
   const [deleteTargetReportId, setDeleteTargetReportId] = useState<
     string | null
   >(null);
+  const [selectedValidIds, setSelectedValidIds] = useState<string[]>([]);
+  const [selectedInvalidIds, setSelectedInvalidIds] = useState<string[]>([]);
+  const [bulkDeleteLoading, setBulkDeleteLoading] = useState(false);
 
   // Check for reportId in URL query params (from redirect)
   useEffect(() => {
@@ -263,6 +266,14 @@ function HasilValidasiContent() {
     setDetailModalOpen(true);
   };
 
+  const removeEvaluationFromCache = (reportId: string) => {
+    setEvaluationsCache((prev) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { [reportId]: _removed, ...rest } = prev;
+      return rest;
+    });
+  };
+
   const handleDeleteEvaluation = async (reportId: string) => {
     if (!reportId) return;
 
@@ -283,11 +294,7 @@ function HasilValidasiContent() {
         alert("Hasil validasi berhasil dihapus.");
 
         // Hapus cache evaluasi untuk laporan ini
-        setEvaluationsCache((prev) => {
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { [reportId]: _removed, ...rest } = prev;
-          return rest;
-        });
+        removeEvaluationFromCache(reportId);
 
         // Tutup modal detail jika sedang melihat laporan yang sama
         if (selectedReportId === reportId) {
@@ -301,6 +308,108 @@ function HasilValidasiContent() {
       // onError handler pada mutation sudah menampilkan alert
     } finally {
       setDeleteTargetReportId(null);
+    }
+  };
+
+  const handleToggleSelect = (
+    reportId: string,
+    selectedIds: string[],
+    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    setSelectedIds((prev) =>
+      prev.includes(reportId)
+        ? prev.filter((id) => id !== reportId)
+        : [...prev, reportId]
+    );
+  };
+
+  const handleToggleSelectAll = (
+    reports: ReportRow[],
+    selectedIds: string[],
+    setSelectedIds: React.Dispatch<React.SetStateAction<string[]>>
+  ) => {
+    const allIds = reports.map((r) => r.rawId);
+    const isAllSelected =
+      allIds.length > 0 && allIds.every((id) => selectedIds.includes(id));
+
+    if (isAllSelected) {
+      // Hapus hanya ID yang ada di halaman ini dari seleksi
+      setSelectedIds((prev) => prev.filter((id) => !allIds.includes(id)));
+    } else {
+      // Tambahkan semua ID di halaman ini ke seleksi
+      setSelectedIds((prev) => Array.from(new Set([...prev, ...allIds])));
+    }
+  };
+
+  const performBulkDelete = async (
+    reportIds: string[],
+    label: string,
+    clearSelection: () => void
+  ) => {
+    if (reportIds.length === 0) return;
+
+    const confirmed = window.confirm(
+      `Apakah Anda yakin ingin menghapus hasil validasi untuk ${reportIds.length} laporan pada daftar ${label}?\n\nTindakan ini hanya menghapus hasil evaluasi (skor & feedback), laporan aslinya tetap tersimpan.`
+    );
+    if (!confirmed) return;
+
+    try {
+      setBulkDeleteLoading(true);
+      let successCount = 0;
+
+      for (const reportId of reportIds) {
+        try {
+          const result = await deleteEvaluationMutation({
+            variables: { reportId },
+          });
+
+          if (result.data?.deleteEvaluationByReport) {
+            successCount += 1;
+            removeEvaluationFromCache(reportId);
+
+            if (selectedReportId === reportId) {
+              setDetailModalOpen(false);
+              setSelectedReportId(null);
+            }
+          }
+        } catch {
+          // error per-item sudah ditangani onError; lanjut ke item berikutnya
+        }
+      }
+
+      if (successCount > 0) {
+        alert(
+          `Berhasil menghapus hasil validasi untuk ${successCount} laporan pada daftar ${label}.`
+        );
+        clearSelection();
+      } else {
+        alert("Gagal menghapus hasil validasi. Silakan coba lagi.");
+      }
+    } finally {
+      setBulkDeleteLoading(false);
+    }
+  };
+
+  const handleDeleteAllForStatus = async (
+    status: "VALID" | "INVALID",
+    label: string,
+    clearSelection: () => void
+  ) => {
+    try {
+      setBulkDeleteLoading(true);
+      const allReports = await fetchAllReportsForExport(status);
+      const allIds = allReports
+        .map((report: { _id?: string }) => report._id)
+        .filter((id): id is string => !!id);
+
+      if (allIds.length === 0) {
+        alert(`Tidak ada hasil validasi pada daftar ${label} yang dapat dihapus.`);
+        return;
+      }
+
+      await performBulkDelete(allIds, label, clearSelection);
+    } finally {
+      setBulkDeleteLoading(false);
     }
   };
 
@@ -451,7 +560,13 @@ function HasilValidasiContent() {
     onPageChange: (page: number) => void,
     title: string,
     badgeColor: string,
-    onRefresh?: () => void
+    onRefresh?: () => void,
+    selectedIds: string[] = [],
+    onToggleOne?: (rawId: string) => void,
+    onToggleAll?: () => void,
+    onBulkDelete?: () => void,
+    onDeleteAll?: () => void,
+    isBulkDeleting?: boolean
   ) => (
     <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -489,6 +604,42 @@ function HasilValidasiContent() {
               disabled={totalCount === 0}
             />
           )}
+          <div className="flex items-center gap-2 ml-2">
+            <button
+              type="button"
+              onClick={onBulkDelete}
+              disabled={
+                !onBulkDelete ||
+                selectedIds.length === 0 ||
+                loading ||
+                !!isBulkDeleting
+              }
+              className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-all duration-200 ${
+                selectedIds.length === 0 || loading || isBulkDeleting
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                  : "border-red-300 text-red-600 hover:bg-red-50 hover:border-red-400"
+              }`}
+            >
+              Hapus Terpilih
+            </button>
+            <button
+              type="button"
+              onClick={onDeleteAll}
+              disabled={
+                !onDeleteAll ||
+                totalCount === 0 ||
+                loading ||
+                !!isBulkDeleting
+              }
+              className={`px-3 py-1 rounded-xl text-xs font-semibold border transition-all duration-200 ${
+                totalCount === 0 || loading || isBulkDeleting
+                  ? "border-gray-200 text-gray-400 cursor-not-allowed"
+                  : "border-red-500 text-red-600 hover:bg-red-50 hover:border-red-600"
+              }`}
+            >
+              Hapus Semua
+            </button>
+          </div>
         </div>
       </div>
 
@@ -515,6 +666,17 @@ function HasilValidasiContent() {
             <table className="min-w-full bg-white rounded-xl overflow-hidden">
               <thead>
                 <tr className="bg-gradient-to-r from-gray-800 to-gray-900 text-white text-sm font-semibold leading-normal">
+                  <th className="py-3 px-4 text-center w-10">
+                    <input
+                      type="checkbox"
+                      className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                      checked={
+                        reports.length > 0 &&
+                        reports.every((r) => selectedIds.includes(r.rawId))
+                      }
+                      onChange={() => onToggleAll && onToggleAll()}
+                    />
+                  </th>
                   <th className="py-3 px-4 text-left w-24">ID</th>
                   <th className="py-3 px-4 text-left">Deskripsi</th>
                   <th className="py-3 px-4 text-center w-28">Status</th>
@@ -527,7 +689,7 @@ function HasilValidasiContent() {
               <tbody className="text-gray-600 text-sm">
                 {reports.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="text-center py-8">
+                    <td colSpan={8} className="text-center py-8">
                       Tidak ada laporan ditemukan.
                     </td>
                   </tr>
@@ -539,6 +701,16 @@ function HasilValidasiContent() {
                         index % 2 === 0 ? "bg-white" : "bg-gray-50/50"
                       } hover:bg-blue-50/50`}
                     >
+                      <td className="py-3 px-4 text-center">
+                        <input
+                          type="checkbox"
+                          className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                          checked={selectedIds.includes(report.rawId)}
+                          onChange={() =>
+                            onToggleOne && onToggleOne(report.rawId)
+                          }
+                        />
+                      </td>
                       <td className="py-3 px-4 text-left font-medium">
                         {report.id}
                       </td>
@@ -670,7 +842,29 @@ function HasilValidasiContent() {
         () => {
           refetchValid();
           setEvaluationsCache({});
-        }
+        },
+        selectedValidIds,
+        (rawId: string) =>
+          handleToggleSelect(rawId, selectedValidIds, setSelectedValidIds),
+        () =>
+          handleToggleSelectAll(
+            validReports,
+            selectedValidIds,
+            setSelectedValidIds
+          ),
+        () =>
+          performBulkDelete(
+            selectedValidIds,
+            "Laporan Valid",
+            () => setSelectedValidIds([])
+          ),
+        () =>
+          handleDeleteAllForStatus(
+            "VALID",
+            "Laporan Valid",
+            () => setSelectedValidIds([])
+          ),
+        bulkDeleteLoading
       )}
 
       {renderTable(
@@ -686,7 +880,29 @@ function HasilValidasiContent() {
         () => {
           refetchInvalid();
           setEvaluationsCache({});
-        }
+        },
+        selectedInvalidIds,
+        (rawId: string) =>
+          handleToggleSelect(rawId, selectedInvalidIds, setSelectedInvalidIds),
+        () =>
+          handleToggleSelectAll(
+            invalidReports,
+            selectedInvalidIds,
+            setSelectedInvalidIds
+          ),
+        () =>
+          performBulkDelete(
+            selectedInvalidIds,
+            "Laporan Invalid/Reject",
+            () => setSelectedInvalidIds([])
+          ),
+        () =>
+          handleDeleteAllForStatus(
+            "INVALID",
+            "Laporan Invalid/Reject",
+            () => setSelectedInvalidIds([])
+          ),
+        bulkDeleteLoading
       )}
 
       <DetailReportModal
