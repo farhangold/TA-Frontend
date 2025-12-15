@@ -400,7 +400,7 @@ function HasilValidasiContent() {
       const allReports = await fetchAllReportsForExport(status);
       const allIds = allReports
         .map((report: { _id?: string }) => report._id)
-        .filter((id): id is string => !!id);
+        .filter((id: string | undefined): id is string => !!id);
 
       if (allIds.length === 0) {
         alert(`Tidak ada hasil validasi pada daftar ${label} yang dapat dihapus.`);
