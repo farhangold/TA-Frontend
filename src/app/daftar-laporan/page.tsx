@@ -313,6 +313,8 @@ export default function DaftarLaporan() {
 
       alert(summaryMessage);
       await refetch();
+      // Setelah upload selesai, pastikan user melihat data terbaru di halaman pertama
+      setCurrentPage(1);
     } catch (e: unknown) {
       console.error("Error in upload process:", e);
       alert("Terjadi kesalahan saat memproses upload. Silakan coba lagi.");

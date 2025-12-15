@@ -58,6 +58,7 @@ function HasilValidasiContent() {
     data: validData,
     loading: validLoading,
     error: validError,
+    refetch: refetchValid,
   } = useQuery(GET_UAT_REPORTS, {
     variables: {
       filter: {
@@ -77,6 +78,7 @@ function HasilValidasiContent() {
     data: invalidData,
     loading: invalidLoading,
     error: invalidError,
+    refetch: refetchInvalid,
   } = useQuery(GET_UAT_REPORTS, {
     variables: {
       filter: {
@@ -365,7 +367,8 @@ function HasilValidasiContent() {
     totalCount: number,
     onPageChange: (page: number) => void,
     title: string,
-    badgeColor: string
+    badgeColor: string,
+    onRefresh?: () => void,
   ) => (
     <div className="bg-white bg-gradient-to-br from-white to-gray-50 rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 border border-gray-200/50 mb-6">
       <div className="flex justify-between items-center mb-4">
@@ -376,6 +379,14 @@ function HasilValidasiContent() {
           <span className={`px-4 py-2 rounded-full text-sm font-semibold ${badgeColor}`}>
             Total: {totalCount}
           </span>
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="px-3 py-1 rounded-xl border border-gray-300 text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
+            >
+              Refresh
+            </button>
+          )}
           {title.includes("Valid") ? (
             <ExportButton
               reports={reports}
@@ -564,7 +575,11 @@ function HasilValidasiContent() {
         validTotalCount,
         setValidPage,
         "Laporan Valid",
-        "bg-gradient-to-r from-green-400 to-emerald-500 text-white"
+        "bg-gradient-to-r from-green-400 to-emerald-500 text-white",
+        () => {
+          refetchValid();
+          setEvaluationsCache({});
+        }
       )}
 
       {renderTable(
@@ -576,7 +591,11 @@ function HasilValidasiContent() {
         invalidTotalCount,
         setInvalidPage,
         "Laporan Invalid/Reject",
-        "bg-gradient-to-r from-red-400 to-rose-500 text-white"
+        "bg-gradient-to-r from-red-400 to-rose-500 text-white",
+        () => {
+          refetchInvalid();
+          setEvaluationsCache({});
+        }
       )}
 
       <DetailReportModal
