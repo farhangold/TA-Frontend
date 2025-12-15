@@ -307,10 +307,12 @@ const RegisterPage = () => {
                   }`}
                   placeholder="Minimal 6 karakter"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  size="icon"
+                  variant="secondary"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 bg-transparent shadow-none"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? (
@@ -318,7 +320,7 @@ const RegisterPage = () => {
                   ) : (
                     <EyeIcon className="h-5 w-5" />
                   )}
-                </button>
+                </Button>
               </div>
               {fieldErrors.password && (
                 <p className="mt-1 text-sm text-red-600">
@@ -361,12 +363,14 @@ const RegisterPage = () => {
                   }`}
                   placeholder="Ulangi kata sandi"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() =>
                     setShowConfirmPassword(!showConfirmPassword)
                   }
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  size="icon"
+                  variant="secondary"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 bg-transparent shadow-none"
                   aria-label="Toggle password visibility"
                 >
                   {showConfirmPassword ? (
@@ -374,7 +378,7 @@ const RegisterPage = () => {
                   ) : (
                     <EyeIcon className="h-5 w-5" />
                   )}
-                </button>
+                </Button>
               </div>
               {fieldErrors.confirmPassword && (
                 <p className="mt-1 text-sm text-red-600">

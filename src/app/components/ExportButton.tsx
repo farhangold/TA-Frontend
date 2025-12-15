@@ -66,7 +66,7 @@ const ExportButton = ({
         disabled={isDisabled}
         loading={loading}
         size="md"
-        variant={isDisabled ? "secondary" : "success"}
+        variant={isDisabled ? "secondary" : "primary"}
         className={`px-4 py-2 shadow-lg flex items-center gap-2 ${
           isDisabled
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
@@ -115,7 +115,7 @@ const ExportButton = ({
             <Button
               type="button"
               onClick={() => handleExport("CSV")}
-              variant="ghost"
+              variant="secondary"
               size="sm"
               className="w-full px-4 py-3 justify-start text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3 rounded-none"
             >
@@ -144,7 +144,7 @@ const ExportButton = ({
             <Button
               type="button"
               onClick={() => handleExport("EXCEL")}
-              variant="ghost"
+              variant="secondary"
               size="sm"
               className="w-full px-4 py-3 justify-start text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3 rounded-none"
             >
@@ -173,7 +173,7 @@ const ExportButton = ({
             <Button
               type="button"
               onClick={() => handleExport("PDF")}
-              variant="ghost"
+              variant="secondary"
               size="sm"
               className="w-full px-4 py-3 justify-start text-sm text-gray-700 hover:bg-gray-100 transition-colors flex items-center gap-3 rounded-none"
             >

@@ -290,7 +290,7 @@ export default function ScoringRulesPage() {
                 type="button"
                 onClick={handleResetToDefault}
                 size="sm"
-                variant={showResetConfirm ? "danger" : "secondary"}
+                variant={showResetConfirm ? "ternary" : "secondary"}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
                   showResetConfirm
                     ? "bg-red-600 text-white hover:bg-red-700"

@@ -175,7 +175,7 @@ export default function AuditLogsPage() {
                   setCurrentPage(1);
                 }}
                 size="sm"
-                variant="ghost"
+                variant="secondary"
                 className="mt-2 text-sm text-blue-600 hover:text-blue-800 px-0 py-0 h-auto"
               >
                 Clear Filters
@@ -281,7 +281,7 @@ export default function AuditLogsPage() {
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     size="sm"
-                    variant="outline"
+                    variant="secondary"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Previous
@@ -293,7 +293,7 @@ export default function AuditLogsPage() {
                     }
                     disabled={currentPage === totalPages}
                     size="sm"
-                    variant="outline"
+                    variant="secondary"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Next

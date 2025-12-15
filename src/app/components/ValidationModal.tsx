@@ -37,7 +37,7 @@ const ValidationModal = ({
             <Button
               type="button"
               size="icon"
-              variant="ghost"
+              variant="secondary"
               onClick={onClose}
               className="mr-2 text-gray-800"
             >
@@ -155,7 +155,7 @@ const ValidationModal = ({
             <div className="flex gap-2 mt-6">
               <Button
                 type="button"
-                variant="danger"
+                variant="ternary"
                 size="md"
                 onClick={() => onValidate(false)}
                 className="flex-1 bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition-colors"

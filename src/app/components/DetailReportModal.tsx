@@ -132,7 +132,7 @@ const DetailReportModal = ({
               <Button
                 type="button"
                 size="sm"
-                variant="danger"
+                variant="ternary"
                 loading={!!deleteLoading}
                 disabled={deleteLoading}
                 onClick={() => onDeleteEvaluation(evaluation.reportId as string)}
@@ -156,7 +156,7 @@ const DetailReportModal = ({
             <Button
               type="button"
               size="icon"
-              variant="ghost"
+              variant="secondary"
               onClick={onClose}
               className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center transition-colors"
             >

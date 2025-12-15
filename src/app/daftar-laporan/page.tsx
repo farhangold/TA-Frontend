@@ -478,7 +478,7 @@ export default function DaftarLaporan() {
                   }}
                   disabled={isDeleting}
                   size="sm"
-                  variant="danger"
+                  variant="ternary"
                   className="px-4 py-2 bg-gradient-to-r from-red-500 to-rose-600 text-white rounded-xl hover:from-red-600 hover:to-rose-700 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
                 >
                   {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
@@ -494,7 +494,7 @@ export default function DaftarLaporan() {
                 }}
                 disabled={isDeleting}
                 size="sm"
-                variant="danger"
+                variant="ternary"
                 className="px-4 py-2 bg-gradient-to-r from-red-700 to-black text-white rounded-xl hover:from-red-800 hover:to-gray-900 disabled:opacity-50 disabled:cursor-not-allowed text-sm font-semibold shadow-md hover:shadow-lg hover:scale-105 active:scale-95 transition-all duration-200"
               >
                 {isDeleting ? "Menghapus semua..." : "Hapus Semua Data"}
@@ -504,7 +504,7 @@ export default function DaftarLaporan() {
               type="button"
               onClick={() => setShowFilters(!showFilters)}
               size="sm"
-              variant="outline"
+              variant="secondary"
               className="px-4 py-2 border-2 border-gray-300 rounded-xl hover:bg-gray-50 hover:border-gray-400 text-sm font-medium transition-all duration-200"
             >
               Filter
@@ -640,7 +640,7 @@ export default function DaftarLaporan() {
                   setCurrentPage(1);
                 }}
                 size="sm"
-                variant="ghost"
+                variant="secondary"
                 className="px-4 py-2 text-sm text-gray-600 hover:text-gray-800"
               >
                 Clear Filters
@@ -770,7 +770,7 @@ export default function DaftarLaporan() {
                 }
                 disabled={currentPage === 1}
                 size="sm"
-                variant="outline"
+                  variant="secondary"
                 className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 aria-label="Previous page"
               >
@@ -793,8 +793,8 @@ export default function DaftarLaporan() {
                   key={page}
                   type="button"
                   onClick={() => handlePageChange(page)}
-                  size="sm"
-                  variant={currentPage === page ? "primary" : "outline"}
+                    size="sm"
+                    variant={currentPage === page ? "primary" : "secondary"}
                   className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
                     currentPage === page
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
@@ -812,7 +812,7 @@ export default function DaftarLaporan() {
                 }
                 disabled={currentPage === totalPages}
                 size="sm"
-                variant="outline"
+                  variant="secondary"
                 className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                 aria-label="Next page"
               >

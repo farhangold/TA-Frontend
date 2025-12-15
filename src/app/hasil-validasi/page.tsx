@@ -561,7 +561,7 @@ function HasilValidasiContent() {
             <Button
               type="button"
               size="sm"
-              variant="outline"
+              variant="secondary"
               onClick={onRefresh}
               className="px-3 py-1 rounded-xl border border-gray-300 text-xs text-gray-600 hover:bg-gray-50 hover:border-gray-400 transition-all duration-200"
             >
@@ -589,7 +589,7 @@ function HasilValidasiContent() {
             <Button
               type="button"
               size="sm"
-              variant="danger"
+              variant="ternary"
               onClick={onBulkDelete}
               disabled={
                 !onBulkDelete ||
@@ -608,7 +608,7 @@ function HasilValidasiContent() {
             <Button
               type="button"
               size="sm"
-              variant="danger"
+              variant="ternary"
               onClick={onDeleteAll}
               disabled={
                 !onDeleteAll ||
@@ -754,7 +754,7 @@ function HasilValidasiContent() {
                   onClick={() => onPageChange(Math.max(1, currentPage - 1))}
                   disabled={currentPage === 1}
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Previous page"
                 >
@@ -778,7 +778,7 @@ function HasilValidasiContent() {
                     type="button"
                     onClick={() => onPageChange(page)}
                     size="sm"
-                    variant={currentPage === page ? "primary" : "outline"}
+                    variant={currentPage === page ? "primary" : "secondary"}
                     className={`w-8 md:flex justify-center items-center hidden px-3 py-1 mx-1 rounded-xl transition-all duration-200 ${
                       currentPage === page
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-md"
@@ -796,7 +796,7 @@ function HasilValidasiContent() {
                   }
                   disabled={currentPage === totalPages}
                   size="sm"
-                  variant="outline"
+                  variant="secondary"
                   className="px-3 py-1 rounded-xl border-2 border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200"
                   aria-label="Next page"
                 >

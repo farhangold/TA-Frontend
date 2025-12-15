@@ -3,13 +3,7 @@
 
 import * as React from "react";
 
-type ButtonVariant =
-  | "primary"
-  | "secondary"
-  | "danger"
-  | "ghost"
-  | "outline"
-  | "success";
+type ButtonVariant = "primary" | "secondary" | "ternary";
 
 type ButtonSize = "sm" | "md" | "lg" | "icon";
 
@@ -27,18 +21,15 @@ const baseClasses =
   "inline-flex items-center justify-center rounded-xl font-semibold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60";
 
 const variantClasses: Record<ButtonVariant, string> = {
+  // Primary: aksi utama/CTA
   primary:
     "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:from-blue-600 hover:to-purple-700 hover:shadow-xl hover:scale-[1.02] active:scale-95 focus-visible:ring-blue-400",
+  // Secondary: aksi pendukung / netral (outline/ghost)
   secondary:
-    "bg-gray-100 text-gray-900 shadow hover:bg-gray-200 hover:shadow-md hover:scale-[1.01] active:scale-95 focus-visible:ring-gray-300",
-  danger:
+    "bg-white text-gray-900 border border-gray-300 hover:bg-gray-50 hover:border-gray-400 hover:shadow-sm active:scale-95 focus-visible:ring-gray-300",
+  // Ternary: aksi destruktif (delete/danger)
+  ternary:
     "bg-gradient-to-r from-red-500 to-rose-600 text-white shadow-lg hover:from-red-600 hover:to-rose-700 hover:shadow-xl hover:scale-[1.02] active:scale-95 focus-visible:ring-red-400",
-  success:
-    "bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg hover:from-green-600 hover:to-emerald-700 hover:shadow-xl hover:scale-[1.02] active:scale-95 focus-visible:ring-emerald-400",
-  ghost:
-    "bg-transparent text-gray-700 hover:bg-gray-100 hover:text-gray-900 active:bg-gray-200 focus-visible:ring-gray-300",
-  outline:
-    "bg-white border-2 border-gray-300 text-gray-900 hover:border-blue-500 hover:text-blue-600 hover:shadow-md hover:scale-[1.01] active:scale-95 focus-visible:ring-blue-300",
 };
 
 const sizeClasses: Record<ButtonSize, string> = {

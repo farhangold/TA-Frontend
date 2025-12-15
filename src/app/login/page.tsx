@@ -189,10 +189,12 @@ const LoginPage = () => {
                   className="w-full pl-10 pr-10 py-3 border-2 border-gray-300 rounded-xl text-sm text-gray-900 placeholder:text-gray-500 bg-white focus:outline-none focus:ring-2 focus:ring-blue-200 focus:border-blue-500 transition-all duration-200"
                   placeholder="••••••••"
                 />
-                <button
+                <Button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+                  size="icon"
+                  variant="secondary"
+                  className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600 bg-transparent shadow-none"
                   aria-label="Toggle password visibility"
                 >
                   {showPassword ? (
@@ -200,7 +202,7 @@ const LoginPage = () => {
                   ) : (
                     <EyeIcon className="h-5 w-5" />
                   )}
-                </button>
+                </Button>
               </div>
             </div>
 

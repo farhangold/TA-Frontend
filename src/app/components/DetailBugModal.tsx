@@ -42,7 +42,7 @@ const DetailBugModal = ({ isOpen, onClose, data, type }: DetailBugModalProps) =>
             <Button
               type="button"
               size="icon"
-              variant="ghost"
+              variant="secondary"
               onClick={onClose}
               className="mr-3 p-2 rounded-full hover:bg-gray-100 transition-colors"
             >

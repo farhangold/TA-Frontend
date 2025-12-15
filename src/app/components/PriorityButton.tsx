@@ -56,7 +56,7 @@ const PriorityButton = ({
             <li>
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 className="w-full flex items-center justify-start px-4 py-2.5 bg-gradient-to-r from-green-400 to-emerald-500 hover:from-green-500 hover:to-emerald-600 text-white transition-all duration-200 rounded-none"
                 onClick={() => handlePriorityChange("Rendah")}
@@ -72,7 +72,7 @@ const PriorityButton = ({
             <li>
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 className="w-full flex items-center justify-start px-4 py-2.5 bg-gradient-to-r from-amber-400 to-orange-500 hover:from-amber-500 hover:to-orange-600 text-white transition-all duration-200 rounded-none"
                 onClick={() => handlePriorityChange("Sedang")}
@@ -88,7 +88,7 @@ const PriorityButton = ({
             <li>
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 className="w-full flex items-center justify-start px-4 py-2.5 bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 text-white transition-all duration-200 rounded-none"
                 onClick={() => handlePriorityChange("Tinggi")}
@@ -104,7 +104,7 @@ const PriorityButton = ({
             <li>
               <Button
                 type="button"
-                variant="ghost"
+                variant="secondary"
                 size="sm"
                 className="w-full flex items-center justify-start px-4 py-2.5 bg-gradient-to-r from-red-700 to-red-900 hover:from-red-800 hover:to-red-950 text-white transition-all duration-200 rounded-none"
                 onClick={() => handlePriorityChange("Kritis")}

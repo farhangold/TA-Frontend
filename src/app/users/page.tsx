@@ -244,7 +244,7 @@ export default function UsersPage() {
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
                     size="sm"
-                    variant="outline"
+                    variant="secondary"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Previous
@@ -256,7 +256,7 @@ export default function UsersPage() {
                     }
                     disabled={currentPage === totalPages}
                     size="sm"
-                    variant="outline"
+                    variant="secondary"
                     className="px-3 py-1 rounded border border-gray-300 text-gray-600 hover:bg-gray-100 disabled:opacity-50"
                   >
                     Next
@@ -384,7 +384,7 @@ function CreateUserModal({
               type="button"
               onClick={onClose}
               size="sm"
-              variant="outline"
+              variant="secondary"
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Batal
@@ -504,7 +504,7 @@ function EditUserModal({
               type="button"
               onClick={onClose}
               size="sm"
-              variant="outline"
+              variant="secondary"
               className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
             >
               Batal

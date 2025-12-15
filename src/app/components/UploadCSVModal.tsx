@@ -112,7 +112,7 @@ const UploadCsvModal = ({
             <Button
               type="button"
               size="icon"
-              variant="ghost"
+              variant="secondary"
               onClick={() => {
                 if (!isUploading) onClose();
               }}
@@ -147,7 +147,7 @@ const UploadCsvModal = ({
             <Button
               type="button"
               onClick={() => setShowInfo(!showInfo)}
-              variant="ghost"
+              variant="secondary"
               size="sm"
               className="w-full flex items-center justify-between p-3 bg-blue-50 border border-blue-200 rounded-lg hover:bg-blue-100 transition-colors"
             >
@@ -250,7 +250,7 @@ const UploadCsvModal = ({
                 <Button
                   type="button"
                   onClick={() => setShowExamples(!showExamples)}
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   className="text-xs text-blue-600 hover:text-blue-800 px-2 py-1 h-auto"
                 >
@@ -296,7 +296,7 @@ const UploadCsvModal = ({
                 <Button
                   type="button"
                   onClick={() => setActiveTab("json")}
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   className={`px-3 py-1 text-sm font-medium rounded-none ${
                     activeTab === "json"
@@ -309,7 +309,7 @@ const UploadCsvModal = ({
                 <Button
                   type="button"
                   onClick={() => setActiveTab("csv")}
-                  variant="ghost"
+                  variant="secondary"
                   size="sm"
                   className={`px-3 py-1 text-sm font-medium rounded-none ${
                     activeTab === "csv"
@@ -476,7 +476,7 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                         handleClearAll();
                       }}
                       size="sm"
-                      variant="ghost"
+                      variant="secondary"
                       className="text-xs text-red-600 hover:text-red-800 font-medium px-0 py-0 h-auto"
                     >
                       Hapus Semua
@@ -523,7 +523,7 @@ TEST-001,Login Button Not Responding,1.0.0,Windows 11,Desktop,Chrome 120,"Step1|
                           }}
                           disabled={isUploading}
                           size="icon"
-                          variant="danger"
+                          variant="ternary"
                           className="w-6 h-6 rounded-full bg-red-100 hover:bg-red-200 disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center transition-colors flex-shrink-0"
                         >
                           <svg

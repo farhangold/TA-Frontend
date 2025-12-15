@@ -15,7 +15,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
           <Button
             type="button"
             size="icon"
-            variant="danger"
+            variant="ternary"
             onClick={onClick}
             className="rounded-lg bg-gradient-to-r from-red-500 to-rose-600 hover:from-red-600 hover:to-rose-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
@@ -60,7 +60,7 @@ const ActionButton = ({ type, onClick }: ActionButtonProps) => {
           <Button
             type="button"
             size="icon"
-            variant="success"
+            variant="primary"
             onClick={onClick}
             className="rounded-lg bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-md hover:shadow-lg hover:scale-110 active:scale-95"
           >
