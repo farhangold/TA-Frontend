@@ -459,6 +459,35 @@ export default function DaftarLaporan() {
                 Upload File (JSON/CSV)
               </Button>
             )}
+            {selectedReportIds.size > 0 && (
+              <>
+                <Button
+                  type="button"
+                  onClick={handleBatchEvaluate}
+                  disabled={isBatchEvaluating || isDeleting}
+                  size="sm"
+                  variant="primary"
+                  className="text-sm font-semibold"
+                >
+                  {isBatchEvaluating
+                    ? "Memvalidasi..."
+                    : `Validasi Batch (${selectedReportIds.size})`}
+                </Button>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setDeleteMode("bulkSelected");
+                    setDeleteModalOpen(true);
+                  }}
+                  disabled={isDeleting}
+                  size="sm"
+                  variant="ternary"
+                  className="text-sm font-semibold"
+                >
+                  {isDeleting ? "Menghapus..." : `Hapus Terpilih (${selectedReportIds.size})`}
+                </Button>
+              </>
+            )}
             <div className="flex items-center border border-gray-300 rounded-xl overflow-hidden bg-white">
               <Button
                 type="button"
