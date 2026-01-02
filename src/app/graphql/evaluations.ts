@@ -86,12 +86,28 @@ export const GET_EVALUATION = gql`
         weight
         weightedScore
         passed
+        reasoning
+        evaluationStatus
+        qualityFlags {
+          isConsistent
+          isClear
+          isContradictory
+          isTooGeneric
+          hasBias
+          isAmbiguous
+        }
       }
       feedback {
         attribute
         message
         severity
         suggestion
+      }
+      requiresManualReview
+      llmEvaluationErrors {
+        attribute
+        error
+        timestamp
       }
     }
   }
